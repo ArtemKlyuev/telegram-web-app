@@ -1,6 +1,4 @@
-interface Params {
-  [key: string]: string | null;
-}
+import { Params } from '../types';
 
 export const urlSafeDecode = (urlencoded: string): string => {
   try {
@@ -50,7 +48,7 @@ export const urlParseQueryString = (queryString: string): Params => {
   const params = queryStringParams.reduce<Params>((acc, param) => {
     const [name, value] = param.split('=');
     const paramName = urlSafeDecode(name);
-    const paramValue = value === undefined ? null : urlSafeDecode(value);
+    const paramValue = value == null ? null : urlSafeDecode(value);
 
     return { ...acc, [paramName]: paramValue };
   }, {});
