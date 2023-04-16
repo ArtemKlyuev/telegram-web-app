@@ -56,7 +56,11 @@ export class WebView {
     return this.#isIframe;
   }
 
-  postEvent = (eventType: string, callback?: PostEventCb | undefined, eventData = ''): void => {
+  postEvent = (
+    eventType: string,
+    callback?: PostEventCb | undefined,
+    eventData: any = ''
+  ): void => {
     if (window.TelegramWebviewProxy !== undefined) {
       window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData));
       callback?.();
