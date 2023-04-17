@@ -1,5 +1,12 @@
 import { WebView } from '../WebView';
-import { byteLength, generateId, SessionStorage, urlParseQueryString } from '../utils';
+import { HexColor, ValueOf } from '../types';
+import {
+  byteLength,
+  generateId,
+  parseColorToHex,
+  SessionStorage,
+  urlParseQueryString,
+} from '../utils';
 
 import { HapticFeedback } from './HapticFeedback';
 
@@ -8,8 +15,15 @@ const COLOR_SCHEMES = {
   DARK: 'dark',
 } as const;
 
+const HEADER_COLOR_KEYS = {
+  BG_COLOR: 'bg_color',
+  SECONDARY_BG_COLOR: 'secondary_bg_color',
+} as const;
+
+export type HeaderBgColor = ValueOf<typeof HEADER_COLOR_KEYS>;
+
 export type ColorSchemes = typeof COLOR_SCHEMES;
-export type ColorScheme = ColorSchemes[keyof ColorSchemes];
+export type ColorScheme = ValueOf<ColorSchemes>;
 type WebViewEvent =
   | 'themeChanged'
   | 'viewportChanged'
@@ -41,7 +55,7 @@ export class WebApp {
   #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
   readonly #webAppVersion: string = '6.0';
   readonly #webAppPlatform: string = 'unknown';
-  #headerColorKey = 'bg_color';
+  #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   readonly #hapticFeedback: HapticFeedback;
   readonly #webAppInvoices = new Map<string, { url: string; callback: any }>();
@@ -128,7 +142,12 @@ export class WebApp {
     return this.#webAppPlatform;
   }
 
-  get headerColor() {
+  set headerColor(value: HeaderBgColor | string) {
+    this.setHeaderColor(value);
+  }
+
+  // @ts-expect-error different getter and setter types, but it's ok
+  get headerColor(): HexColor | null {
     return this.#themeParams[this.#headerColorKey] || null;
   }
 
@@ -196,6 +215,54 @@ export class WebApp {
       callback.apply(this, callbackArgs);
     });
   }
+
+  #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
+    if (
+      colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
+      colorKeyOrColor === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
+    ) {
+      return colorKeyOrColor;
+    }
+
+    const parsedColor = parseColorToHex(colorKeyOrColor);
+    const themeParams = this.#themeParams;
+
+    if (themeParams.bg_color && themeParams.bg_color === parsedColor) {
+      return HEADER_COLOR_KEYS.BG_COLOR;
+    }
+
+    if (themeParams.secondary_bg_color && themeParams.secondary_bg_color === parsedColor) {
+      return HEADER_COLOR_KEYS.SECONDARY_BG_COLOR;
+    }
+
+    return false;
+  }
+
+  setHeaderColor = (colorKeyOrColor: HeaderBgColor | string): void | never => {
+    if (!this.#versionAtLeast('6.1')) {
+      console.warn(
+        '[Telegram.WebApp] Header color is not supported in version ' + this.#webAppVersion
+      );
+      return;
+    }
+
+    const colorKey = this.#getHeaderColorKey(colorKeyOrColor);
+
+    if (
+      colorKey !== HEADER_COLOR_KEYS.BG_COLOR &&
+      colorKey !== HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
+    ) {
+      console.error(
+        "[Telegram.WebApp] Header color key should be one of Telegram.WebApp.themeParams.bg_color, Telegram.WebApp.themeParams.secondary_bg_color, 'bg_color', 'secondary_bg_color'",
+        colorKeyOrColor
+      );
+      throw new Error('WebAppHeaderColorKeyInvalid');
+    }
+
+    this.#headerColorKey = colorKey;
+
+    this.#webView.postEvent('web_app_set_header_color', undefined, { color_key: colorKey });
+  };
 
   sendData = (data: string): void => {
     if (!data || !data.length) {
