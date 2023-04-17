@@ -207,6 +207,14 @@ export class WebApp {
     this.#webView.offEvent('webview:' + eventType, callback);
   }
 
+  #onWindowResize = (e: UIEvent): void => {
+    if (this.#lastWindowHeight !== window.innerHeight) {
+      this.#lastWindowHeight = window.innerHeight;
+
+      this.#receiveWebViewEvent('viewportChanged', { isStateStable: true });
+    }
+  };
+
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
     if (
       colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
