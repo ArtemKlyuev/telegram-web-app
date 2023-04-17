@@ -1,5 +1,5 @@
 import { WebView } from '../WebView';
-import { generateId, SessionStorage, urlParseQueryString } from '../utils';
+import { byteLength, generateId, SessionStorage, urlParseQueryString } from '../utils';
 
 import { HapticFeedback } from './HapticFeedback';
 
@@ -130,32 +130,6 @@ export class WebApp {
     return this.#hapticFeedback;
   }
 
-  #byteLength(data: string): number {
-    if (window.Blob) {
-      try {
-        return new Blob([data]).size;
-      } catch {}
-    }
-
-    let size = data.length;
-
-    for (let i = data.length - 1; i >= 0; i--) {
-      const code = data.charCodeAt(i);
-
-      if (code > 0x7f && code <= 0x7ff) {
-        size++;
-      } else if (code > 0x7ff && code <= 0xffff) {
-        size += 2;
-      }
-
-      if (code >= 0xdc00 && code <= 0xdfff) {
-        i--;
-      }
-    }
-
-    return size;
-  }
-
   #versionCompare(v1: string = '', v2: string = ''): number {
     if (typeof v1 !== 'string') {
       v1 = '';
@@ -223,7 +197,7 @@ export class WebApp {
       throw new Error('WebAppDataInvalid');
     }
 
-    if (this.#byteLength(data) > WebApp.MAXIMUM_BYTES_TO_SEND) {
+    if (byteLength(data) > WebApp.MAXIMUM_BYTES_TO_SEND) {
       console.error('[Telegram.WebApp] Data is too long', data);
       throw new Error('WebAppDataInvalid');
     }
