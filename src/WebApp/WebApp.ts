@@ -53,7 +53,7 @@ export class WebApp {
 
     if (initParams.tgWebAppData) {
       this.#webAppInitData = initParams.tgWebAppData;
-      this.#webAppInitDataUnsafe = urlParseQueryString(webAppInitData);
+      this.#webAppInitDataUnsafe = urlParseQueryString(this.#webAppInitData);
 
       const isWrappedInCurlyBrackets = (value: string): boolean => {
         return value[0] === '{' && value.at(-1) === '}';
