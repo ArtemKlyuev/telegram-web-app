@@ -18,6 +18,7 @@ export class WebApp {
   #webAppVersion = '6.0';
   #webAppPlatform = 'unknown';
   #headerColorKey = 'bg_color';
+  #hapticFeedback: HapticFeedback;
   readonly #webAppInvoices = new Map<string, { url: string; callback: any }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: any }>();
   readonly #webView: WebView;
@@ -25,7 +26,9 @@ export class WebApp {
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  constructor() {}
+  constructor() {
+    this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
+  }
 
   get initData(): string {
     return this.#webAppInitData;
@@ -53,6 +56,10 @@ export class WebApp {
 
   get headerColor() {
     return this.#themeParams[this.#headerColorKey] || null;
+  }
+
+  get HapticFeedback(): HapticFeedback {
+    return this.#hapticFeedback;
   }
 
   #generateId(length: number): string {
