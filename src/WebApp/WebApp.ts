@@ -36,6 +36,7 @@ export class WebApp {
   #webAppVersion = '6.0';
   #webAppPlatform = 'unknown';
   #headerColorKey = 'bg_color';
+  #lastWindowHeight = window.innerHeight;
   readonly #hapticFeedback: HapticFeedback;
   readonly #webAppInvoices = new Map<string, { url: string; callback: any }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: any }>();
