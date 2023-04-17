@@ -29,12 +29,12 @@ interface WebViewEventParams {
 }
 
 export class WebApp {
-  #webAppInitData = '';
-  #webAppInitDataUnsafe = {};
+  readonly #webAppInitData: string = '';
+  readonly #webAppInitDataUnsafe = {};
   #themeParams = {};
-  #colorScheme: ColorScheme = WebApp.COLOR_SCHEMES.LIGHT;
-  #webAppVersion = '6.0';
-  #webAppPlatform = 'unknown';
+  #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
+  readonly #webAppVersion: string = '6.0';
+  readonly #webAppPlatform: string = 'unknown';
   #headerColorKey = 'bg_color';
   #lastWindowHeight = window.innerHeight;
   readonly #hapticFeedback: HapticFeedback;
