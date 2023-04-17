@@ -1,14 +1,14 @@
-import { Params } from '../types';
+import { InitParams } from '../types';
 
 import { SessionStorage } from './sessionStorage';
 import { urlParseHashParams } from './url';
 
-export const getWebViewInitParams = (): Params => {
+export const getWebViewInitParams = (): InitParams => {
   let locationHash = '';
 
   try {
     locationHash = location.hash.toString();
-  } catch (e) {}
+  } catch {}
 
   const initParams = urlParseHashParams(locationHash);
 

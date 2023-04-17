@@ -1,4 +1,4 @@
-import { Params } from './types';
+import { InitParams } from './types';
 
 export type PostEventCb = (arg?: (Error | { notAvailable: true }) | undefined) => any;
 export type AnyCallback = (...args: any[]) => any;
@@ -9,7 +9,7 @@ export class WebView {
   #isIframe: boolean = window.parent != null && window != window.parent;
   #iframeStyleEl: HTMLStyleElement | null = null;
 
-  constructor(initParams: Params) {
+  constructor(initParams: InitParams) {
     this.#initParams = initParams;
 
     if (this.#isIframe) {

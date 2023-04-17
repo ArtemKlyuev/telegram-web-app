@@ -1,4 +1,4 @@
-import { Params } from '../types';
+import { InitParams } from '../types';
 
 export const urlSafeDecode = (urlencoded: string): string => {
   try {
@@ -9,7 +9,7 @@ export const urlSafeDecode = (urlencoded: string): string => {
   }
 };
 
-export const urlParseHashParams = (locationHash: string): Params => {
+export const urlParseHashParams = (locationHash: string): InitParams => {
   locationHash = locationHash.replace(/^#/, '');
 
   if (!locationHash.length) {
@@ -20,7 +20,7 @@ export const urlParseHashParams = (locationHash: string): Params => {
     return { _path: urlSafeDecode(locationHash) };
   }
 
-  const params: Params = {};
+  const params: InitParams = {};
   const queryStringIndex = locationHash.indexOf('?');
 
   if (queryStringIndex >= 0) {
@@ -38,14 +38,14 @@ export const urlParseHashParams = (locationHash: string): Params => {
   return params;
 };
 
-export const urlParseQueryString = (queryString: string): Params => {
+export const urlParseQueryString = (queryString: string): InitParams => {
   if (!queryString.length) {
     return {};
   }
 
   const queryStringParams = queryString.split('&');
 
-  const params = queryStringParams.reduce<Params>((acc, param) => {
+  const params = queryStringParams.reduce<InitParams>((acc, param) => {
     const [name, value] = param.split('=');
     const paramName = urlSafeDecode(name);
     const paramValue = value == null ? null : urlSafeDecode(value);
