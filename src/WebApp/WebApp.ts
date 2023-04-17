@@ -7,6 +7,7 @@ import {
   SessionStorage,
   urlParseQueryString,
 } from '../utils';
+import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
@@ -32,12 +33,14 @@ export class WebApp {
   readonly #webAppInvoices = new Map<string, { url: string; callback: AnyCallback }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #webView: WebView;
+  readonly #bgColor: BackgroundColor;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  constructor(webView: WebView) {
+  constructor(webView: WebView, bgColor: BackgroundColor) {
     this.#webView = webView;
+    this.#bgColor = bgColor;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
 
     const { initParams } = this.#webView;
@@ -120,6 +123,15 @@ export class WebApp {
   // @ts-expect-error different getter and setter types, but it's ok
   get headerColor(): HexColor | null {
     return this.#themeParams[this.#headerColorKey] || null;
+  }
+
+  set backgroundColor(color: HeaderBgColor | string) {
+    this.#bgColor.setBackgroundColor(color);
+  }
+
+  // @ts-expect-error different getter and setter types, but it's ok
+  get backgroundColor(): HexColor | undefined {
+    return this.#bgColor.getBackgroundColor();
   }
 
   get HapticFeedback(): HapticFeedback {
@@ -241,6 +253,10 @@ export class WebApp {
     this.#headerColorKey = colorKey;
 
     this.#webView.postEvent('web_app_set_header_color', undefined, { color_key: colorKey });
+  };
+
+  setBackgroundColor = (color: HeaderBgColor | string): void => {
+    this.backgroundColor = color;
   };
 
   sendData = (data: string): void => {
