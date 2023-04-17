@@ -9,16 +9,7 @@ import {
 } from '../utils';
 
 import { HapticFeedback } from './HapticFeedback';
-
-const COLOR_SCHEMES = {
-  LIGHT: 'light',
-  DARK: 'dark',
-} as const;
-
-const HEADER_COLOR_KEYS = {
-  BG_COLOR: 'bg_color',
-  SECONDARY_BG_COLOR: 'secondary_bg_color',
-} as const;
+import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 
 export type HeaderBgColor = ValueOf<typeof HEADER_COLOR_KEYS>;
 
