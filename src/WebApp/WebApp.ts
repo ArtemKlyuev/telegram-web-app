@@ -27,11 +27,17 @@ interface WebViewEventParams {
   button_id?: string | undefined;
   data?: any | undefined;
 }
+export interface ThemeParams {
+  bg_color?: HexColor | undefined;
+  secondary_bg_color?: HexColor | undefined;
+  button_color?: HexColor | undefined;
+  button_text_color?: HexColor | undefined;
+}
 
 export class WebApp {
   readonly #webAppInitData: string = '';
   readonly #webAppInitDataUnsafe = {};
-  #themeParams = {};
+  #themeParams: ThemeParams = {};
   #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
   readonly #webAppVersion: string = '6.0';
   readonly #webAppPlatform: string = 'unknown';
