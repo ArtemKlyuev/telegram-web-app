@@ -16,7 +16,7 @@ export const urlParseHashParams = (locationHash: string): InitParams => {
     return {};
   }
 
-  if (locationHash.indexOf('=') < 0 && locationHash.indexOf('?') < 0) {
+  if (!locationHash.includes('=') && !locationHash.includes('?')) {
     return { _path: urlSafeDecode(locationHash) };
   }
 
@@ -24,9 +24,9 @@ export const urlParseHashParams = (locationHash: string): InitParams => {
   const queryStringIndex = locationHash.indexOf('?');
 
   if (queryStringIndex >= 0) {
-    const pathParam = locationHash.substr(0, queryStringIndex);
+    const pathParam = locationHash.slice(0, queryStringIndex);
     params._path = urlSafeDecode(pathParam);
-    locationHash = locationHash.substr(queryStringIndex + 1);
+    locationHash = locationHash.slice(queryStringIndex + 1);
   }
 
   const query_params = urlParseQueryString(locationHash);
