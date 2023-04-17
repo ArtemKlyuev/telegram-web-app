@@ -1,4 +1,6 @@
-import { WebView } from './WebView';
+import { WebView } from '../WebView';
+
+import { HapticFeedback } from './HapticFeedback';
 
 const COLOR_SCHEMES = {
   LIGHT: 'light',
