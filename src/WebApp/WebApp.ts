@@ -10,6 +10,23 @@ const COLOR_SCHEMES = {
 
 export type ColorSchemes = typeof COLOR_SCHEMES;
 export type ColorScheme = ColorSchemes[keyof ColorSchemes];
+type WebViewEvent =
+  | 'themeChanged'
+  | 'viewportChanged'
+  | 'backButtonClicked'
+  | 'mainButtonClicked'
+  | 'settingsButtonClicked'
+  | 'invoiceClosed'
+  | 'popupClosed'
+  | 'qrTextReceived'
+  | 'clipboardTextReceived';
+interface WebViewEventParams {
+  isStateStable?: boolean | undefined;
+  url?: string | undefined;
+  status?: string | undefined;
+  button_id?: string | undefined;
+  data?: any | undefined;
+}
 
 export class WebApp {
   #webAppInitData = '';
@@ -127,6 +144,24 @@ export class WebApp {
 
   #versionAtLeast(version: string): boolean {
     return this.#versionCompare(this.#webAppVersion, version) >= 0;
+  }
+
+
+  #receiveWebViewEvent(eventType: 'themeChanged'): void;
+  #receiveWebViewEvent(eventType: 'backButtonClicked'): void;
+  #receiveWebViewEvent(eventType: 'mainButtonClicked'): void;
+  #receiveWebViewEvent(eventType: 'settingsButtonClicked'): void;
+  #receiveWebViewEvent(eventType: 'viewportChanged', params: { isStateStable: boolean }): void;
+  #receiveWebViewEvent(eventType: 'popupClosed', params: { button_id: string }): void;
+  #receiveWebViewEvent(eventType: 'qrTextReceived', params: { data: any }): void;
+  #receiveWebViewEvent(eventType: 'clipboardTextReceived', params: { data: any }): void;
+  #receiveWebViewEvent(eventType: 'invoiceClosed', params: { url: string; status: string }): void;
+  #receiveWebViewEvent(eventType: WebViewEvent, params?: WebViewEventParams | undefined): void {
+    const callbackArgs = params ? [params] : [];
+
+    this.#webView.callEventCallbacks('webview:' + eventType, (callback) => {
+      callback.apply(this, callbackArgs);
+    });
   }
 
   sendData = (data: string): void => {
