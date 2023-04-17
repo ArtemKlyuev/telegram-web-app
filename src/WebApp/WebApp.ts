@@ -191,6 +191,10 @@ export class WebApp {
     this.#webView.onEvent('webview:' + eventType, callback);
   }
 
+  #offWebViewEvent(eventType: string, callback: AnyCallback) {
+    this.#webView.offEvent('webview:' + eventType, callback);
+  }
+
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
     if (
       colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
@@ -352,6 +356,10 @@ export class WebApp {
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
     this.#onWebViewEvent(eventType, callback);
+  };
+
+  offEvent = (eventType: string, callback: AnyCallback) => {
+    this.#offWebViewEvent(eventType, callback);
   };
 
   ready = (): void => {
