@@ -187,6 +187,10 @@ export class WebApp {
     });
   }
 
+  #onWebViewEvent(eventType: string, callback: AnyCallback): void {
+    this.#webView.onEvent('webview:' + eventType, callback);
+  }
+
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
     if (
       colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
@@ -344,6 +348,10 @@ export class WebApp {
     this.#webAppClipboardRequests.set(req_id, { callback });
 
     this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id });
+  };
+
+  onEvent = (eventType: string, callback: AnyCallback): void => {
+    this.#onWebViewEvent(eventType, callback);
   };
 
   ready = (): void => {
