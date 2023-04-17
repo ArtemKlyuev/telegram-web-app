@@ -10,6 +10,7 @@ import {
 import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
+import { Viewport } from './Viewport';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 import {
   ColorScheme,
@@ -34,13 +35,15 @@ export class WebApp {
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
+  readonly #viewport: Viewport;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  constructor(webView: WebView, bgColor: BackgroundColor) {
+  constructor(webView: WebView, bgColor: BackgroundColor, viewport: Viewport) {
     this.#webView = webView;
     this.#bgColor = bgColor;
+    this.#viewport = viewport;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
 
     const { initParams } = this.#webView;
@@ -136,6 +139,18 @@ export class WebApp {
 
   get HapticFeedback(): HapticFeedback {
     return this.#hapticFeedback;
+  }
+
+  get viewportHeight(): number {
+    return this.#viewport.viewportHeight;
+  }
+
+  get viewportStableHeight(): number {
+    return this.#viewport.viewportStableHeight;
+  }
+
+  get isExpanded(): boolean {
+    return this.#viewport.isExpanded;
   }
 
   #versionCompare(v1: string = '', v2: string = ''): number {
