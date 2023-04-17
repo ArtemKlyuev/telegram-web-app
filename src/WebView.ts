@@ -1,7 +1,6 @@
-import { InitParams } from './types';
+import { AnyCallback, InitParams } from './types';
 
 export type PostEventCb = (arg?: (Error | { notAvailable: true }) | undefined) => any;
-export type AnyCallback = (...args: any[]) => any;
 
 export class WebView {
   #initParams: InitParams;

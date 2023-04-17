@@ -1,5 +1,5 @@
 import { WebView } from '../WebView';
-import { HexColor, ValueOf } from '../types';
+import { AnyCallback, HexColor, ValueOf } from '../types';
 import {
   byteLength,
   generateId,
@@ -58,8 +58,8 @@ export class WebApp {
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   readonly #hapticFeedback: HapticFeedback;
-  readonly #webAppInvoices = new Map<string, { url: string; callback: any }>();
-  readonly #webAppClipboardRequests = new Map<string, { callback: any }>();
+  readonly #webAppInvoices = new Map<string, { url: string; callback: AnyCallback }>();
+  readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #webView: WebView;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
@@ -328,7 +328,7 @@ export class WebApp {
     location.href = 'https://t.me' + fullPath;
   };
 
-  openInvoice = (url: string, callback: any): void => {
+  openInvoice = (url: string, callback: AnyCallback): void => {
     const url2 = new URL(url);
     let match: string[] | null, slug: string;
 
@@ -359,7 +359,7 @@ export class WebApp {
     this.#webView.postEvent('web_app_open_invoice', undefined, { slug });
   };
 
-  readTextFromClipboard = (callback: any): void => {
+  readTextFromClipboard = (callback: AnyCallback): void => {
     if (!this.#versionAtLeast('6.4')) {
       console.error(
         '[Telegram.WebApp] Method readTextFromClipboard is not supported in version ' +
