@@ -13,5 +13,6 @@ export interface InitParams {
   tgWebAppPlatform?: string | undefined;
   tgWebAppDebug?: boolean | undefined;
   tgWebAppBotInline?: boolean | undefined;
+  _path?: string | undefined;
   [key: string]: any;
 }
