@@ -28,6 +28,12 @@ export class Viewport {
     return this.#mainButtonHeight ? `calc(100vh - ${this.#mainButtonHeight}px)` : '100vh';
   }
 
+  #calculateViewportHeight(viewportHeight: number | false): number {
+    const height = viewportHeight === false ? window.innerHeight : viewportHeight;
+
+    return height - this.#mainButtonHeight;
+  }
+
   setViewportHeight = (
     data?: { is_expanded: boolean; height: number; is_state_stable: boolean } | undefined
   ): void => {
@@ -53,11 +59,11 @@ export class Viewport {
     return this.#isExpanded;
   }
 
-  get viewportHeight(): number | false {
-    return this.#viewportHeight;
+  get viewportHeight(): number {
+    return this.#calculateViewportHeight(this.#viewportHeight);
   }
 
-  get viewportStableHeight(): number | false {
-    return this.#viewportStableHeight;
+  get viewportStableHeight(): number {
+    return this.#calculateViewportHeight(this.#viewportStableHeight);
   }
 }
