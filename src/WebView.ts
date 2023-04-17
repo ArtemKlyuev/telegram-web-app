@@ -4,7 +4,7 @@ export type PostEventCb = (arg?: (Error | { notAvailable: true }) | undefined) =
 export type AnyCallback = (...args: any[]) => any;
 
 export class WebView {
-  #initParams: any;
+  #initParams: InitParams;
   #eventHandlers = new Map<string, Set<AnyCallback>>();
   #isIframe: boolean = window.parent != null && window != window.parent;
   #iframeStyleEl: HTMLStyleElement | null = null;
@@ -48,7 +48,7 @@ export class WebView {
     });
   }
 
-  get initParams() {
+  get initParams(): InitParams {
     return this.#initParams;
   }
 
