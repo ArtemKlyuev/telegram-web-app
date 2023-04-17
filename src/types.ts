@@ -1,4 +1,5 @@
 export type ValueOf<T> = T[keyof T];
+export type HexColor = string;
 
 export interface InitParams {
   /**

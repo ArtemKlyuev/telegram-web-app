@@ -1,4 +1,6 @@
-export const parseColorToHex = (color: string): string | false => {
+import { HexColor } from '../types';
+
+export const parseColorToHex = (color: string): HexColor | false => {
   // Are they trying convert color to string if it is number?
   color += '';
   let match: RegExpExecArray | null;
