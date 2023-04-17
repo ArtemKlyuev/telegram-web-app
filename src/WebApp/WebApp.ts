@@ -1,4 +1,5 @@
 import { WebView } from '../WebView';
+import { generateId, SessionStorage, urlParseQueryString } from '../utils';
 
 import { HapticFeedback } from './HapticFeedback';
 
@@ -61,19 +62,6 @@ export class WebApp {
 
   get HapticFeedback(): HapticFeedback {
     return this.#hapticFeedback;
-  }
-
-  #generateId(length: number): string {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const charsLength = chars.length;
-    let id = '';
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charsLength);
-      id += chars[randomIndex];
-    }
-
-    return id;
   }
 
   #byteLength(data: string): number {
@@ -245,7 +233,7 @@ export class WebApp {
       throw new Error('WebAppMethodUnsupported');
     }
 
-    const req_id = this.#generateId(16);
+    const req_id = generateId(16);
 
     this.#webAppClipboardRequests.set(req_id, { callback });
 
