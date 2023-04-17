@@ -48,6 +48,54 @@ export class WebApp {
   constructor(webView: WebView) {
     this.#webView = webView;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
+
+    const { initParams } = this.#webView;
+
+    if (initParams.tgWebAppData) {
+      this.#webAppInitData = initParams.tgWebAppData;
+      this.#webAppInitDataUnsafe = urlParseQueryString(webAppInitData);
+
+      const isWrappedInCurlyBrackets = (value: string): boolean => {
+        return value[0] === '{' && value.at(-1) === '}';
+      };
+
+      const isWrappedInSquareBrackets = (value: string): boolean => {
+        return value[0] === '[' && value.at(-1) === ']';
+      };
+
+      for (let key in this.#webAppInitDataUnsafe) {
+        const value = this.#webAppInitDataUnsafe[key];
+
+        if (isWrappedInCurlyBrackets(value) || isWrappedInSquareBrackets(value)) {
+          try {
+            this.#webAppInitDataUnsafe[key] = JSON.parse(val);
+          } catch {}
+        }
+      }
+    }
+
+    if (initParams.tgWebAppThemeParams) {
+      try {
+        const parsedThemeParams = JSON.parse(initParams.tgWebAppThemeParams);
+
+        if (parsedThemeParams) {
+          setThemeParams(parsedThemeParams);
+        }
+      } catch {}
+    }
+
+    const themeParams = SessionStorage.get('themeParams');
+    if (themeParams) {
+      setThemeParams(themeParams);
+    }
+
+    if (initParams.tgWebAppVersion) {
+      this.#webAppVersion = initParams.tgWebAppVersion;
+    }
+
+    if (initParams.tgWebAppPlatform) {
+      this.#webAppPlatform = initParams.tgWebAppPlatform;
+    }
   }
 
   get initData(): string {
