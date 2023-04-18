@@ -11,6 +11,7 @@ import { BackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
+import { MainButton } from './MainButton';
 import { Theme } from './Theme';
 import { Viewport } from './Viewport';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
@@ -38,16 +39,50 @@ export class WebApp {
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
   readonly #backButton: BackButton;
+  // @ts-expect-error defined in constructor by `#initMainButton` method
+  readonly #mainButton: MainButton;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
+
+  #initMainButton(mainButton: MainButton): void {
+    // @ts-expect-error `#initMainButton` method will only executed in constructor
+    this.#mainButton = mainButton;
+
+    const onMainButtonClick = (isActive: boolean): void => {
+      if (isActive) {
+        this.#receiveWebViewEvent('mainButtonClicked');
+      }
+    };
+
+    this.#webView.onEvent('main_button_pressed', () => {
+      onMainButtonClick(this.#mainButton.isActive);
+    });
+
+    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_CLICKED, onMainButtonClick);
+
+    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setViewportHeight);
+
+    this.#mainButton.on(MainButton.EVENTS.UPDATED, (params) => {
+      this.#webView.postEvent('web_app_setup_main_button', undefined, params);
+    });
+
+    this.#mainButton.on(MainButton.EVENTS.CLICKED, (callback) => {
+      this.#onWebViewEvent('mainButtonClicked', callback);
+    });
+
+    this.#mainButton.on(MainButton.EVENTS.OFF_CLICKED, (callback) => {
+      this.#offWebViewEvent('mainButtonClicked', callback);
+    });
+  }
 
   constructor(
     webView: WebView,
     bgColor: BackgroundColor,
     viewport: Viewport,
     theme: Theme,
-    backButton: BackButton
+    backButton: BackButton,
+    mainButton: MainButton
   ) {
     this.#webView = webView;
     this.#theme = theme;
@@ -69,6 +104,8 @@ export class WebApp {
     this.#backButton.on(BackButton.EVENTS.OFF_CLICKED, (callback) => {
       this.#offWebViewEvent('backButtonClicked', callback);
     });
+
+    this.#initMainButton(mainButton);
 
     const { initParams } = this.#webView;
 
@@ -164,6 +201,10 @@ export class WebApp {
 
   get BackButton(): BackButton {
     return this.#backButton;
+  }
+
+  get MainButton(): MainButton {
+    return this.#mainButton;
   }
 
   get viewportHeight(): number {
