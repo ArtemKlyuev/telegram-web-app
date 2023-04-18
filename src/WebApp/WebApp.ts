@@ -92,6 +92,36 @@ export class WebApp {
     });
   }
 
+  #initTheme(rawTheme: InitParams['tgWebAppThemeParams']): void {
+    this.#theme.on(Theme.EVENTS.COLOR_SCHEME_CHANGED, (colorScheme) =>
+      this.#setCssVar('color-scheme', colorScheme)
+    );
+
+    this.#theme.on(Theme.EVENTS.THEME_PARAMS_CHANGED, (themeParams) =>
+      SessionStorage.set('themeParams', themeParams)
+    );
+
+    this.#theme.on(Theme.EVENTS.THEME_PARAM_SET, (param, value) => {
+      const cssVar = 'theme-' + param.split('_').join('-');
+      this.#setCssVar(cssVar, value);
+    });
+
+    if (rawTheme) {
+      try {
+        const parsedThemeParams = JSON.parse(rawTheme);
+
+        if (parsedThemeParams) {
+          this.#theme.setParams(parsedThemeParams);
+        }
+      } catch {}
+    }
+
+    const themeParams = SessionStorage.get('themeParams');
+    if (themeParams) {
+      this.#theme.setParams(themeParams);
+    }
+  }
+
   constructor(
     webView: WebView,
     bgColor: BackgroundColor,
@@ -101,7 +131,6 @@ export class WebApp {
     mainButton: MainButton
   ) {
     this.#webView = webView;
-    this.#theme = theme;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
@@ -114,16 +143,7 @@ export class WebApp {
 
     const { initParams } = this.#webView;
 
-    this.#theme.on(Theme.EVENTS.COLOR_SCHEME_CHANGED, (colorScheme) =>
-      this.#setCssVar('color-scheme', colorScheme)
-    );
-    this.#theme.on(Theme.EVENTS.THEME_PARAMS_CHANGED, (themeParams) =>
-      SessionStorage.set('themeParams', themeParams)
-    );
-    this.#theme.on(Theme.EVENTS.THEME_PARAM_SET, (param, value) => {
-      const cssVar = 'theme-' + param.split('_').join('-');
-      this.#setCssVar(cssVar, value);
-    });
+    this.#theme = theme;
     this.#initTheme(initParams.tgWebAppThemeParams);
 
     if (initParams.tgWebAppData) {
@@ -222,23 +242,6 @@ export class WebApp {
 
   get isExpanded(): boolean {
     return this.#viewport.isExpanded;
-  }
-
-  #initTheme(rawTheme: InitParams['tgWebAppThemeParams']): void {
-    if (rawTheme) {
-      try {
-        const parsedThemeParams = JSON.parse(rawTheme);
-
-        if (parsedThemeParams) {
-          this.#theme.setParams(parsedThemeParams);
-        }
-      } catch {}
-    }
-
-    const themeParams = SessionStorage.get('themeParams');
-    if (themeParams) {
-      this.#theme.setParams(themeParams);
-    }
   }
 
   #versionCompare(v1: string = '', v2: string = ''): number {
