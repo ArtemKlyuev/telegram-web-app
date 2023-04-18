@@ -1,4 +1,7 @@
 export type ValueOf<T> = T[keyof T];
+/**
+ * color in `#RRGGBB` format
+ */
 export type HexColor = string;
 export type AnyCallback = (...args: any[]) => any;
 
