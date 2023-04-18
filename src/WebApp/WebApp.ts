@@ -76,6 +76,26 @@ export class WebApp {
     });
   }
 
+  #initBackButton(): void {
+    this.#backButton.on(BackButton.EVENTS.CREATED, () => {
+      this.#webView.onEvent('back_button_pressed', () => {
+        this.#receiveWebViewEvent('backButtonClicked');
+      });
+    });
+
+    this.#backButton.on(BackButton.EVENTS.UPDATED, (params) => {
+      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
+    });
+
+    this.#backButton.on(BackButton.EVENTS.CLICKED, (callback) => {
+      this.#onWebViewEvent('backButtonClicked', callback);
+    });
+
+    this.#backButton.on(BackButton.EVENTS.OFF_CLICKED, (callback) => {
+      this.#offWebViewEvent('backButtonClicked', callback);
+    });
+  }
+
   constructor(
     webView: WebView,
     bgColor: BackgroundColor,
@@ -89,21 +109,9 @@ export class WebApp {
     this.#bgColor = bgColor;
     this.#viewport = viewport;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
+
     this.#backButton = backButton;
-    this.#backButton.on(BackButton.EVENTS.CREATED, () => {
-      this.#webView.onEvent('back_button_pressed', () => {
-        this.#receiveWebViewEvent('backButtonClicked');
-      });
-    });
-    this.#backButton.on(BackButton.EVENTS.UPDATED, (params) => {
-      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
-    });
-    this.#backButton.on(BackButton.EVENTS.CLICKED, (callback) => {
-      this.#onWebViewEvent('backButtonClicked', callback);
-    });
-    this.#backButton.on(BackButton.EVENTS.OFF_CLICKED, (callback) => {
-      this.#offWebViewEvent('backButtonClicked', callback);
-    });
+    this.#initBackButton();
 
     this.#initMainButton(mainButton);
 
