@@ -38,20 +38,20 @@ export const urlParseHashParams = (locationHash: string): InitParams => {
   return params;
 };
 
-export const urlParseQueryString = (queryString: string): InitParams => {
+export const urlParseQueryString = <T extends Record<string, any>>(queryString: string): T => {
   if (!queryString.length) {
-    return {};
+    return {} as T;
   }
 
   const queryStringParams = queryString.split('&');
 
-  const params = queryStringParams.reduce<InitParams>((acc, param) => {
+  const params = queryStringParams.reduce<T>((acc, param) => {
     const [name, value] = param.split('=');
     const paramName = urlSafeDecode(name);
     const paramValue = value == null ? null : urlSafeDecode(value);
 
     return { ...acc, [paramName]: paramValue };
-  }, {});
+  }, {} as T);
 
   return params;
 };
