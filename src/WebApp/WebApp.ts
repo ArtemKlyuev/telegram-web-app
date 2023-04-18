@@ -1,5 +1,5 @@
 import { WebView } from '../WebView';
-import { AnyCallback, HexColor } from '../types';
+import { AnyCallback, HexColor, InitParams } from '../types';
 import {
   byteLength,
   generateId,
@@ -10,6 +10,7 @@ import {
 import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
+import { Theme } from './Theme';
 import { Viewport } from './Viewport';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 import {
@@ -24,8 +25,7 @@ import {
 export class WebApp {
   readonly #webAppInitData: string = '';
   readonly #webAppInitDataUnsafe = {};
-  #themeParams: ThemeParams = {};
-  #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
+  readonly #theme: Theme;
   readonly #webAppVersion: string = '6.0';
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
@@ -40,13 +40,26 @@ export class WebApp {
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  constructor(webView: WebView, bgColor: BackgroundColor, viewport: Viewport) {
+  constructor(webView: WebView, bgColor: BackgroundColor, viewport: Viewport, theme: Theme) {
     this.#webView = webView;
+    this.#theme = theme;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
 
     const { initParams } = this.#webView;
+
+    this.#theme.on(Theme.EVENTS.COLOR_SCHEME_CHANGED, (colorScheme) =>
+      this.#setCssVar('color-scheme', colorScheme)
+    );
+    this.#theme.on(Theme.EVENTS.THEME_PARAMS_CHANGED, (themeParams) =>
+      SessionStorage.set('themeParams', themeParams)
+    );
+    this.#theme.on(Theme.EVENTS.THEME_PARAM_SET, (param, value) => {
+      const cssVar = 'theme-' + param.split('_').join('-');
+      this.#setCssVar(cssVar, value);
+    });
+    this.#initTheme(initParams.tgWebAppThemeParams);
 
     if (initParams.tgWebAppData) {
       this.#webAppInitData = initParams.tgWebAppData;
@@ -71,21 +84,6 @@ export class WebApp {
       }
     }
 
-    if (initParams.tgWebAppThemeParams) {
-      try {
-        const parsedThemeParams = JSON.parse(initParams.tgWebAppThemeParams);
-
-        if (parsedThemeParams) {
-          setThemeParams(parsedThemeParams);
-        }
-      } catch {}
-    }
-
-    const themeParams = SessionStorage.get('themeParams');
-    if (themeParams) {
-      setThemeParams(themeParams);
-    }
-
     if (initParams.tgWebAppVersion) {
       this.#webAppVersion = initParams.tgWebAppVersion;
     }
@@ -103,12 +101,12 @@ export class WebApp {
     return this.#webAppInitDataUnsafe;
   }
 
-  get themeParams() {
-    return this.#themeParams;
+  get themeParams(): ThemeParams {
+    return this.#theme.params;
   }
 
   get colorScheme(): ColorScheme {
-    return this.#colorScheme;
+    return this.#theme.colorScheme;
   }
 
   get version(): string {
@@ -125,7 +123,7 @@ export class WebApp {
 
   // @ts-expect-error different getter and setter types, but it's ok
   get headerColor(): HexColor | null {
-    return this.#themeParams[this.#headerColorKey] || null;
+    return this.#theme.getParam(this.#headerColorKey);
   }
 
   set backgroundColor(color: HeaderBgColor | string) {
@@ -151,6 +149,23 @@ export class WebApp {
 
   get isExpanded(): boolean {
     return this.#viewport.isExpanded;
+  }
+
+  #initTheme(rawTheme: InitParams['tgWebAppThemeParams']): void {
+    if (rawTheme) {
+      try {
+        const parsedThemeParams = JSON.parse(rawTheme);
+
+        if (parsedThemeParams) {
+          this.#theme.setParams(parsedThemeParams);
+        }
+      } catch {}
+    }
+
+    const themeParams = SessionStorage.get('themeParams');
+    if (themeParams) {
+      this.#theme.setParams(themeParams);
+    }
   }
 
   #versionCompare(v1: string = '', v2: string = ''): number {
@@ -240,7 +255,7 @@ export class WebApp {
     }
 
     const parsedColor = parseColorToHex(colorKeyOrColor);
-    const themeParams = this.#themeParams;
+    const themeParams = this.#theme.params;
 
     if (themeParams.bg_color && themeParams.bg_color === parsedColor) {
       return HEADER_COLOR_KEYS.BG_COLOR;
