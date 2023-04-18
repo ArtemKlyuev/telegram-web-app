@@ -29,11 +29,23 @@ export interface ThemeParams {
   button_text_color?: HexColor | undefined;
 }
 
-export interface MainButtonParams {
-  is_visible: boolean;
-  is_active: boolean;
+export interface NullableMainButtonParams {
+  is_visible?: boolean | undefined;
+  is_active?: boolean | undefined;
+  text?: string | undefined;
+  is_progress_visible?: boolean | undefined;
+  color?: HexColor | false | null | undefined;
+  text_color?: HexColor | false | null | undefined;
+}
+
+type ToNonFalsyRequired<Obj, K extends keyof Obj = keyof Obj> = Required<{
+  [key in K]: NonNullable<Obj[K]>;
+}>;
+
+export type MainButtonParams = ToNonFalsyRequired<
+  Omit<NullableMainButtonParams, 'text' | 'color' | 'text_color'>
+> & {
   text: string;
-  is_progress_visible: boolean;
   color: HexColor;
   text_color: HexColor;
-}
+};
