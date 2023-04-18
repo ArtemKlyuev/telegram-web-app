@@ -48,7 +48,7 @@ export class MainButtonDebug {
     document.addEventListener('DOMContentLoaded', onDomLoaded);
   }
 
-  update = (params: MainButtonParams): void => {
+  update = (params: MainButtonParams | { is_visible: false }): void => {
     if (params.is_visible) {
       this.#btn.style.display = 'block';
       this.#height = 48;
