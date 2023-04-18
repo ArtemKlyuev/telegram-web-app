@@ -1,15 +1,7 @@
-import { WebView } from '../WebView';
 import { AnyCallback, HexColor, InitParams } from '../types';
 import { byteLength, generateId, parseColorToHex, SessionStorage } from '../utils';
-import { BackButton } from './BackButton';
-import { BackgroundColor } from './BackgroundColor';
+import { WebView } from '../WebView';
 
-import { HapticFeedback } from './HapticFeedback';
-import { InitData } from './InitData';
-import { MainButton } from './MainButton';
-import { Theme } from './Theme';
-import { Viewport } from './Viewport';
-import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 import {
   ColorScheme,
   ColorSchemes,
@@ -18,6 +10,14 @@ import {
   WebViewEvent,
   WebViewEventParams,
 } from './types';
+import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
+import { BackButton } from './BackButton';
+import { BackgroundColor } from './BackgroundColor';
+import { HapticFeedback } from './HapticFeedback';
+import { InitData } from './InitData';
+import { MainButton } from './MainButton';
+import { Theme } from './Theme';
+import { Viewport } from './Viewport';
 
 export class WebApp {
   readonly #webAppVersion: string = '6.0';
