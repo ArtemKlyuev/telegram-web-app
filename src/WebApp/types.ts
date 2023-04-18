@@ -28,3 +28,12 @@ export interface ThemeParams {
   button_color?: HexColor | undefined;
   button_text_color?: HexColor | undefined;
 }
+
+export interface MainButtonParams {
+  is_visible: boolean;
+  is_active: boolean;
+  text: string;
+  is_progress_visible: boolean;
+  color: string;
+  text_color: string;
+}
