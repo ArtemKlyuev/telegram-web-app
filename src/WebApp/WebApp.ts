@@ -7,6 +7,7 @@ import {
   SessionStorage,
   urlParseQueryString,
 } from '../utils';
+import { BackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
@@ -36,16 +37,38 @@ export class WebApp {
   readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
+  readonly #backButton: BackButton;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  constructor(webView: WebView, bgColor: BackgroundColor, viewport: Viewport, theme: Theme) {
+  constructor(
+    webView: WebView,
+    bgColor: BackgroundColor,
+    viewport: Viewport,
+    theme: Theme,
+    backButton: BackButton
+  ) {
     this.#webView = webView;
     this.#theme = theme;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
     this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
+    this.#backButton = backButton;
+    this.#backButton.on(BackButton.EVENTS.CREATED, () => {
+      this.#webView.onEvent('back_button_pressed', () => {
+        this.#receiveWebViewEvent('backButtonClicked');
+      });
+    });
+    this.#backButton.on(BackButton.EVENTS.UPDATED, (params) => {
+      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
+    });
+    this.#backButton.on(BackButton.EVENTS.CLICKED, (callback) => {
+      this.#onWebViewEvent('backButtonClicked', callback);
+    });
+    this.#backButton.on(BackButton.EVENTS.OFF_CLICKED, (callback) => {
+      this.#offWebViewEvent('backButtonClicked', callback);
+    });
 
     const { initParams } = this.#webView;
 
@@ -137,6 +160,10 @@ export class WebApp {
 
   get HapticFeedback(): HapticFeedback {
     return this.#hapticFeedback;
+  }
+
+  get BackButton(): BackButton {
+    return this.#backButton;
   }
 
   get viewportHeight(): number {
