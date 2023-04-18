@@ -1,26 +1,43 @@
 import { HexColor } from '../types';
 
-export const parseColorToHex = (color: string): HexColor | false => {
-  // Are they trying convert color to string if it is number?
-  color += '';
-  let match: RegExpExecArray | null;
+// for example search for '#2c2c2e'
+const HEX_REGEXP = /^\s*#([0-9a-f]{6})\s*$/i;
 
-  if ((match = /^\s*#([0-9a-f]{6})\s*$/i.exec(color))) {
-    return '#' + match[1].toLowerCase();
+// for example search for '#900'
+const SHORT_HEX_REGEXP = /^\s*#([0-9a-f])([0-9a-f])([0-9a-f])\s*$/i;
+
+// for example search for 'rgb(0, 255, 0)' or 'rgba(0, 255, 0, 0.5)'
+const RGB_OR_RGBA_REGEXP = /^\s*rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)\s*$/;
+
+const toHex = (value: number): string => (value < 16 ? '0' : '') + value.toString(16);
+
+export const parseColorToHex = (color?: any): HexColor | false => {
+  if (typeof color !== 'string' && typeof color !== 'number') {
+    return false;
   }
 
-  if ((match = /^\s*#([0-9a-f])([0-9a-f])([0-9a-f])\s*$/i.exec(color))) {
-    return ('#' + match[1] + match[1] + match[2] + match[2] + match[3] + match[3]).toLowerCase();
+  const stringifiedColor = color.toString();
+
+  const hexColorMatch = HEX_REGEXP.exec(stringifiedColor);
+
+  if (hexColorMatch) {
+    const hexColorWithoutHash = hexColorMatch[1].toLowerCase();
+    return '#' + hexColorWithoutHash;
   }
 
-  if ((match = /^\s*rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)\s*$/.exec(color))) {
-    let r: string | number = parseInt(match[1]);
-    let g: string | number = parseInt(match[2]);
-    let b: string | number = parseInt(match[3]);
+  const shortHexColorMatch = SHORT_HEX_REGEXP.exec(stringifiedColor);
 
-    r = (r < 16 ? '0' : '') + r.toString(16);
-    g = (g < 16 ? '0' : '') + g.toString(16);
-    b = (b < 16 ? '0' : '') + b.toString(16);
+  if (shortHexColorMatch) {
+    const [, r, g, b] = shortHexColorMatch;
+    return ('#' + r + r + g + g + b + b).toLowerCase();
+  }
+
+  const rgbOrRgbaColorMatch = RGB_OR_RGBA_REGEXP.exec(stringifiedColor);
+
+  if (rgbOrRgbaColorMatch) {
+    const r = toHex(parseInt(rgbOrRgbaColorMatch[1]));
+    const g = toHex(parseInt(rgbOrRgbaColorMatch[2]));
+    const b = toHex(parseInt(rgbOrRgbaColorMatch[3]));
 
     return '#' + r + g + b;
   }
