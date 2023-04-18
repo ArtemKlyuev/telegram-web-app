@@ -34,6 +34,6 @@ export interface MainButtonParams {
   is_active: boolean;
   text: string;
   is_progress_visible: boolean;
-  color: string;
-  text_color: string;
+  color: HexColor;
+  text_color: HexColor;
 }
