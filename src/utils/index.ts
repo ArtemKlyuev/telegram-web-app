@@ -1,4 +1,5 @@
 export * from './byteLength';
+export * from './EventEmitter';
 export * from './generateId';
 export * from './isColorDark';
 export * from './parseColorToHex';
