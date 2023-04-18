@@ -192,7 +192,8 @@ export class WebApp {
     return this.#versionCompare(this.#webAppVersion, version) >= 0;
   }
 
-  #setCssProperty(name: string, value: any): void {
+  // `setCssProperty` originally
+  #setCssVar(name: string, value: any): void {
     const root = document.documentElement;
     root?.style?.setProperty('--tg-' + name, value);
   }
