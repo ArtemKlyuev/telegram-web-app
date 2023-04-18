@@ -39,16 +39,12 @@ export class WebApp {
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
   readonly #backButton: BackButton;
-  // @ts-expect-error defined in constructor by `#initMainButton` method
   readonly #mainButton: MainButton;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
 
-  #initMainButton(mainButton: MainButton): void {
-    // @ts-expect-error `#initMainButton` method will only executed in constructor
-    this.#mainButton = mainButton;
-
+  #initMainButton(): void {
     const onMainButtonClick = (isActive: boolean): void => {
       if (isActive) {
         this.#receiveWebViewEvent('mainButtonClicked');
@@ -113,7 +109,8 @@ export class WebApp {
     this.#backButton = backButton;
     this.#initBackButton();
 
-    this.#initMainButton(mainButton);
+    this.#mainButton = mainButton;
+    this.#initMainButton();
 
     const { initParams } = this.#webView;
 
