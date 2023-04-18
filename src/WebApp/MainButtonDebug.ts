@@ -1,8 +1,8 @@
-import { MainButtonParams } from './types';
+import { InvisibleButtonParams, VisibleButtonParams } from './types';
 
 interface Options {
   onClick: (e: MouseEvent) => any;
-  updateViewport: () => any;
+  onUpdate: () => any;
 }
 
 const BACKGROUND_IMAGE =
@@ -11,10 +11,10 @@ const BACKGROUND_IMAGE =
 export class MainButtonDebug {
   #btn: HTMLButtonElement;
   #height = 0;
-  #updateViewport: Options['updateViewport'];
+  #onUpdate: Options['onUpdate'];
 
-  constructor({ onClick, updateViewport }: Options) {
-    this.#updateViewport = updateViewport;
+  constructor({ onClick, onUpdate }: Options) {
+    this.#onUpdate = onUpdate;
     this.#btn = document.createElement('tg-main-button') as HTMLButtonElement;
 
     const styles = {
@@ -48,7 +48,7 @@ export class MainButtonDebug {
     document.addEventListener('DOMContentLoaded', onDomLoaded);
   }
 
-  update = (params: MainButtonParams | { is_visible: false }): void => {
+  update = (params: VisibleButtonParams | InvisibleButtonParams): void => {
     if (params.is_visible) {
       this.#btn.style.display = 'block';
       this.#height = 48;
@@ -70,6 +70,6 @@ export class MainButtonDebug {
       document.documentElement.style.paddingBottom = this.#height + 'px';
     }
 
-    this.#updateViewport();
+    this.#onUpdate();
   };
 }

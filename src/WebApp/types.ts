@@ -49,3 +49,6 @@ export type MainButtonParams = ToNonFalsyRequired<
   color: HexColor;
   text_color: HexColor;
 };
+
+export type VisibleButtonParams = MainButtonParams & { is_visible: true };
+export type InvisibleButtonParams = { is_visible: false };
