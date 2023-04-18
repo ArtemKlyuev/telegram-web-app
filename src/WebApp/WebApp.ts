@@ -18,15 +18,16 @@ import { InitData } from './InitData';
 import { MainButton } from './MainButton';
 import { Theme } from './Theme';
 import { Viewport } from './Viewport';
+import { Version } from './Version';
 
 export class WebApp {
-  readonly #webAppVersion: string = '6.0';
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   readonly #webAppInvoices = new Map<string, { url: string; callback: AnyCallback }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #initData: InitData;
+  readonly #version: Version;
   readonly #theme: Theme;
   readonly #hapticFeedback: HapticFeedback;
   readonly #webView: WebView;
@@ -118,6 +119,7 @@ export class WebApp {
 
   constructor(
     initData: InitData,
+    version: Version,
     webView: WebView,
     bgColor: BackgroundColor,
     viewport: Viewport,
@@ -126,10 +128,11 @@ export class WebApp {
     mainButton: MainButton
   ) {
     this.#initData = initData;
+    this.#version = version;
     this.#webView = webView;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
-    this.#hapticFeedback = new HapticFeedback(this.#versionAtLeast('6.1'), this.#webView);
+    this.#hapticFeedback = new HapticFeedback(this.#version.isSuitableTo('6.1'), this.#webView);
 
     this.#backButton = backButton;
     this.#initBackButton();
@@ -143,7 +146,7 @@ export class WebApp {
     this.#initTheme(initParams.tgWebAppThemeParams);
 
     if (initParams.tgWebAppVersion) {
-      this.#webAppVersion = initParams.tgWebAppVersion;
+      this.#version.set(initParams.tgWebAppVersion);
     }
 
     if (initParams.tgWebAppPlatform) {
@@ -152,11 +155,11 @@ export class WebApp {
   }
 
   get initData(): string {
-    return this.#webAppInitData;
+    return this.#initData.rawData;
   }
 
   get initDataUnsafe() {
-    return this.#webAppInitDataUnsafe;
+    return this.#initData.unsafeData;
   }
 
   get themeParams(): ThemeParams {
@@ -168,7 +171,7 @@ export class WebApp {
   }
 
   get version(): string {
-    return this.#webAppVersion;
+    return this.#version.value;
   }
 
   get platfrom(): string {
@@ -215,45 +218,6 @@ export class WebApp {
 
   get isExpanded(): boolean {
     return this.#viewport.isExpanded;
-  }
-
-  #versionCompare(v1: string = '', v2: string = ''): number {
-    if (typeof v1 !== 'string') {
-      v1 = '';
-    }
-
-    if (typeof v2 !== 'string') {
-      v2 = '';
-    }
-
-    // trim whitespaces
-    const v1Units = v1.replace(/^\s+|\s+$/g, '').split('.');
-    const v2Units = v2.replace(/^\s+|\s+$/g, '').split('.');
-
-    const longestVersionString = Math.max(v1Units.length, v2Units.length);
-
-    let p1: number, p2: number;
-
-    for (let i = 0; i < longestVersionString; i++) {
-      p1 = parseInt(v1Units[i]) || 0;
-      p2 = parseInt(v2Units[i]) || 0;
-
-      if (p1 === p2) {
-        continue;
-      }
-
-      if (p1 > p2) {
-        return 1;
-      }
-
-      return -1;
-    }
-
-    return 0;
-  }
-
-  #versionAtLeast(version: string): boolean {
-    return this.#versionCompare(this.#webAppVersion, version) >= 0;
   }
 
   // `setCssProperty` originally
@@ -318,10 +282,8 @@ export class WebApp {
   }
 
   setHeaderColor = (colorKeyOrColor: HeaderBgColor | string): void | never => {
-    if (!this.#versionAtLeast('6.1')) {
-      console.warn(
-        '[Telegram.WebApp] Header color is not supported in version ' + this.#webAppVersion
-      );
+    if (!this.#version.isSuitableTo('6.1')) {
+      console.warn('[Telegram.WebApp] Header color is not supported in version ' + this.#version);
       return;
     }
 
@@ -362,7 +324,7 @@ export class WebApp {
   };
 
   isVersionAtLeast = (version: string): boolean => {
-    return this.#versionAtLeast(version);
+    return this.#version.isSuitableTo(version);
   };
 
   openLink = (
@@ -376,10 +338,10 @@ export class WebApp {
       throw new Error('WebAppTgUrlInvalid');
     }
 
-    if (this.#versionAtLeast('6.1')) {
+    if (this.#version.isSuitableTo('6.1')) {
       this.#webView.postEvent('web_app_open_link', undefined, {
         url,
-        try_instant_view: this.#versionAtLeast('6.4') && Boolean(options.try_instant_view),
+        try_instant_view: this.#version.isSuitableTo('6.4') && Boolean(options.try_instant_view),
       });
 
       return;
@@ -403,7 +365,7 @@ export class WebApp {
 
     const fullPath = url2.pathname + url2.search;
 
-    if (this.#webView.isIframe || this.#versionAtLeast('6.1')) {
+    if (this.#webView.isIframe || this.#version.isSuitableTo('6.1')) {
       this.#webView.postEvent('web_app_open_tg_link', undefined, { path_full: fullPath });
       return;
     }
@@ -425,9 +387,9 @@ export class WebApp {
       throw Error('WebAppInvoiceUrlInvalid');
     }
 
-    if (!this.#versionAtLeast('6.1')) {
+    if (!this.#version.isSuitableTo('6.1')) {
       console.error(
-        '[Telegram.WebApp] Method openInvoice is not supported in version ' + this.#webAppVersion
+        '[Telegram.WebApp] Method openInvoice is not supported in version ' + this.#version
       );
       throw Error('WebAppMethodUnsupported');
     }
@@ -443,10 +405,10 @@ export class WebApp {
   };
 
   readTextFromClipboard = (callback: AnyCallback): void => {
-    if (!this.#versionAtLeast('6.4')) {
+    if (!this.#version.isSuitableTo('6.4')) {
       console.error(
         '[Telegram.WebApp] Method readTextFromClipboard is not supported in version ' +
-          this.#webAppVersion
+          this.#version
       );
       throw new Error('WebAppMethodUnsupported');
     }
