@@ -58,3 +58,42 @@ export type MainButtonParams = ToNonFalsyRequired<
 
 export type VisibleButtonParams = MainButtonParams & { is_visible: true };
 export type InvisibleButtonParams = { is_visible: false };
+
+/**
+ * @see https://core.telegram.org/bots/webapps#webappuser
+ */
+export interface WebAppUser {
+  id: number;
+  first_name: string;
+  is_bot?: boolean | undefined;
+  last_name?: string | undefined;
+  username?: string | undefined;
+  language_code?: string | undefined;
+  is_premium?: boolean | undefined;
+  photo_url?: string | undefined;
+}
+
+/**
+ * @see https://core.telegram.org/bots/webapps#webappchat
+ */
+export interface WebAppChat {
+  id: number;
+  type: 'group' | 'supergroup' | 'channel';
+  title: string;
+  username?: string | undefined;
+  photo_url?: string | undefined;
+}
+
+/**
+ * @see https://core.telegram.org/bots/webapps#webappinitdata
+ */
+export interface WebAppInitData {
+  auth_date: number;
+  hash: string;
+  query_id?: string | undefined;
+  user?: WebAppUser | undefined;
+  receiver?: WebAppUser | undefined;
+  chat?: WebAppChat | undefined;
+  start_param?: string | undefined;
+  can_send_after?: number | undefined;
+}
