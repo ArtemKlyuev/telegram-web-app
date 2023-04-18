@@ -1,16 +1,11 @@
 import { WebView } from '../WebView';
 import { AnyCallback, HexColor, InitParams } from '../types';
-import {
-  byteLength,
-  generateId,
-  parseColorToHex,
-  SessionStorage,
-  urlParseQueryString,
-} from '../utils';
+import { byteLength, generateId, parseColorToHex, SessionStorage } from '../utils';
 import { BackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 
 import { HapticFeedback } from './HapticFeedback';
+import { InitData } from './InitData';
 import { MainButton } from './MainButton';
 import { Theme } from './Theme';
 import { Viewport } from './Viewport';
@@ -25,16 +20,15 @@ import {
 } from './types';
 
 export class WebApp {
-  readonly #webAppInitData: string = '';
-  readonly #webAppInitDataUnsafe = {};
-  readonly #theme: Theme;
   readonly #webAppVersion: string = '6.0';
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
-  readonly #hapticFeedback: HapticFeedback;
   readonly #webAppInvoices = new Map<string, { url: string; callback: AnyCallback }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
+  readonly #initData: InitData;
+  readonly #theme: Theme;
+  readonly #hapticFeedback: HapticFeedback;
   readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
@@ -123,6 +117,7 @@ export class WebApp {
   }
 
   constructor(
+    initData: InitData,
     webView: WebView,
     bgColor: BackgroundColor,
     viewport: Viewport,
@@ -130,6 +125,7 @@ export class WebApp {
     backButton: BackButton,
     mainButton: MainButton
   ) {
+    this.#initData = initData;
     this.#webView = webView;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
@@ -145,29 +141,6 @@ export class WebApp {
 
     this.#theme = theme;
     this.#initTheme(initParams.tgWebAppThemeParams);
-
-    if (initParams.tgWebAppData) {
-      this.#webAppInitData = initParams.tgWebAppData;
-      this.#webAppInitDataUnsafe = urlParseQueryString(this.#webAppInitData);
-
-      const isWrappedInCurlyBrackets = (value: string): boolean => {
-        return value[0] === '{' && value.at(-1) === '}';
-      };
-
-      const isWrappedInSquareBrackets = (value: string): boolean => {
-        return value[0] === '[' && value.at(-1) === ']';
-      };
-
-      for (let key in this.#webAppInitDataUnsafe) {
-        const value = this.#webAppInitDataUnsafe[key];
-
-        if (isWrappedInCurlyBrackets(value) || isWrappedInSquareBrackets(value)) {
-          try {
-            this.#webAppInitDataUnsafe[key] = JSON.parse(val);
-          } catch {}
-        }
-      }
-    }
 
     if (initParams.tgWebAppVersion) {
       this.#webAppVersion = initParams.tgWebAppVersion;
