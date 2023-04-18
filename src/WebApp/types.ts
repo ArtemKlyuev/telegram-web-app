@@ -22,9 +22,15 @@ export interface WebViewEventParams {
   button_id?: string | undefined;
   data?: any | undefined;
 }
+/**
+ * @see https://core.telegram.org/bots/webapps#themeparams
+ */
 export interface ThemeParams {
   bg_color?: HexColor | undefined;
   secondary_bg_color?: HexColor | undefined;
+  text_color?: HexColor | undefined;
+  hint_color?: HexColor | undefined;
+  link_color?: HexColor | undefined;
   button_color?: HexColor | undefined;
   button_text_color?: HexColor | undefined;
 }
