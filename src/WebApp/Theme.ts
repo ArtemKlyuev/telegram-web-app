@@ -16,6 +16,16 @@ const THEME_EVENTS = {
   THEME_PARAMS_CHANGED: 'theme_params_changed',
 } as const;
 
+const PARAMS_KEYS = {
+  BG_COLOR: 'bg_color',
+  TEXT_COLOR: 'text_color',
+  HINT_COLOR: 'hint_color',
+  LINK_COLOR: 'link_color',
+  BUTTON_COLOR: 'button_color',
+  BUTTON_TEXT_COLOR: 'button_text_color',
+  SECONDARY_BG_COLOR: 'secondary_bg_color',
+} as const;
+
 type ThemeValues = ValueOf<Required<ThemeParams>>;
 
 export class Theme {
@@ -24,6 +34,7 @@ export class Theme {
   #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
 
   static readonly EVENTS = THEME_EVENTS;
+  static readonly PARAMS_KEYS = PARAMS_KEYS;
 
   constructor(eventEmitter: EventEmitter<ThemeEvent>) {
     this.#eventEmitter = eventEmitter;
