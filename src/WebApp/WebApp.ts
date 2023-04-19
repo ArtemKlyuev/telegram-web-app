@@ -156,6 +156,7 @@ export class WebApp {
     }
 
     this.#invoices = invoices;
+    this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
   }
 
   get initData(): string {
