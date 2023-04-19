@@ -17,7 +17,7 @@ import { HapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
 import { MainButton } from './MainButton';
 import { Theme } from './Theme';
-import { Viewport } from './Viewport';
+import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
 
@@ -157,7 +157,10 @@ export class WebApp {
 
     this.#invoices = invoices;
 
+
+    window.addEventListener('resize', this.#onWindowResize);
     this.#webView.onEvent('theme_changed', this.#onThemeChanged);
+    this.#webView.onEvent('viewport_changed', this.#onViewportChanged);
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
   }
 
@@ -294,6 +297,15 @@ export class WebApp {
     this.#mainButton.setParams({});
     this.#bgColor.updateBackgroundColor();
     this.#receiveWebViewEvent('themeChanged');
+  };
+
+  #onViewportChanged = (eventType: any, eventData: ViewportData): void => {
+    if (!eventData.height) {
+      return;
+    }
+
+    window.removeEventListener('resize', this.#onWindowResize);
+    this.#viewport.setViewportHeight(eventData);
   };
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
