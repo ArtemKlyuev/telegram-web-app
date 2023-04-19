@@ -19,12 +19,12 @@ import { MainButton } from './MainButton';
 import { Theme } from './Theme';
 import { Viewport } from './Viewport';
 import { Version } from './Version';
+import { Invoices } from './Invoices';
 
 export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
-  readonly #webAppInvoices = new Map<string, { url: string; callback: AnyCallback }>();
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #initData: InitData;
   readonly #version: Version;
@@ -35,6 +35,7 @@ export class WebApp {
   readonly #viewport: Viewport;
   readonly #backButton: BackButton;
   readonly #mainButton: MainButton;
+  readonly #invoices: Invoices;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
@@ -125,7 +126,8 @@ export class WebApp {
     viewport: Viewport,
     theme: Theme,
     backButton: BackButton,
-    mainButton: MainButton
+    mainButton: MainButton,
+    invoices: Invoices
   ) {
     this.#initData = initData;
     this.#version = version;
@@ -152,6 +154,8 @@ export class WebApp {
     if (initParams.tgWebAppPlatform) {
       this.#webAppPlatform = initParams.tgWebAppPlatform;
     }
+
+    this.#invoices = invoices;
   }
 
   get initData(): string {
@@ -259,6 +263,25 @@ export class WebApp {
     }
   };
 
+  #onInvoiceClosed = (eventType: any, eventData: { slug?: string; status: string }) => {
+    if (!eventData.slug) {
+      return;
+    }
+
+    if (!this.#invoices.has(eventData.slug)) {
+      return;
+    }
+
+    const invoiceData = this.#invoices.remove(eventData.slug)!;
+
+    invoiceData.callback(eventData.status);
+
+    this.#receiveWebViewEvent('invoiceClosed', {
+      url: invoiceData.url,
+      status: eventData.status,
+    });
+  };
+
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
     if (
       colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
@@ -350,6 +373,13 @@ export class WebApp {
     window.open(url, '_blank');
   };
 
+  openInvoice = (url: string, callback: AnyCallback): void => {
+    const slug = this.#invoices.create(url);
+    this.#invoices.save(slug, { url, callback });
+
+    this.#webView.postEvent('web_app_open_invoice', undefined, { slug });
+  };
+
   openTelegramLink = (url: string): void => {
     const url2 = new URL(url);
 
@@ -371,37 +401,6 @@ export class WebApp {
     }
 
     location.href = 'https://t.me' + fullPath;
-  };
-
-  openInvoice = (url: string, callback: AnyCallback): void => {
-    const url2 = new URL(url);
-    let match: string[] | null, slug: string;
-
-    if (
-      (url2.protocol !== 'http:' && url2.protocol !== 'https:') ||
-      url2.hostname !== 't.me' ||
-      !(match = url2.pathname.match(/^\/(\$|invoice\/)([A-Za-z0-9\-_=]+)$/)) ||
-      !(slug = match[2])
-    ) {
-      console.error('[Telegram.WebApp] Invoice url is invalid', url);
-      throw Error('WebAppInvoiceUrlInvalid');
-    }
-
-    if (!this.#version.isSuitableTo('6.1')) {
-      console.error(
-        '[Telegram.WebApp] Method openInvoice is not supported in version ' + this.#version
-      );
-      throw Error('WebAppMethodUnsupported');
-    }
-
-    if (this.#webAppInvoices.has(slug)) {
-      console.error('[Telegram.WebApp] Invoice is already opened');
-      throw new Error('WebAppInvoiceOpened');
-    }
-
-    this.#webAppInvoices.set(slug, { url, callback });
-
-    this.#webView.postEvent('web_app_open_invoice', undefined, { slug });
   };
 
   readTextFromClipboard = (callback: AnyCallback): void => {
