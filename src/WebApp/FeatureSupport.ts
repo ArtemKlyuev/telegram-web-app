@@ -9,17 +9,17 @@ interface MethodInfo {
   executeOriginalMethod: () => any;
 }
 
-interface Config {
+interface Config<MethodName extends string = string> {
   availableInVersion?: string;
   methodsConfig:
     | {
-        [methodName: string]: {
+        [key in MethodName]: {
           // rewrites base `availableInVersion` for method
           availableInVersion?: string | undefined;
-          decorate: (info: MethodInfo) => Function;
+          decorate?: (info: MethodInfo) => any;
         };
       }
-    | ((info: MethodInfo) => Function);
+    | ((info: MethodInfo) => any);
 }
 
 type Initializer<ThisArg> = (this: ThisArg) => void;
@@ -55,14 +55,15 @@ export abstract class FeatureSupport {
     return { appVersion: this.#version.value, isSupported, ...config };
   }
 
-  static inVersion(versionOrConfig: string | Config) {
-    return <Class extends new (...args: any) => Class>(
+  static inVersion<Methods extends string>(versionOrConfig: string | Config<Methods>) {
+    return <Class extends new (...args: any) => any>(
       feature: Class,
       context: ClassDecoratorContext<Class>
-    ) => {
+    ): Class => {
+      console.log('inVersion', { feature, context, versionOrConfig });
       if (!(context.kind === 'class')) {
         throw new TypeError(
-          `'bindMethods' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`
+          `'FeatureSupport' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`
         );
       }
 
@@ -81,7 +82,7 @@ export abstract class FeatureSupport {
 
       const methods = Object.getOwnPropertyNames(feature.prototype).filter(
         (name) => name !== 'constructor'
-      );
+      ) as Methods[];
 
       methods.forEach((methodName) => {
         const descriptor = Object.getOwnPropertyDescriptor(feature.prototype, methodName)!;
@@ -96,6 +97,7 @@ export abstract class FeatureSupport {
           method: string;
           supportedVersion: string;
         }) => {
+          console.log('deorate when string');
           if (!this.#version.isSuitableTo(supportedVersion)) {
             throw new UnsupportedVersionError(feature, method, this.#version.value);
           }
@@ -108,7 +110,9 @@ export abstract class FeatureSupport {
           const thisArg = this;
 
           descriptor.value = function (...args: any[]) {
+            console.log('inside decorator value');
             if (typeof versionOrConfig === 'string') {
+              console.log('insise if string');
               return decorateWhenString({
                 feature: feature.name,
                 method: methodName,
@@ -136,12 +140,24 @@ export abstract class FeatureSupport {
               const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName];
 
               if (!versionOrConfig.availableInVersion && !availableInVersion) {
-                throw new TypeError(`Property 'availableInVersion' required in config`);
+                throw new TypeError(
+                  `Property 'availableInVersion' required either in top level config or in method ${methodName} config`
+                );
+              }
+
+              const supportedVersion = (availableInVersion ??
+                versionOrConfig.availableInVersion) as string;
+
+              if (!decorate) {
+                return decorateWhenString({
+                  feature: feature.name,
+                  method: methodName,
+                  supportedVersion,
+                });
               }
 
               const config = decorateWhenFunc({
-                // @ts-expect-error typeguard exist
-                availableInVersion: availableInVersion ?? versionOrConfig.availableInVersion,
+                availableInVersion: supportedVersion,
                 executeOriginalMethod,
                 name: methodName,
                 thisArg,
@@ -152,10 +168,12 @@ export abstract class FeatureSupport {
 
             return originalMethod.apply(this, args);
           };
+
+          Object.defineProperty(feature.prototype, methodName, descriptor);
         });
       });
 
-      return wrapper;
+      return wrapper as unknown as Class;
     };
   }
 }
