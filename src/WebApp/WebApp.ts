@@ -156,6 +156,8 @@ export class WebApp {
     }
 
     this.#invoices = invoices;
+
+    this.#webView.onEvent('theme_changed', this.#onThemeChanged);
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
   }
 
@@ -281,6 +283,17 @@ export class WebApp {
       url: invoiceData.url,
       status: eventData.status,
     });
+  };
+
+  #onThemeChanged = (eventType: any, eventData: { theme_params: ThemeParams }) => {
+    if (!eventData.theme_params) {
+      return;
+    }
+
+    this.#theme.setParams(eventData.theme_params);
+    this.#mainButton.setParams({});
+    this.#bgColor.updateBackgroundColor();
+    this.#receiveWebViewEvent('themeChanged');
   };
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
