@@ -8,6 +8,12 @@ interface Options {
   };
 }
 
+export interface ViewportData {
+  is_expanded: boolean;
+  height: number;
+  is_state_stable: boolean;
+}
+
 export class Viewport {
   #viewportHeight: number | false = false;
   #viewportStableHeight: number | false = false;
@@ -34,9 +40,7 @@ export class Viewport {
     return height - this.#mainButtonHeight;
   }
 
-  setViewportHeight = (
-    data?: { is_expanded: boolean; height: number; is_state_stable: boolean } | undefined
-  ): void => {
+  setViewportHeight = (data?: ViewportData | undefined): void => {
     if (typeof data !== 'undefined') {
       this.#isExpanded = Boolean(data.is_expanded);
       this.#viewportHeight = data.height;
