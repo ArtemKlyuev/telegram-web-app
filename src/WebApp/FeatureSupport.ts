@@ -10,11 +10,11 @@ interface MethodInfo {
 }
 
 interface Config {
-  availableInVersion: string;
+  availableInVersion?: string;
   methodsConfig:
     | {
         [methodName: string]: {
-          // rewrite base `availableInVersion` for method
+          // rewrites base `availableInVersion` for method
           availableInVersion?: string | undefined;
           decorate: (info: MethodInfo) => Function;
         };
@@ -119,6 +119,10 @@ export abstract class FeatureSupport {
             const executeOriginalMethod = () => originalMethod.apply(this, args);
 
             if (typeof versionOrConfig.methodsConfig === 'function') {
+              if (!versionOrConfig.availableInVersion) {
+                throw new TypeError(`Property 'availableInVersion' required in config`);
+              }
+
               const config = decorateWhenFunc({
                 availableInVersion: versionOrConfig.availableInVersion,
                 executeOriginalMethod,
@@ -131,7 +135,12 @@ export abstract class FeatureSupport {
             if (versionOrConfig.methodsConfig[methodName]) {
               const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName];
 
+              if (!versionOrConfig.availableInVersion && !availableInVersion) {
+                throw new TypeError(`Property 'availableInVersion' required in config`);
+              }
+
               const config = decorateWhenFunc({
+                // @ts-expect-error typeguard exist
                 availableInVersion: availableInVersion ?? versionOrConfig.availableInVersion,
                 executeOriginalMethod,
                 name: methodName,
