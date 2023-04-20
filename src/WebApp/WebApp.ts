@@ -173,6 +173,7 @@ export class WebApp {
     this.#webView.onEvent('theme_changed', this.#onThemeChanged);
     this.#webView.onEvent('viewport_changed', this.#onViewportChanged);
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
+    this.#webView.onEvent('settings_button_pressed', this.#onSettingsButtonPressed);
   }
 
   get initData(): string {
@@ -342,6 +343,10 @@ export class WebApp {
 
     window.removeEventListener('resize', this.#onWindowResize);
     this.#viewport.setViewportHeight(eventData);
+  };
+
+  #onSettingsButtonPressed = (): void => {
+    this.#receiveWebViewEvent('settingsButtonClicked');
   };
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
