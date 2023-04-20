@@ -32,6 +32,7 @@ export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
+  #isClosingConfirmationEnabled = false;
   readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #initData: InitData;
   readonly #version: Version;
@@ -242,6 +243,14 @@ export class WebApp {
     return this.#viewport.isExpanded;
   }
 
+  set isClosingConfirmationEnabled(isEnabled: boolean) {
+    this.#setClosingConfirmation(isEnabled);
+  }
+
+  get isClosingConfirmationEnabled(): boolean {
+    return this.#isClosingConfirmationEnabled;
+  }
+
   #linkHandler = (e: MouseEvent): void => {
     if (e.metaKey || e.ctrlKey || !e.target) {
       return;
@@ -278,7 +287,7 @@ export class WebApp {
   #receiveWebViewEvent(eventType: 'mainButtonClicked'): void;
   #receiveWebViewEvent(eventType: 'settingsButtonClicked'): void;
   #receiveWebViewEvent(eventType: 'viewportChanged', params: { isStateStable: boolean }): void;
-  #receiveWebViewEvent(eventType: 'popupClosed', params: { button_id: string }): void;
+  #receiveWebViewEvent(eventType: 'popupClosed', params: { button_id?: string | null }): void;
   #receiveWebViewEvent(eventType: 'qrTextReceived', params: { data: any }): void;
   #receiveWebViewEvent(eventType: 'clipboardTextReceived', params: { data: any }): void;
   #receiveWebViewEvent(eventType: 'invoiceClosed', params: { url: string; status: string }): void;
@@ -348,6 +357,23 @@ export class WebApp {
   #onSettingsButtonPressed = (): void => {
     this.#receiveWebViewEvent('settingsButtonClicked');
   };
+
+
+  #setClosingConfirmation(isEnabled: boolean): void {
+    if (!this.#version.isSuitableTo('6.2')) {
+      console.warn(
+        '[Telegram.WebApp] Closing confirmation is not supported in version ' + this.#version.value
+      );
+
+      return;
+    }
+
+    this.#isClosingConfirmationEnabled = Boolean(isEnabled);
+
+    this.#webView.postEvent('web_app_setup_closing_behavior', undefined, {
+      need_confirmation: this.#isClosingConfirmationEnabled,
+    });
+  }
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
     if (
@@ -488,6 +514,14 @@ export class WebApp {
     this.#webAppClipboardRequests.set(req_id, { callback });
 
     this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id });
+  };
+
+  enableClosingConfirmation = (): void => {
+    this.#isClosingConfirmationEnabled = true;
+  };
+
+  disableClosingConfirmation = (): void => {
+    this.#isClosingConfirmationEnabled = false;
   };
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
