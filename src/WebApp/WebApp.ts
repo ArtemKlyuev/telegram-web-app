@@ -443,21 +443,25 @@ export class WebApp {
   };
 
   openTelegramLink = (url: string): void => {
-    const url2 = new URL(url);
+    if (!this.#version.isSuitableTo('6.1')) {
+      return;
+    }
 
-    if (url2.protocol !== 'http:' && url2.protocol !== 'https:') {
+    const parsedURL = new URL(url);
+
+    if (!isHTTPTypeProtocol(parsedURL.protocol)) {
       console.error('[Telegram.WebApp] Url protocol is not supported', url);
-      throw Error('WebAppTgUrlInvalid');
+      throw new Error('WebAppTgUrlInvalid');
     }
 
-    if (url2.hostname !== 't.me') {
+    if (!isTelegramHostname(parsedURL.hostname)) {
       console.error('[Telegram.WebApp] Url host is not supported', url);
-      throw Error('WebAppTgUrlInvalid');
+      throw new Error('WebAppTgUrlInvalid');
     }
 
-    const fullPath = url2.pathname + url2.search;
+    const fullPath = parsedURL.pathname + parsedURL.search;
 
-    if (this.#webView.isIframe || this.#version.isSuitableTo('6.1')) {
+    if (this.#webView.isIframe) {
       this.#webView.postEvent('web_app_open_tg_link', undefined, { path_full: fullPath });
       return;
     }
