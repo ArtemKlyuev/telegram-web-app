@@ -1,5 +1,12 @@
 import { AnyCallback, HexColor, InitParams } from '../types';
-import { byteLength, generateId, parseColorToHex, SessionStorage } from '../utils';
+import {
+  byteLength,
+  generateId,
+  isHTTPTypeProtocol,
+  isTelegramHostname,
+  parseColorToHex,
+  SessionStorage,
+} from '../utils';
 import { WebView } from '../WebView';
 
 import {
@@ -159,6 +166,10 @@ export class WebApp {
 
 
     window.addEventListener('resize', this.#onWindowResize);
+    if (this.#webView.isIframe) {
+      document.addEventListener('click', this.#linkHandler);
+    }
+
     this.#webView.onEvent('theme_changed', this.#onThemeChanged);
     this.#webView.onEvent('viewport_changed', this.#onViewportChanged);
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
@@ -229,6 +240,31 @@ export class WebApp {
   get isExpanded(): boolean {
     return this.#viewport.isExpanded;
   }
+
+  #linkHandler = (e: MouseEvent): void => {
+    if (e.metaKey || e.ctrlKey || !e.target) {
+      return;
+    }
+
+    const isAnchroEl = (el: HTMLElement): el is HTMLAnchorElement => el.tagName === 'A';
+
+    let el = e.target as HTMLElement;
+
+    while (!isAnchroEl(el) && el.parentNode) {
+      el = el.parentNode as HTMLElement;
+    }
+
+    const shouldOpenLink =
+      isAnchroEl(el) &&
+      el.target !== '_blank' &&
+      isHTTPTypeProtocol(el.protocol) &&
+      isTelegramHostname(el.hostname);
+
+    if (shouldOpenLink) {
+      e.preventDefault();
+      // WebApp.openTgLink(el.href);
+    }
+  };
 
   // `setCssProperty` originally
   #setCssVar(name: string, value: any): void {
