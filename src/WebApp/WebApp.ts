@@ -29,6 +29,7 @@ import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
 import { Popup, PopupCallback } from './Popup';
+import { WebAppPopupButton } from './WebAppPopupButton';
 
 export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
@@ -574,6 +575,25 @@ export class WebApp {
     const callbackWithoutID = (): any => callback?.();
 
     this.showPopup({ message }, callbackWithoutID);
+  };
+
+  showConfirm = (
+    message: string,
+    callback?: ((isOkPressed: boolean) => any) | null | undefined
+  ): void => {
+    const OK_BTN_ID = 'ok';
+    const popupCallback = (pressedBtnID: string): any => callback?.(pressedBtnID === OK_BTN_ID);
+
+    this.showPopup(
+      {
+        message,
+        buttons: [
+          { type: WebAppPopupButton.TYPES.OK, id: OK_BTN_ID },
+          { type: WebAppPopupButton.TYPES.CANCEL },
+        ],
+      },
+      popupCallback
+    );
   };
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
