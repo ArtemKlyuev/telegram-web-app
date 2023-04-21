@@ -14,6 +14,8 @@ import {
   ColorSchemes,
   HeaderBgColor,
   PopupParams,
+  ScanQrCallback,
+  ScanQrPopupParams,
   ThemeParams,
   WebViewEvent,
   WebViewEventParams,
@@ -31,6 +33,7 @@ import { Invoices } from './Invoices';
 import { Popup, PopupCallback } from './Popup';
 import { WebAppPopupButton } from './WebAppPopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
+import { QrPopup } from './QrPopup';
 
 const CHAT_TYPES = {
   USERS: 'users',
@@ -66,6 +69,7 @@ export class WebApp {
   readonly #invoices: Invoices;
   readonly #popup: Popup;
   readonly #clipboard: WebAppClipboard;
+  readonly #qrPopup: QrPopup;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
@@ -165,7 +169,8 @@ export class WebApp {
     mainButton: MainButton,
     invoices: Invoices,
     popup: Popup,
-    clipboard: WebAppClipboard
+    clipboard: WebAppClipboard,
+    qrPopup: QrPopup
   ) {
     this.#initData = initData;
     this.#version = version;
@@ -197,6 +202,7 @@ export class WebApp {
 
     this.#invoices = invoices;
     this.#clipboard = clipboard;
+    this.#qrPopup = qrPopup;
 
 
     window.addEventListener('resize', this.#onWindowResize);
@@ -209,6 +215,8 @@ export class WebApp {
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
     this.#webView.onEvent('settings_button_pressed', this.#onSettingsButtonPressed);
     this.#webView.onEvent('popup_closed', this.#onPopupClosed);
+    this.#webView.onEvent('qr_text_received', this.#onQrTextReceived);
+    this.#webView.onEvent('scan_qr_popup_closed', this.#onScanQrPopupClosed);
     this.#webView.onEvent('clipboard_text_received', this.#onClipboardTextReceived);
   }
 
@@ -427,6 +435,26 @@ export class WebApp {
     callback?.(data);
 
     this.#receiveWebViewEvent('clipboardTextReceived', { data });
+  };
+
+  #onQrTextReceived = (eventType: any, eventData: { data?: string | undefined }): void => {
+    if (!this.#qrPopup.isOpened) {
+      return;
+    }
+
+    const { callback } = this.#qrPopup;
+    const data = eventData.data ?? null;
+
+    if (callback?.(data)) {
+      this.#qrPopup.close();
+      this.#webView.postEvent('web_app_close_scan_qr_popup');
+    }
+
+    this.#receiveWebViewEvent('qrTextReceived', { data });
+  };
+
+  #onScanQrPopupClosed = (eventType: any, eventData: any): void => {
+    this.#qrPopup.close();
   };
 
   #setClosingConfirmation(isEnabled: boolean): void {
@@ -686,6 +714,37 @@ export class WebApp {
       query: queryToSend,
       chat_types: chats,
     });
+  };
+
+  showScanQrPopup = (
+    params: ScanQrPopupParams,
+    callback?: ScanQrCallback | null | undefined
+  ): void | never => {
+    if (!this.#version.isSuitableTo('6.4')) {
+      console.error(
+        '[Telegram.WebApp] Method showScanQrPopup is not supported in version ' +
+          this.#version.value
+      );
+      throw new Error('WebAppMethodUnsupported');
+    }
+
+    this.#qrPopup.open({ params, callback });
+
+    this.#webView.postEvent('web_app_open_scan_qr_popup', undefined, this.#qrPopup.params);
+  };
+
+  closeScanQrPopup = (): void => {
+    if (!this.#version.isSuitableTo('6.4')) {
+      console.error(
+        '[Telegram.WebApp] Method closeScanQrPopup is not supported in version ' +
+          this.#version.value
+      );
+      throw new Error('WebAppMethodUnsupported');
+    }
+
+    this.#qrPopup.close();
+
+    this.#webView.postEvent('web_app_close_scan_qr_popup');
   };
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
