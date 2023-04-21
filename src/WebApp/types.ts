@@ -120,7 +120,7 @@ export interface PopupParams {
   buttons?: PopupButtonsSet | undefined;
 }
 
-export type ScanQrCallback = (text: string) => boolean;
+export type ScanQrCallback = (text: string | null) => boolean;
 
 /**
  * @see https://core.telegram.org/bots/webapps#scanqrpopupparams
