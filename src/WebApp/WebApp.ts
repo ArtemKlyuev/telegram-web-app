@@ -1,4 +1,4 @@
-import { AnyCallback, HexColor, InitParams } from '../types';
+import { AnyCallback, HexColor, InitParams, ValueOf } from '../types';
 import {
   byteLength,
   generateId,
@@ -31,6 +31,23 @@ import { Invoices } from './Invoices';
 import { Popup, PopupCallback } from './Popup';
 import { WebAppPopupButton } from './WebAppPopupButton';
 
+const CHAT_TYPES = {
+  USERS: 'users',
+  BOTS: 'bots',
+  GROUPS: 'groups',
+  CHANNELS: 'channels',
+} as const;
+
+const VALID_CHAT_TYPES = Object.values(CHAT_TYPES);
+
+export type ChatTypes = typeof CHAT_TYPES;
+export type ChatType = ValueOf<ChatTypes>;
+export type ChatTypesToChoose =
+  | [ChatType]
+  | [ChatType, ChatType]
+  | [ChatType, ChatType, ChatType]
+  | [ChatType, ChatType, ChatType, ChatType];
+
 export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
@@ -51,6 +68,12 @@ export class WebApp {
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
+  static get MAX_INLINE_QUERY_LENGTH(): number {
+    return 256;
+  }
+  static get CHAT_TYPES(): ChatTypes {
+    return CHAT_TYPES;
+  }
 
   #initMainButton(): void {
     const onMainButtonClick = (isActive: boolean): void => {
@@ -594,6 +617,52 @@ export class WebApp {
       },
       popupCallback
     );
+  };
+
+  switchInlineQuery = (query: string, chatTypesToChoose?: ChatTypesToChoose | null | undefined) => {
+    if (!this.#version.isSuitableTo('6.7')) {
+      console.error(
+        '[Telegram.WebApp] Method switchInlineQuery is not supported in version ' +
+          this.#version.value
+      );
+      throw new Error('WebAppMethodUnsupported');
+    }
+
+    if (!this.#webView.initParams.tgWebAppBotInline) {
+      console.error(
+        '[Telegram.WebApp] Inline mode is disabled for this bot. Read more about inline mode: https://core.telegram.org/bots/inline'
+      );
+      throw new Error('WebAppInlineModeDisabled');
+    }
+
+    const queryToSend = (query || '').trim();
+
+    if (queryToSend.length > WebApp.MAX_INLINE_QUERY_LENGTH) {
+      console.error('[Telegram.WebApp] Inline query is too long', query);
+      throw new Error('WebAppInlineQueryInvalid');
+    }
+
+    const chatTypes = chatTypesToChoose ? chatTypesToChoose : [];
+
+    if (!Array.isArray(chatTypesToChoose)) {
+      console.error('[Telegram.WebApp] Choose chat types should be an array', chatTypesToChoose);
+      throw new Error('WebAppInlineChooseChatTypesInvalid');
+    }
+
+    // remove duplicates
+    const chats = [...new Set(chatTypes)];
+
+    chats.forEach((chat) => {
+      if (!VALID_CHAT_TYPES.includes(chat)) {
+        console.error('[Telegram.WebApp] Choose chat type is invalid', chat);
+        throw Error('WebAppInlineChooseChatTypeInvalid');
+      }
+    });
+
+    this.#webView.postEvent('web_app_switch_inline_query', undefined, {
+      query: queryToSend,
+      chat_types: chats,
+    });
   };
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
