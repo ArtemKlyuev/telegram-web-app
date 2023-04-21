@@ -570,6 +570,12 @@ export class WebApp {
     this.#webView.postEvent('web_app_open_popup', undefined, this.#popup.params);
   }
 
+  showAlert = (message: string, callback?: (() => any) | null | undefined): void => {
+    const callbackWithoutID = (): any => callback?.();
+
+    this.showPopup({ message }, callbackWithoutID);
+  };
+
   onEvent = (eventType: string, callback: AnyCallback): void => {
     this.#onWebViewEvent(eventType, callback);
   };
