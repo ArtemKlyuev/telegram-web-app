@@ -204,6 +204,8 @@ export class WebApp {
     this.#clipboard = clipboard;
     this.#qrPopup = qrPopup;
 
+    this.#bgColor.updateBackgroundColor();
+    this.#viewport.setViewportHeight();
 
     window.addEventListener('resize', this.#onWindowResize);
     if (this.#webView.isIframe) {
