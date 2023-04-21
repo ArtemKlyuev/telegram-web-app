@@ -13,6 +13,7 @@ import {
   ColorScheme,
   ColorSchemes,
   HeaderBgColor,
+  PopupParams,
   ThemeParams,
   WebViewEvent,
   WebViewEventParams,
@@ -27,6 +28,7 @@ import { Theme } from './Theme';
 import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
+import { Popup, PopupCallback } from './Popup';
 
 export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
@@ -44,6 +46,7 @@ export class WebApp {
   readonly #backButton: BackButton;
   readonly #mainButton: MainButton;
   readonly #invoices: Invoices;
+  readonly #popup: Popup;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
@@ -135,7 +138,8 @@ export class WebApp {
     theme: Theme,
     backButton: BackButton,
     mainButton: MainButton,
-    invoices: Invoices
+    invoices: Invoices,
+    popup: Popup
   ) {
     this.#initData = initData;
     this.#version = version;
@@ -154,6 +158,8 @@ export class WebApp {
 
     this.#theme = theme;
     this.#initTheme(initParams.tgWebAppThemeParams);
+
+    this.#popup = popup;
 
     if (initParams.tgWebAppVersion) {
       this.#version.set(initParams.tgWebAppVersion);
@@ -175,6 +181,7 @@ export class WebApp {
     this.#webView.onEvent('viewport_changed', this.#onViewportChanged);
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
     this.#webView.onEvent('settings_button_pressed', this.#onSettingsButtonPressed);
+    this.#webView.onEvent('popup_closed', this.#onPopupClosed);
   }
 
   get initData(): string {
@@ -358,6 +365,22 @@ export class WebApp {
     this.#receiveWebViewEvent('settingsButtonClicked');
   };
 
+  #onPopupClosed = (eventType: any, eventData: { button_id: string | null }): void => {
+    if (!this.#popup.isOpened) {
+      return;
+    }
+
+    const callback = this.#popup.callback;
+    this.#popup.close();
+
+    const buttonID = eventData.button_id ?? null;
+
+    if (buttonID) {
+      callback?.(buttonID);
+    }
+
+    this.#receiveWebViewEvent('popupClosed', { button_id: buttonID });
+  };
 
   #setClosingConfirmation(isEnabled: boolean): void {
     if (!this.#version.isSuitableTo('6.2')) {
@@ -523,6 +546,29 @@ export class WebApp {
   disableClosingConfirmation = (): void => {
     this.#isClosingConfirmationEnabled = false;
   };
+
+  showPopup(params: PopupParams, callback?: PopupCallback | undefined): void {
+    if (!this.#version.isSuitableTo('6.2')) {
+      console.error(
+        '[Telegram.WebApp] Method showPopup is not supported in version ' + this.#version.value
+      );
+
+      throw new Error('WebAppMethodUnsupported');
+    }
+
+    if (this.#popup.isOpened) {
+      console.error('[Telegram.WebApp] Popup is already opened');
+      throw new Error('WebAppPopupOpened');
+    }
+
+    if (typeof params !== 'object' && params === null) {
+      throw new Error('WebAppPopupParamsInvalid');
+    }
+
+    this.#popup.open({ params, callback });
+
+    this.#webView.postEvent('web_app_open_popup', undefined, this.#popup.params);
+  }
 
   onEvent = (eventType: string, callback: AnyCallback): void => {
     this.#onWebViewEvent(eventType, callback);
