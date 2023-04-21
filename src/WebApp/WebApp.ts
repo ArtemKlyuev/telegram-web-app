@@ -220,6 +220,8 @@ export class WebApp {
     this.#webView.onEvent('qr_text_received', this.#onQrTextReceived);
     this.#webView.onEvent('scan_qr_popup_closed', this.#onScanQrPopupClosed);
     this.#webView.onEvent('clipboard_text_received', this.#onClipboardTextReceived);
+    this.#webView.postEvent('web_app_request_theme');
+    this.#webView.postEvent('web_app_request_viewport');
   }
 
   get initData(): string {
