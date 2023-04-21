@@ -30,6 +30,7 @@ import { Version } from './Version';
 import { Invoices } from './Invoices';
 import { Popup, PopupCallback } from './Popup';
 import { WebAppPopupButton } from './WebAppPopupButton';
+import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 
 const CHAT_TYPES = {
   USERS: 'users',
@@ -53,7 +54,6 @@ export class WebApp {
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   #isClosingConfirmationEnabled = false;
-  readonly #webAppClipboardRequests = new Map<string, { callback: AnyCallback }>();
   readonly #initData: InitData;
   readonly #version: Version;
   readonly #theme: Theme;
@@ -65,6 +65,7 @@ export class WebApp {
   readonly #mainButton: MainButton;
   readonly #invoices: Invoices;
   readonly #popup: Popup;
+  readonly #clipboard: WebAppClipboard;
 
   static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
@@ -163,7 +164,8 @@ export class WebApp {
     backButton: BackButton,
     mainButton: MainButton,
     invoices: Invoices,
-    popup: Popup
+    popup: Popup,
+    clipboard: WebAppClipboard
   ) {
     this.#initData = initData;
     this.#version = version;
@@ -194,6 +196,7 @@ export class WebApp {
     }
 
     this.#invoices = invoices;
+    this.#clipboard = clipboard;
 
 
     window.addEventListener('resize', this.#onWindowResize);
@@ -206,6 +209,7 @@ export class WebApp {
     this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
     this.#webView.onEvent('settings_button_pressed', this.#onSettingsButtonPressed);
     this.#webView.onEvent('popup_closed', this.#onPopupClosed);
+    this.#webView.onEvent('clipboard_text_received', this.#onClipboardTextReceived);
   }
 
   get initData(): string {
@@ -406,6 +410,25 @@ export class WebApp {
     this.#receiveWebViewEvent('popupClosed', { button_id: buttonID });
   };
 
+  #onClipboardTextReceived = (
+    eventType: any,
+    {
+      req_id: id,
+      data = null,
+    }: { req_id?: string | undefined; data?: string | '' | null | undefined }
+  ) => {
+    if (!id || !this.#clipboard.hasRequest(id)) {
+      return;
+    }
+
+    const callback = this.#clipboard.getRequest(id);
+    this.#clipboard.removeRequest(id);
+
+    callback?.(data);
+
+    this.#receiveWebViewEvent('clipboardTextReceived', { data });
+  };
+
   #setClosingConfirmation(isEnabled: boolean): void {
     if (!this.#version.isSuitableTo('6.2')) {
       console.warn(
@@ -547,7 +570,7 @@ export class WebApp {
     location.href = 'https://t.me' + fullPath;
   };
 
-  readTextFromClipboard = (callback: AnyCallback): void => {
+  readTextFromClipboard = (callback?: ClipboardCallback | null | undefined): void => {
     if (!this.#version.isSuitableTo('6.4')) {
       console.error(
         '[Telegram.WebApp] Method readTextFromClipboard is not supported in version ' +
@@ -556,11 +579,11 @@ export class WebApp {
       throw new Error('WebAppMethodUnsupported');
     }
 
-    const req_id = generateId(16);
+    const id = generateId(16);
 
-    this.#webAppClipboardRequests.set(req_id, { callback });
+    this.#clipboard.setRequest(id, callback);
 
-    this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id });
+    this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id: id });
   };
 
   enableClosingConfirmation = (): void => {
