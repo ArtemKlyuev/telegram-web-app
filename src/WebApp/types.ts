@@ -97,3 +97,25 @@ export interface WebAppInitData {
   start_param?: string | undefined;
   can_send_after?: number | undefined;
 }
+
+export type PopupButtonType = 'default' | 'ok' | 'close' | 'cancel' | 'destructive';
+
+export interface PopupButton {
+  id?: string | undefined;
+  type?: PopupButtonType | undefined;
+  text?: string | undefined;
+}
+
+export type PopupButtonsSet =
+  | [PopupButton]
+  | [PopupButton, PopupButton]
+  | [PopupButton, PopupButton, PopupButton];
+
+/**
+ * @see https://core.telegram.org/bots/webapps#popupparams
+ */
+export interface PopupParams {
+  title?: string | undefined;
+  message: string;
+  buttons?: PopupButtonsSet | undefined;
+}
