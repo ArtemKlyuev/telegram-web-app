@@ -27,7 +27,7 @@ export class BackgroundColor {
     this.#themeParams = themeParams;
   }
 
-  getBackgroundColor = (): HexColor | undefined => {
+  get = (): HexColor | undefined => {
     if (this.#backgroundColorKeyOrColor === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR) {
       return this.#themeParams.secondary_bg_color;
     }
@@ -39,8 +39,8 @@ export class BackgroundColor {
     return this.#backgroundColorKeyOrColor;
   };
 
-  updateBackgroundColor = (): void => {
-    const color = this.getBackgroundColor();
+  update = (): void => {
+    const color = this.get();
 
     // FIXME `!=`
     if (this.#appBackgroundColor != color) {
@@ -64,7 +64,7 @@ export class BackgroundColor {
     return bgColor;
   }
 
-  setBackgroundColor = (color: HeaderBgColor | string): void => {
+  set = (color: HeaderBgColor | string): void => {
     if (!this.#isSupported) {
       console.warn(
         '[Telegram.WebApp] Background color is not supported in version ' + this.#webAppVersion
@@ -73,6 +73,6 @@ export class BackgroundColor {
     }
 
     this.#backgroundColorKeyOrColor = this.#getBgColor(color);
-    this.updateBackgroundColor();
+    this.update();
   };
 }

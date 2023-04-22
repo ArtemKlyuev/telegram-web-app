@@ -204,7 +204,7 @@ export class WebApp {
     this.#clipboard = clipboard;
     this.#qrPopup = qrPopup;
 
-    this.#bgColor.updateBackgroundColor();
+    this.#bgColor.update();
     this.#viewport.setHeight();
 
     window.addEventListener('resize', this.#onWindowResize);
@@ -258,12 +258,12 @@ export class WebApp {
   }
 
   set backgroundColor(color: HeaderBgColor | string) {
-    this.#bgColor.setBackgroundColor(color);
+    this.#bgColor.set(color);
   }
 
   // @ts-expect-error different getter and setter types, but it's ok
   get backgroundColor(): HexColor | undefined {
-    return this.#bgColor.getBackgroundColor();
+    return this.#bgColor.get();
   }
 
   get HapticFeedback(): HapticFeedback {
@@ -388,7 +388,7 @@ export class WebApp {
 
     this.#theme.setParams(eventData.theme_params);
     this.#mainButton.setParams({});
-    this.#bgColor.updateBackgroundColor();
+    this.#bgColor.update();
     this.#receiveWebViewEvent('themeChanged');
   };
 
