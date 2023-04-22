@@ -4,6 +4,7 @@ export type ValueOf<T> = T[keyof T];
  */
 export type HexColor = string;
 export type AnyCallback = (...args: any[]) => any;
+export type NoParamsCallback = () => any;
 
 export interface InitParams {
   /**
