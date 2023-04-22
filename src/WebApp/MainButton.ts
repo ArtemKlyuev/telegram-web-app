@@ -1,9 +1,9 @@
-import { AnyCallback, HexColor, ValueOf } from '../types';
+import { AnyCallback, HexColor, MainButton, MainButtonParams, ValueOf } from '../types';
 import { Disposer, EventEmitter, parseColorToHex } from '../utils';
 
 import { MainButtonDebug } from './MainButtonDebug';
 import { Theme } from './Theme';
-import { InvisibleButtonParams, NullableMainButtonParams, VisibleButtonParams } from './types';
+import { InvisibleButtonParams, VisibleButtonParams } from './types';
 
 interface Options {
   eventEmitter: EventEmitter<ButtonEvent>;
@@ -28,7 +28,7 @@ const BUTTON_EVENTS = {
   OFF_CLICKED: 'off_clicked',
 } as const;
 
-export class MainButton {
+export class WebAppMainButton implements MainButton {
   #eventEmitter: Options['eventEmitter'];
   #theme: Theme;
   #isVisible = false;
@@ -41,10 +41,18 @@ export class MainButton {
   #prevButtonState: string | null = null;
   #debugBtn: MainButtonDebug | null = null;
 
-  static readonly EVENTS = BUTTON_EVENTS;
-  static readonly MAXIMUM_TEXT_LENGTH = 64;
-  static readonly DEFAULT_COLOR = '#2481cc';
-  static readonly DEFAULT_TEXT_COLOR = '#ffffff';
+  static get EVENTS() {
+    return BUTTON_EVENTS;
+  }
+  static get MAXIMUM_TEXT_LENGTH(): number {
+    return 64;
+  }
+  static get DEFAULT_COLOR(): string {
+    return '#2481cc';
+  }
+  static get DEFAULT_TEXT_COLOR(): string {
+    return '#ffffff';
+  }
 
   constructor({ eventEmitter, theme, isDebug = false }: Options) {
     this.#eventEmitter = eventEmitter;
@@ -54,10 +62,10 @@ export class MainButton {
     if (isDebug) {
       this.#debugBtn = new MainButtonDebug({
         onClick: () => {
-          this.#eventEmitter.emit(MainButton.EVENTS.DEBUG_BUTTON_CLICKED, this.isActive);
+          this.#eventEmitter.emit(WebAppMainButton.EVENTS.DEBUG_BUTTON_CLICKED, this.isActive);
         },
         onUpdate: () => {
-          this.#eventEmitter.emit(MainButton.EVENTS.DEBUG_BUTTON_UPDATED);
+          this.#eventEmitter.emit(WebAppMainButton.EVENTS.DEBUG_BUTTON_UPDATED);
         },
       });
     }
@@ -87,7 +95,7 @@ export class MainButton {
     }
 
     this.#prevButtonState = newState;
-    this.#eventEmitter.emit(MainButton.EVENTS.UPDATED, btnParams);
+    this.#eventEmitter.emit(WebAppMainButton.EVENTS.UPDATED, btnParams);
 
     if (this.#isDebug) {
       this.#debugBtn!.update(btnParams);
@@ -98,7 +106,7 @@ export class MainButton {
     return value === false || value === null;
   }
 
-  #setText(value: NullableMainButtonParams['text']): void | never {
+  #setText(value: MainButtonParams['text']): void | never {
     if (typeof value === 'undefined') {
       return;
     }
@@ -110,7 +118,7 @@ export class MainButton {
       throw new Error('WebAppMainButtonParamInvalid');
     }
 
-    if (text.length > MainButton.MAXIMUM_TEXT_LENGTH) {
+    if (text.length > WebAppMainButton.MAXIMUM_TEXT_LENGTH) {
       console.error('[Telegram.WebApp] Main button text is too long', text);
       throw new Error('WebAppMainButtonParamInvalid');
     }
@@ -118,7 +126,7 @@ export class MainButton {
     this.#buttonText = text;
   }
 
-  #setButtonColor(value: NullableMainButtonParams['color']): void | never {
+  #setButtonColor(value: MainButtonParams['color']): void | never {
     if (typeof value === 'undefined') {
       return;
     }
@@ -138,7 +146,7 @@ export class MainButton {
     this.#buttonColor = color;
   }
 
-  #setTextColor(value: NullableMainButtonParams['text_color']): void | never {
+  #setTextColor(value: MainButtonParams['text_color']): void | never {
     if (typeof value === 'undefined') {
       return;
     }
@@ -159,7 +167,7 @@ export class MainButton {
     this.#buttonTextColor = textColor;
   }
 
-  #setIsVisible(visible: NullableMainButtonParams['is_visible']): void | never {
+  #setIsVisible(visible: MainButtonParams['is_visible']): void | never {
     if (typeof visible === 'undefined') {
       return;
     }
@@ -172,7 +180,7 @@ export class MainButton {
     this.#isVisible = visible;
   }
 
-  #setIsActive(active: NullableMainButtonParams['is_active']): void | never {
+  #setIsActive(active: MainButtonParams['is_active']): void | never {
     if (typeof active === 'undefined') {
       return;
     }
@@ -213,7 +221,7 @@ export class MainButton {
     return (
       this.#buttonColor ||
       this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_COLOR) ||
-      MainButton.DEFAULT_COLOR
+      WebAppMainButton.DEFAULT_COLOR
     );
   }
 
@@ -225,7 +233,7 @@ export class MainButton {
     return (
       this.#buttonTextColor ||
       this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_TEXT_COLOR) ||
-      MainButton.DEFAULT_TEXT_COLOR
+      WebAppMainButton.DEFAULT_TEXT_COLOR
     );
   }
 
@@ -249,7 +257,7 @@ export class MainButton {
     return this.#isActive;
   }
 
-  setParams = (params: NullableMainButtonParams): this | never => {
+  setParams = (params: MainButtonParams): this | never => {
     this.#setText(params.text);
     this.#setButtonColor(params.color);
     this.#setTextColor(params.text_color);
@@ -264,12 +272,12 @@ export class MainButton {
   setText = (text: string): this => this.setParams({ text });
 
   onClick = (callback: AnyCallback): this => {
-    this.#eventEmitter.emit(MainButton.EVENTS.CLICKED, callback);
+    this.#eventEmitter.emit(WebAppMainButton.EVENTS.CLICKED, callback);
     return this;
   };
 
   offClick = (callback: AnyCallback) => {
-    this.#eventEmitter.emit(MainButton.EVENTS.OFF_CLICKED, callback);
+    this.#eventEmitter.emit(WebAppMainButton.EVENTS.OFF_CLICKED, callback);
 
     return this;
   };

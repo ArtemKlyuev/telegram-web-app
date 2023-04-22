@@ -1,4 +1,4 @@
-import { PopupButton, PopupButtonsSet, PopupParams } from './types';
+import { PopupButton, PopupButtonsSet, PopupParams } from '../types';
 import { WebAppPopupButton } from './WebAppPopupButton';
 
 export type PopupCallback = (id: string) => any;

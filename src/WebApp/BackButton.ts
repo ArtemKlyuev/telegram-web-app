@@ -1,6 +1,5 @@
-import { NoParamsCallback, ValueOf } from '../types';
+import { BackButton, NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
-import { BackButton } from './types';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;

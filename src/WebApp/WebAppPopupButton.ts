@@ -1,4 +1,4 @@
-import { PopupButton, PopupButtonType } from './types';
+import { PopupButton, PopupButtonType } from '../types';
 
 const TYPES = {
   DEFAULT: 'default',

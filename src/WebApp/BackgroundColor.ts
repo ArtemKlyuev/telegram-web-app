@@ -1,8 +1,8 @@
-import { HexColor } from '../types';
+import { HexColor, ThemeParams } from '../types';
 import { WebView } from '../WebView';
 import { parseColorToHex } from '../utils';
 
-import { HeaderBgColor, ThemeParams } from './types';
+import { HeaderBgColor } from './types';
 import { HEADER_COLOR_KEYS } from './constants';
 
 interface Options {

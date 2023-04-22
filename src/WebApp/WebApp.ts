@@ -1,4 +1,15 @@
-import { AnyCallback, HexColor, InitParams, ValueOf } from '../types';
+import {
+  AnyCallback,
+  BackButton,
+  HapticFeedback,
+  HexColor,
+  InitParams,
+  MainButton,
+  PopupParams,
+  ScanQrPopupParams,
+  ThemeParams,
+  ValueOf,
+} from '../types';
 import {
   byteLength,
   generateId,
@@ -10,23 +21,19 @@ import {
 import { WebView } from '../WebView';
 
 import {
-  BackButton,
   ColorScheme,
   ColorSchemes,
   HeaderBgColor,
-  PopupParams,
   ScanQrCallback,
-  ScanQrPopupParams,
-  ThemeParams,
   WebViewEvent,
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 import { BACK_BUTTON_EVENTS_KEY, BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
-import { HapticFeedback } from './HapticFeedback';
+import { WebAppHapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
-import { MainButton } from './MainButton';
+import { WebAppMainButton } from './MainButton';
 import { Theme } from './Theme';
 import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
@@ -61,12 +68,12 @@ export class WebApp {
   readonly #initData: InitData;
   readonly #version: Version;
   readonly #theme: Theme;
-  readonly #hapticFeedback: HapticFeedback;
+  readonly #hapticFeedback: WebAppHapticFeedback;
   readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
   readonly #backButton: WebAppBackButton;
-  readonly #mainButton: MainButton;
+  readonly #mainButton: WebAppMainButton;
   readonly #invoices: Invoices;
   readonly #popup: Popup;
   readonly #clipboard: WebAppClipboard;
@@ -92,19 +99,19 @@ export class WebApp {
       onMainButtonClick(this.#mainButton.isActive);
     });
 
-    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_CLICKED, onMainButtonClick);
+    this.#mainButton.on(WebAppMainButton.EVENTS.DEBUG_BUTTON_CLICKED, onMainButtonClick);
 
-    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setHeight);
+    this.#mainButton.on(WebAppMainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setHeight);
 
-    this.#mainButton.on(MainButton.EVENTS.UPDATED, (params) => {
+    this.#mainButton.on(WebAppMainButton.EVENTS.UPDATED, (params) => {
       this.#webView.postEvent('web_app_setup_main_button', undefined, params);
     });
 
-    this.#mainButton.on(MainButton.EVENTS.CLICKED, (callback) => {
+    this.#mainButton.on(WebAppMainButton.EVENTS.CLICKED, (callback) => {
       this.#onWebViewEvent('mainButtonClicked', callback);
     });
 
-    this.#mainButton.on(MainButton.EVENTS.OFF_CLICKED, (callback) => {
+    this.#mainButton.on(WebAppMainButton.EVENTS.OFF_CLICKED, (callback) => {
       this.#offWebViewEvent('mainButtonClicked', callback);
     });
   }
@@ -179,7 +186,7 @@ export class WebApp {
     viewport: Viewport,
     theme: Theme,
     backButton: WebAppBackButton,
-    mainButton: MainButton,
+    mainButton: WebAppMainButton,
     invoices: Invoices,
     popup: Popup,
     clipboard: WebAppClipboard,
@@ -190,7 +197,10 @@ export class WebApp {
     this.#webView = webView;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
-    this.#hapticFeedback = new HapticFeedback(this.#version.isSuitableTo('6.1'), this.#webView);
+    this.#hapticFeedback = new WebAppHapticFeedback(
+      this.#version.isSuitableTo('6.1'),
+      this.#webView
+    );
 
     this.#backButton = backButton;
     this.#initBackButton();

@@ -1,4 +1,4 @@
-import { ValueOf } from '../types';
+import { HapticFeedback, ValueOf } from '../types';
 import { WebView } from '../WebView';
 
 type Feedbacks = typeof FEEDBACK_TYPES;
@@ -39,7 +39,7 @@ const NOTIFICATION_TYPES = {
 
 const VALID_NOTIFICATION_TYPES = Object.values(NOTIFICATION_TYPES);
 
-export class HapticFeedback {
+export class WebAppHapticFeedback implements HapticFeedback {
   #isSupported: boolean;
   #webView: WebView;
 
@@ -71,13 +71,13 @@ export class HapticFeedback {
   #triggerFeedback(params: {
     type: Feedbacks['IMPACT'];
     impact_style: ImpactStyle;
-  }): HapticFeedback | never;
+  }): WebAppHapticFeedback | never;
   #triggerFeedback(params: {
     type: Feedbacks['NOTIFICATION'];
     notification_type: NotificationType;
-  }): HapticFeedback | never;
-  #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): HapticFeedback | never;
-  #triggerFeedback(params: Params): HapticFeedback | never {
+  }): WebAppHapticFeedback | never;
+  #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): WebAppHapticFeedback | never;
+  #triggerFeedback(params: Params): WebAppHapticFeedback | never {
     if (!this.#isSupported) {
       console.warn('[Telegram.WebApp] HapticFeedback is not supported in version ' + webAppVersion);
       return this;
@@ -115,15 +115,15 @@ export class HapticFeedback {
     return this;
   }
 
-  impactOccurred = (style: ImpactStyle): HapticFeedback | never => {
+  impactOccurred = (style: ImpactStyle): WebAppHapticFeedback | never => {
     return this.#triggerFeedback({ type: 'impact', impact_style: style });
   };
 
-  notificationOccurred = (type: NotificationType): HapticFeedback | never => {
+  notificationOccurred = (type: NotificationType): WebAppHapticFeedback | never => {
     return this.#triggerFeedback({ type: 'notification', notification_type: type });
   };
 
-  selectionChanged = (): HapticFeedback | never => {
+  selectionChanged = (): WebAppHapticFeedback | never => {
     return this.#triggerFeedback({ type: 'selection_change' });
   };
 }

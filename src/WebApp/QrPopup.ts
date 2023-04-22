@@ -1,4 +1,6 @@
-import { ScanQrCallback, ScanQrPopupParams } from './types';
+import { ScanQrPopupParams } from '../types';
+
+import { ScanQrCallback } from './types';
 
 interface Options {
   params: ScanQrPopupParams;
