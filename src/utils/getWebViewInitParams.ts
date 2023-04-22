@@ -12,7 +12,7 @@ export const getWebViewInitParams = (): InitParams => {
 
   const initParams = urlParseHashParams(locationHash);
 
-  const storedParams = SessionStorage.get('initParams');
+  const storedParams = SessionStorage.get<InitParams>('initParams');
 
   if (storedParams) {
     for (let key in storedParams) {
