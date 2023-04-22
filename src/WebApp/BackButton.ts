@@ -1,5 +1,6 @@
 import { NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
+import { BackButton } from './types';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
@@ -28,7 +29,7 @@ const BUTTON_EVENTS = {
 export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
-export class WebAppBackButton {
+export class WebAppBackButton implements BackButton {
   readonly #eventEmitter: EventEmitter<ButtonEvent>;
   #isVisible = false;
   #isSupported: boolean;

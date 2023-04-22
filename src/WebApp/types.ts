@@ -1,3 +1,4 @@
+import { NoParamsCallback } from '../types';
 import { HexColor, ValueOf } from '../types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 
@@ -127,4 +128,15 @@ export type ScanQrCallback = (text: string | null) => boolean;
  */
 export interface ScanQrPopupParams {
   text?: string | undefined;
+}
+
+/**
+ * @see https://core.telegram.org/bots/webapps#backbutton
+ */
+export interface BackButton {
+  readonly isVisible: boolean;
+  onClick: (callback: NoParamsCallback) => BackButton;
+  offClick: (callback: NoParamsCallback) => BackButton;
+  show: () => BackButton;
+  hide: () => BackButton;
 }

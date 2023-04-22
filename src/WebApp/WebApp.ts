@@ -10,6 +10,7 @@ import {
 import { WebView } from '../WebView';
 
 import {
+  BackButton,
   ColorScheme,
   ColorSchemes,
   HeaderBgColor,
@@ -282,7 +283,7 @@ export class WebApp {
     return this.#hapticFeedback;
   }
 
-  get BackButton(): WebAppBackButton {
+  get BackButton(): BackButton {
     return this.#backButton;
   }
 
