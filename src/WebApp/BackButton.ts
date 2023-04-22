@@ -28,7 +28,7 @@ const BUTTON_EVENTS = {
 export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
-export class BackButton {
+export class WebAppBackButton {
   readonly #eventEmitter: EventEmitter<ButtonEvent>;
   #isVisible = false;
   #isSupported: boolean;

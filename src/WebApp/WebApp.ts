@@ -21,7 +21,7 @@ import {
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
-import { BACK_BUTTON_EVENTS_KEY, BACK_BUTTON_ON_EVENT_KEY, BackButton } from './BackButton';
+import { BACK_BUTTON_EVENTS_KEY, BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { HapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
@@ -64,7 +64,7 @@ export class WebApp {
   readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
-  readonly #backButton: BackButton;
+  readonly #backButton: WebAppBackButton;
   readonly #mainButton: MainButton;
   readonly #invoices: Invoices;
   readonly #popup: Popup;
@@ -109,28 +109,31 @@ export class WebApp {
   }
 
   #initBackButton(): void {
-    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](BackButton[BACK_BUTTON_EVENTS_KEY].CREATED, () => {
-      this.#webView.onEvent('back_button_pressed', () => {
-        this.#receiveWebViewEvent('backButtonClicked');
-      });
-    });
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
+      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].CREATED,
+      () => {
+        this.#webView.onEvent('back_button_pressed', () => {
+          this.#receiveWebViewEvent('backButtonClicked');
+        });
+      }
+    );
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      BackButton[BACK_BUTTON_EVENTS_KEY].UPDATED,
+      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].UPDATED,
       (params) => {
         this.#webView.postEvent('web_app_setup_back_button', undefined, params);
       }
     );
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      BackButton[BACK_BUTTON_EVENTS_KEY].CLICKED,
+      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].CLICKED,
       (callback) => {
         this.#onWebViewEvent('backButtonClicked', callback);
       }
     );
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      BackButton[BACK_BUTTON_EVENTS_KEY].OFF_CLICKED,
+      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].OFF_CLICKED,
       (callback) => {
         this.#offWebViewEvent('backButtonClicked', callback);
       }
@@ -174,7 +177,7 @@ export class WebApp {
     bgColor: BackgroundColor,
     viewport: Viewport,
     theme: Theme,
-    backButton: BackButton,
+    backButton: WebAppBackButton,
     mainButton: MainButton,
     invoices: Invoices,
     popup: Popup,
@@ -279,7 +282,7 @@ export class WebApp {
     return this.#hapticFeedback;
   }
 
-  get BackButton(): BackButton {
+  get BackButton(): WebAppBackButton {
     return this.#backButton;
   }
 
