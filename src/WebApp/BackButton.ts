@@ -1,12 +1,12 @@
-import { AnyCallback, ValueOf } from '../types';
+import { NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
 type ButtonCreateListener = () => any;
 type ButtonUpdateListener = (params: Required<BackButtonParams>) => any;
-type onClickListener = (callback: AnyCallback) => any;
-type offClickListener = (callback: AnyCallback) => any;
+type onClickListener = (callback: NoParamsCallback) => any;
+type offClickListener = (callback: NoParamsCallback) => any;
 
 interface Options {
   eventEmitter: EventEmitter<ButtonEvent>;
@@ -25,6 +25,9 @@ const BUTTON_EVENTS = {
   OFF_CLICKED: 'off_clicked',
 } as const;
 
+export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
+export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
+
 export class BackButton {
   readonly #eventEmitter: EventEmitter<ButtonEvent>;
   #isVisible = false;
@@ -32,14 +35,16 @@ export class BackButton {
   #webAppVersion: string;
   #prevButtonState = this.#isVisible;
 
-  static readonly EVENTS = BUTTON_EVENTS;
+  static get [BACK_BUTTON_EVENTS_KEY](): ButtonEvents {
+    return BUTTON_EVENTS;
+  }
 
   constructor({ eventEmitter, isSupported, webAppVersion }: Options) {
     this.#eventEmitter = eventEmitter;
     this.#isSupported = isSupported;
     this.#webAppVersion = webAppVersion;
 
-    queueMicrotask(() => this.#eventEmitter.emit(BackButton.EVENTS.CREATED));
+    queueMicrotask(() => this.#eventEmitter.emit(BUTTON_EVENTS.CREATED));
   }
 
   #isButtonSupported(): boolean {
@@ -52,7 +57,7 @@ export class BackButton {
     return this.#isSupported;
   }
 
-  #updateButton() {
+  #update() {
     const newState = this.#isVisible;
 
     if (this.#prevButtonState === newState) {
@@ -61,7 +66,7 @@ export class BackButton {
 
     this.#prevButtonState = newState;
 
-    this.#eventEmitter.emit(BackButton.EVENTS.UPDATED, { is_visible: this.#isVisible });
+    this.#eventEmitter.emit(BUTTON_EVENTS.UPDATED, { is_visible: this.#isVisible });
   }
 
   #setParams(params: BackButtonParams): this {
@@ -73,33 +78,42 @@ export class BackButton {
       this.#isVisible = Boolean(params.is_visible);
     }
 
-    this.#updateButton();
+    this.#update();
 
     return this;
   }
 
-  on(event: ButtonEvents['CREATED'], listener: ButtonCreateListener): Disposer;
-  on(event: ButtonEvents['UPDATED'], listener: ButtonUpdateListener): Disposer;
-  on(event: ButtonEvents['CLICKED'], listener: onClickListener): Disposer;
-  on(event: ButtonEvents['OFF_CLICKED'], listener: offClickListener): Disposer;
-  on(
+  [BACK_BUTTON_ON_EVENT_KEY](
+    event: ButtonEvents['CREATED'],
+    listener: ButtonCreateListener
+  ): Disposer;
+  [BACK_BUTTON_ON_EVENT_KEY](
+    event: ButtonEvents['UPDATED'],
+    listener: ButtonUpdateListener
+  ): Disposer;
+  [BACK_BUTTON_ON_EVENT_KEY](event: ButtonEvents['CLICKED'], listener: onClickListener): Disposer;
+  [BACK_BUTTON_ON_EVENT_KEY](
+    event: ButtonEvents['OFF_CLICKED'],
+    listener: offClickListener
+  ): Disposer;
+  [BACK_BUTTON_ON_EVENT_KEY](
     event: ButtonEvent,
     listener: ButtonCreateListener | ButtonUpdateListener | onClickListener | offClickListener
   ): Disposer {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
-  onClick = (callback: AnyCallback): this => {
+  onClick = (callback: NoParamsCallback): this => {
     if (this.#isButtonSupported()) {
-      this.#eventEmitter.emit(BackButton.EVENTS.CLICKED, callback);
+      this.#eventEmitter.emit(BUTTON_EVENTS.CLICKED, callback);
     }
 
     return this;
   };
 
-  offClick = (callback: AnyCallback): this => {
+  offClick = (callback: NoParamsCallback): this => {
     if (this.#isButtonSupported()) {
-      this.#eventEmitter.emit(BackButton.EVENTS.OFF_CLICKED, callback);
+      this.#eventEmitter.emit(BUTTON_EVENTS.OFF_CLICKED, callback);
     }
 
     return this;

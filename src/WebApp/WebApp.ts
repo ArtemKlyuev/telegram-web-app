@@ -21,7 +21,7 @@ import {
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
-import { BackButton } from './BackButton';
+import { BACK_BUTTON_EVENTS_KEY, BACK_BUTTON_ON_EVENT_KEY, BackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { HapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
@@ -109,23 +109,32 @@ export class WebApp {
   }
 
   #initBackButton(): void {
-    this.#backButton.on(BackButton.EVENTS.CREATED, () => {
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](BackButton[BACK_BUTTON_EVENTS_KEY].CREATED, () => {
       this.#webView.onEvent('back_button_pressed', () => {
         this.#receiveWebViewEvent('backButtonClicked');
       });
     });
 
-    this.#backButton.on(BackButton.EVENTS.UPDATED, (params) => {
-      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
-    });
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
+      BackButton[BACK_BUTTON_EVENTS_KEY].UPDATED,
+      (params) => {
+        this.#webView.postEvent('web_app_setup_back_button', undefined, params);
+      }
+    );
 
-    this.#backButton.on(BackButton.EVENTS.CLICKED, (callback) => {
-      this.#onWebViewEvent('backButtonClicked', callback);
-    });
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
+      BackButton[BACK_BUTTON_EVENTS_KEY].CLICKED,
+      (callback) => {
+        this.#onWebViewEvent('backButtonClicked', callback);
+      }
+    );
 
-    this.#backButton.on(BackButton.EVENTS.OFF_CLICKED, (callback) => {
-      this.#offWebViewEvent('backButtonClicked', callback);
-    });
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
+      BackButton[BACK_BUTTON_EVENTS_KEY].OFF_CLICKED,
+      (callback) => {
+        this.#offWebViewEvent('backButtonClicked', callback);
+      }
+    );
   }
 
   #initTheme(rawTheme: InitParams['tgWebAppThemeParams']): void {
