@@ -93,7 +93,7 @@ export class WebApp {
 
     this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_CLICKED, onMainButtonClick);
 
-    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setViewportHeight);
+    this.#mainButton.on(MainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setHeight);
 
     this.#mainButton.on(MainButton.EVENTS.UPDATED, (params) => {
       this.#webView.postEvent('web_app_setup_main_button', undefined, params);
@@ -205,7 +205,7 @@ export class WebApp {
     this.#qrPopup = qrPopup;
 
     this.#bgColor.updateBackgroundColor();
-    this.#viewport.setViewportHeight();
+    this.#viewport.setHeight();
 
     window.addEventListener('resize', this.#onWindowResize);
     if (this.#webView.isIframe) {
@@ -279,11 +279,11 @@ export class WebApp {
   }
 
   get viewportHeight(): number {
-    return this.#viewport.viewportHeight;
+    return this.#viewport.height;
   }
 
   get viewportStableHeight(): number {
-    return this.#viewport.viewportStableHeight;
+    return this.#viewport.stableHeight;
   }
 
   get isExpanded(): boolean {
@@ -398,7 +398,7 @@ export class WebApp {
     }
 
     window.removeEventListener('resize', this.#onWindowResize);
-    this.#viewport.setViewportHeight(eventData);
+    this.#viewport.setHeight(eventData);
   };
 
   #onSettingsButtonPressed = (): void => {

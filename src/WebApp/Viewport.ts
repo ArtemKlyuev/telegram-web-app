@@ -40,7 +40,7 @@ export class Viewport {
     return height - this.#mainButtonHeight;
   }
 
-  setViewportHeight = (data?: ViewportData | undefined): void => {
+  setHeight = (data?: ViewportData | undefined): void => {
     if (typeof data !== 'undefined') {
       this.#isExpanded = Boolean(data.is_expanded);
       this.#viewportHeight = data.height;
@@ -63,11 +63,11 @@ export class Viewport {
     return this.#isExpanded;
   }
 
-  get viewportHeight(): number {
+  get height(): number {
     return this.#calculateViewportHeight(this.#viewportHeight);
   }
 
-  get viewportStableHeight(): number {
+  get stableHeight(): number {
     return this.#calculateViewportHeight(this.#viewportStableHeight);
   }
 }
