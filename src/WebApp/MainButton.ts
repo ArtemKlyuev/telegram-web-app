@@ -1,4 +1,4 @@
-import { AnyCallback, HexColor, MainButton, MainButtonParams, ValueOf } from '../types';
+import { HexColor, MainButton, MainButtonParams, NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter, parseColorToHex } from '../utils';
 
 import { MainButtonDebug } from './MainButtonDebug';
@@ -17,8 +17,8 @@ type ButtonEvent = ValueOf<ButtonEvents>;
 type DebugButtonClickListener = (isActive: boolean) => any;
 type DebugButtonUpdateListener = () => any;
 type UpdateListener = (params: VisibleButtonParams | InvisibleButtonParams) => any;
-type OnClickListener = (callback: AnyCallback) => any;
-type OffClickListener = (callback: AnyCallback) => any;
+type OnClickListener = (callback: NoParamsCallback) => any;
+type OffClickListener = (callback: NoParamsCallback) => any;
 
 const BUTTON_EVENTS = {
   DEBUG_BUTTON_CLICKED: 'debug_button_clicked',
@@ -271,12 +271,12 @@ export class WebAppMainButton implements MainButton {
 
   setText = (text: string): this => this.setParams({ text });
 
-  onClick = (callback: AnyCallback): this => {
+  onClick = (callback: NoParamsCallback): this => {
     this.#eventEmitter.emit(WebAppMainButton.EVENTS.CLICKED, callback);
     return this;
   };
 
-  offClick = (callback: AnyCallback) => {
+  offClick = (callback: NoParamsCallback): this => {
     this.#eventEmitter.emit(WebAppMainButton.EVENTS.OFF_CLICKED, callback);
 
     return this;

@@ -2,13 +2,27 @@ import {
   AnyCallback,
   BackButton,
   ChatTypesToChoose,
+  ClipboardTextReceivedCallbackData,
   HapticFeedback,
   HexColor,
   InitParams,
+  InvoiceClosedCallbackData,
+  InvoiceStatus,
   MainButton,
+  NoParamsCallback,
+  Nullable,
+  OpenInvoiceCallback,
+  OpenLinkOptions,
+  PopupClosedCallbackData,
   PopupParams,
+  QrTextReceivedCallbackData,
   ScanQrPopupParams,
+  ShowConfirmCallback,
+  ShowPopupCallback,
+  ShowScanQrPopupCallback,
   ThemeParams,
+  ViewportChangedCallbackData,
+  WebApp,
   WebAppInitData,
 } from '../types';
 import {
@@ -25,7 +39,6 @@ import {
   ColorScheme,
   ColorSchemes,
   HeaderBgColor,
-  ScanQrCallback,
   WebViewEvent,
   WebViewEventParams,
 } from './types';
@@ -39,7 +52,7 @@ import { Theme } from './Theme';
 import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
-import { Popup, PopupCallback } from './Popup';
+import { Popup } from './Popup';
 import { WebAppPopupButton } from './WebAppPopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
@@ -55,8 +68,8 @@ const VALID_CHAT_TYPES = Object.values(CHAT_TYPES);
 
 export type ChatTypes = typeof CHAT_TYPES;
 
-export class WebApp {
-  readonly #webAppPlatform: string = 'unknown';
+export class TelegramWebApp implements WebApp {
+  readonly #platform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   #isClosingConfirmationEnabled = false;
@@ -167,7 +180,7 @@ export class WebApp {
       } catch {}
     }
 
-    const themeParams = SessionStorage.get('themeParams');
+    const themeParams = SessionStorage.get<ThemeParams>('themeParams');
     if (themeParams) {
       this.#theme.setParams(themeParams);
     }
@@ -215,7 +228,7 @@ export class WebApp {
     }
 
     if (initParams.tgWebAppPlatform) {
-      this.#webAppPlatform = initParams.tgWebAppPlatform;
+      this.#platform = initParams.tgWebAppPlatform;
     }
 
     this.#invoices = invoices;
@@ -262,26 +275,24 @@ export class WebApp {
     return this.#version.value;
   }
 
-  get platfrom(): string {
-    return this.#webAppPlatform;
+  get platform(): string {
+    return this.#platform;
   }
 
-  set headerColor(value: HeaderBgColor | string) {
+  set headerColor(value: HeaderBgColor | HexColor) {
     this.setHeaderColor(value);
   }
 
-  // @ts-expect-error different getter and setter types, but it's ok
-  get headerColor(): HexColor | null {
-    return this.#theme.getParam(this.#headerColorKey);
+  get headerColor(): HexColor {
+    return this.#theme.getParam(this.#headerColorKey) ?? '';
   }
 
-  set backgroundColor(color: HeaderBgColor | string) {
+  set backgroundColor(color: HeaderBgColor | HexColor) {
     this.#bgColor.set(color);
   }
 
-  // @ts-expect-error different getter and setter types, but it's ok
-  get backgroundColor(): HexColor | undefined {
-    return this.#bgColor.get();
+  get backgroundColor(): HexColor {
+    return this.#bgColor.get() ?? '';
   }
 
   get HapticFeedback(): HapticFeedback {
@@ -351,11 +362,14 @@ export class WebApp {
   #receiveWebViewEvent(eventType: 'backButtonClicked'): void;
   #receiveWebViewEvent(eventType: 'mainButtonClicked'): void;
   #receiveWebViewEvent(eventType: 'settingsButtonClicked'): void;
-  #receiveWebViewEvent(eventType: 'viewportChanged', params: { isStateStable: boolean }): void;
-  #receiveWebViewEvent(eventType: 'popupClosed', params: { button_id?: string | null }): void;
-  #receiveWebViewEvent(eventType: 'qrTextReceived', params: { data: any }): void;
-  #receiveWebViewEvent(eventType: 'clipboardTextReceived', params: { data: any }): void;
-  #receiveWebViewEvent(eventType: 'invoiceClosed', params: { url: string; status: string }): void;
+  #receiveWebViewEvent(eventType: 'viewportChanged', params: ViewportChangedCallbackData): void;
+  #receiveWebViewEvent(eventType: 'popupClosed', params: PopupClosedCallbackData): void;
+  #receiveWebViewEvent(eventType: 'qrTextReceived', params: QrTextReceivedCallbackData): void;
+  #receiveWebViewEvent(
+    eventType: 'clipboardTextReceived',
+    params: ClipboardTextReceivedCallbackData
+  ): void;
+  #receiveWebViewEvent(eventType: 'invoiceClosed', params: InvoiceClosedCallbackData): void;
   #receiveWebViewEvent(eventType: WebViewEvent, params?: WebViewEventParams | undefined): void {
     const callbackArgs = params ? [params] : [];
 
@@ -372,7 +386,7 @@ export class WebApp {
     this.#webView.offEvent('webview:' + eventType, callback);
   }
 
-  #onWindowResize = (e: UIEvent): void => {
+  #onWindowResize = (): void => {
     if (this.#lastWindowHeight !== window.innerHeight) {
       this.#lastWindowHeight = window.innerHeight;
 
@@ -380,23 +394,23 @@ export class WebApp {
     }
   };
 
-  #onInvoiceClosed = (eventType: any, eventData: { slug?: string; status: string }) => {
-    if (!eventData.slug) {
+  #onInvoiceClosed = (
+    eventType: any,
+    { slug, status }: { slug?: string; status: InvoiceStatus }
+  ) => {
+    if (!slug) {
       return;
     }
 
-    if (!this.#invoices.has(eventData.slug)) {
+    if (!this.#invoices.has(slug)) {
       return;
     }
 
-    const invoiceData = this.#invoices.remove(eventData.slug)!;
+    const { url, callback } = this.#invoices.remove(slug)!;
 
-    invoiceData.callback(eventData.status);
+    callback?.(status);
 
-    this.#receiveWebViewEvent('invoiceClosed', {
-      url: invoiceData.url,
-      status: eventData.status,
-    });
+    this.#receiveWebViewEvent('invoiceClosed', { url, status });
   };
 
   #onThemeChanged = (eventType: any, eventData: { theme_params: ThemeParams }) => {
@@ -419,11 +433,9 @@ export class WebApp {
     this.#viewport.setHeight(eventData);
   };
 
-  #onSettingsButtonPressed = (): void => {
-    this.#receiveWebViewEvent('settingsButtonClicked');
-  };
+  #onSettingsButtonPressed = (): void => this.#receiveWebViewEvent('settingsButtonClicked');
 
-  #onPopupClosed = (eventType: any, eventData: { button_id: string | null }): void => {
+  #onPopupClosed = (eventType: any, eventData: PopupClosedCallbackData): void => {
     if (!this.#popup.isOpened) {
       return;
     }
@@ -475,9 +487,7 @@ export class WebApp {
     this.#receiveWebViewEvent('qrTextReceived', { data });
   };
 
-  #onScanQrPopupClosed = (eventType: any, eventData: any): void => {
-    this.#qrPopup.close();
-  };
+  #onScanQrPopupClosed = (): void => this.#qrPopup.close();
 
   #setClosingConfirmation(isEnabled: boolean): void {
     if (!this.#version.isSuitableTo('6.2')) {
@@ -551,7 +561,7 @@ export class WebApp {
       throw new Error('WebAppDataInvalid');
     }
 
-    if (byteLength(data) > WebApp.MAXIMUM_BYTES_TO_SEND) {
+    if (byteLength(data) > TelegramWebApp.MAXIMUM_BYTES_TO_SEND) {
       console.error('[Telegram.WebApp] Data is too long', data);
       throw new Error('WebAppDataInvalid');
     }
@@ -559,34 +569,30 @@ export class WebApp {
     this.#webView.postEvent('web_app_data_send', undefined, { data });
   };
 
-  isVersionAtLeast = (version: string): boolean => {
-    return this.#version.isSuitableTo(version);
-  };
+  isVersionAtLeast = (version: string): boolean => this.#version.isSuitableTo(version);
 
-  openLink = (
-    url: string,
-    options: { try_instant_view: any } | undefined = { try_instant_view: undefined }
-  ): void => {
-    const url2 = new URL(url);
+  openLink = (url: string, options?: Nullable<OpenLinkOptions>): void | never => {
+    const { protocol } = new URL(url);
 
-    if (url2.protocol !== 'http:' && url2.protocol !== 'https:') {
+    if (!isHTTPTypeProtocol(protocol)) {
       console.error('[Telegram.WebApp] Url protocol is not supported', url);
       throw new Error('WebAppTgUrlInvalid');
     }
 
-    if (this.#version.isSuitableTo('6.1')) {
-      this.#webView.postEvent('web_app_open_link', undefined, {
-        url,
-        try_instant_view: this.#version.isSuitableTo('6.4') && Boolean(options.try_instant_view),
-      });
-
+    if (!this.#version.isSuitableTo('6.1')) {
+      window.open(url, '_blank');
       return;
     }
 
-    window.open(url, '_blank');
+    const linkOptions: OpenLinkOptions = options ?? { try_instant_view: false };
+
+    this.#webView.postEvent('web_app_open_link', undefined, {
+      url,
+      try_instant_view: this.#version.isSuitableTo('6.4') && linkOptions.try_instant_view,
+    });
   };
 
-  openInvoice = (url: string, callback: AnyCallback): void => {
+  openInvoice = (url: string, callback?: Nullable<OpenInvoiceCallback>): void | never => {
     const slug = this.#invoices.create(url);
     this.#invoices.save(slug, { url, callback });
 
@@ -598,19 +604,19 @@ export class WebApp {
       return;
     }
 
-    const parsedURL = new URL(url);
+    const { protocol, hostname, pathname, search } = new URL(url);
 
-    if (!isHTTPTypeProtocol(parsedURL.protocol)) {
+    if (!isHTTPTypeProtocol(protocol)) {
       console.error('[Telegram.WebApp] Url protocol is not supported', url);
       throw new Error('WebAppTgUrlInvalid');
     }
 
-    if (!isTelegramHostname(parsedURL.hostname)) {
+    if (!isTelegramHostname(hostname)) {
       console.error('[Telegram.WebApp] Url host is not supported', url);
       throw new Error('WebAppTgUrlInvalid');
     }
 
-    const fullPath = parsedURL.pathname + parsedURL.search;
+    const fullPath = pathname + search;
 
     if (this.#webView.isIframe) {
       this.#webView.postEvent('web_app_open_tg_link', undefined, { path_full: fullPath });
@@ -636,15 +642,15 @@ export class WebApp {
     this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id: id });
   };
 
-  enableClosingConfirmation = (): void => {
+  enableClosingConfirmation = (): void | never => {
     this.#isClosingConfirmationEnabled = true;
   };
 
-  disableClosingConfirmation = (): void => {
+  disableClosingConfirmation = (): void | never => {
     this.#isClosingConfirmationEnabled = false;
   };
 
-  showPopup(params: PopupParams, callback?: PopupCallback | undefined): void {
+  showPopup(params: PopupParams, callback?: Nullable<ShowPopupCallback>): void | never {
     if (!this.#version.isSuitableTo('6.2')) {
       console.error(
         '[Telegram.WebApp] Method showPopup is not supported in version ' + this.#version.value
@@ -667,18 +673,15 @@ export class WebApp {
     this.#webView.postEvent('web_app_open_popup', undefined, this.#popup.params);
   }
 
-  showAlert = (message: string, callback?: (() => any) | null | undefined): void => {
-    const callbackWithoutID = (): any => callback?.();
+  showAlert = (message: string, callback?: Nullable<NoParamsCallback>): void => {
+    const callbackWithoutID = (): void => callback?.();
 
     this.showPopup({ message }, callbackWithoutID);
   };
 
-  showConfirm = (
-    message: string,
-    callback?: ((isOkPressed: boolean) => any) | null | undefined
-  ): void => {
+  showConfirm = (message: string, callback?: Nullable<ShowConfirmCallback>): void => {
     const OK_BTN_ID = 'ok';
-    const popupCallback = (pressedBtnID: string): any => callback?.(pressedBtnID === OK_BTN_ID);
+    const popupCallback = (pressedBtnID: string) => callback?.(pressedBtnID === OK_BTN_ID);
 
     this.showPopup(
       {
@@ -692,7 +695,10 @@ export class WebApp {
     );
   };
 
-  switchInlineQuery = (query: string, chatTypesToChoose?: ChatTypesToChoose | null | undefined) => {
+  switchInlineQuery = (
+    query: string,
+    chatTypesToChoose?: Nullable<ChatTypesToChoose>
+  ): void | never => {
     if (!this.#version.isSuitableTo('6.7')) {
       console.error(
         '[Telegram.WebApp] Method switchInlineQuery is not supported in version ' +
@@ -710,7 +716,7 @@ export class WebApp {
 
     const queryToSend = (query || '').trim();
 
-    if (queryToSend.length > WebApp.MAX_INLINE_QUERY_LENGTH) {
+    if (queryToSend.length > TelegramWebApp.MAX_INLINE_QUERY_LENGTH) {
       console.error('[Telegram.WebApp] Inline query is too long', query);
       throw new Error('WebAppInlineQueryInvalid');
     }
@@ -740,7 +746,7 @@ export class WebApp {
 
   showScanQrPopup = (
     params: ScanQrPopupParams,
-    callback?: ScanQrCallback | null | undefined
+    callback?: Nullable<ShowScanQrPopupCallback>
   ): void | never => {
     if (!this.#version.isSuitableTo('6.4')) {
       console.error(
@@ -755,7 +761,7 @@ export class WebApp {
     this.#webView.postEvent('web_app_open_scan_qr_popup', undefined, this.#qrPopup.params);
   };
 
-  closeScanQrPopup = (): void => {
+  closeScanQrPopup = (): void | never => {
     if (!this.#version.isSuitableTo('6.4')) {
       console.error(
         '[Telegram.WebApp] Method closeScanQrPopup is not supported in version ' +
@@ -773,7 +779,7 @@ export class WebApp {
     this.#onWebViewEvent(eventType, callback);
   };
 
-  offEvent = (eventType: string, callback: AnyCallback) => {
+  offEvent = (eventType: string, callback: AnyCallback): void => {
     this.#offWebViewEvent(eventType, callback);
   };
 

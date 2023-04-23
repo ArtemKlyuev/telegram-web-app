@@ -1,10 +1,10 @@
-import { AnyCallback } from '../types';
+import { Nullable, OpenInvoiceCallback } from '../types';
 import { isHTTPTypeProtocol } from '../utils';
 
 type InvoiceId = string;
 interface InvoiceData {
   url: string;
-  callback: AnyCallback;
+  callback?: Nullable<OpenInvoiceCallback>;
 }
 
 export class Invoices {

@@ -5,7 +5,7 @@ export type ValueOf<T> = T[keyof T];
 export type HexColor = string;
 export type AnyCallback = (...args: any[]) => any;
 export type NoParamsCallback = () => any;
-type Nullable<T> = T | null | undefined;
+export type Nullable<T> = T | null | undefined;
 
 export interface InitParams {
   /**
@@ -244,6 +244,12 @@ export interface OpenLinkOptions {
   try_instant_view: boolean;
 }
 
+export type OpenInvoiceCallback = (status: InvoiceStatus) => any;
+export type ShowPopupCallback = (id: string) => any;
+export type ShowConfirmCallback = (isOkPressed: boolean) => any;
+export type ShowScanQrPopupCallback = (text: string | null) => boolean;
+export type ReadTextFromClipboardCallback = (text: string | null) => any;
+
 /**
  * @see https://core.telegram.org/bots/webapps#initializing-web-apps
  */
@@ -257,6 +263,10 @@ export interface WebApp {
   readonly isExpanded: boolean;
   readonly viewportHeight: number;
   readonly viewportStableHeight: number;
+  /**
+   * @throws {Error} Throwable setter if app version is not suitable with bot api version
+   * or color is invalid
+   */
   headerColor: HexColor;
   backgroundColor: HexColor;
   isClosingConfirmationEnabled: boolean;
@@ -340,12 +350,12 @@ export interface WebApp {
    * @throws {Error} If app version is not suitable with bot api version or invoice is
    * already opened or url is invalid
    */
-  openInvoice: (url: string, callback?: Nullable<(status: InvoiceStatus) => any>) => void | never;
+  openInvoice: (url: string, callback?: Nullable<OpenInvoiceCallback>) => void | never;
   /**
    * @throws {Error} If app version is not suitable with bot api version or popup is
    * already opened or params are invalid
    */
-  showPopup: (params: PopupParams, callback?: Nullable<(id: string) => any>) => void | never;
+  showPopup: (params: PopupParams, callback?: Nullable<ShowPopupCallback>) => void | never;
   /**
    * @throws {Error} If app version is not suitable with bot api version or popup is
    * already opened or params are invalid
@@ -355,16 +365,13 @@ export interface WebApp {
    * @throws {Error} If app version is not suitable with bot api version or popup is
    * already opened or params are invalid
    */
-  showConfirm: (
-    message: string,
-    callback?: Nullable<(isOkPressed: boolean) => any>
-  ) => void | never;
+  showConfirm: (message: string, callback?: Nullable<ShowConfirmCallback>) => void | never;
   /**
    * @throws {Error} If app version is not suitable with bot api version
    */
   showScanQrPopup: (
     params: ScanQrPopupParams,
-    callback?: Nullable<(text: string) => boolean>
+    callback?: Nullable<ShowScanQrPopupCallback>
   ) => void | never;
   /**
    * @throws {Error} If app version is not suitable with bot api version
@@ -373,7 +380,7 @@ export interface WebApp {
   /**
    * @throws {Error} If app version is not suitable with bot api version
    */
-  readTextFromClipboard: (callback?: Nullable<(text: string | null) => any>) => void | never;
+  readTextFromClipboard: (callback?: Nullable<ReadTextFromClipboardCallback>) => void | never;
   ready: () => void;
   expand: () => void;
   close: () => void;

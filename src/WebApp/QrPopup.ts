@@ -1,10 +1,8 @@
-import { ScanQrPopupParams } from '../types';
-
-import { ScanQrCallback } from './types';
+import { Nullable, ScanQrPopupParams, ShowScanQrPopupCallback } from '../types';
 
 interface Options {
   params: ScanQrPopupParams;
-  callback?: ScanQrCallback | null | undefined;
+  callback?: Nullable<ShowScanQrPopupCallback>;
 }
 
 const INITIAL_DATA: Options = { params: {}, callback: null };
@@ -18,13 +16,13 @@ export class QrPopup {
     return 64;
   }
 
-  open({ params: { text = '' }, callback }: Options): void {
+  open({ params: { text }, callback }: Options): void {
     if (this.#isOpened) {
       console.error('[Telegram.WebApp] Popup is already opened');
       throw new Error('WebAppScanQrPopupOpened');
     }
 
-    const trimmedText = text.trim();
+    const trimmedText = (text ?? '').trim();
 
     if (trimmedText.length > QrPopup.MAX_TEXT_LENGTH) {
       console.error('[Telegram.WebApp] Scan QR popup text is too long', text);
@@ -53,7 +51,7 @@ export class QrPopup {
     return this.#data.params;
   }
 
-  get callback(): ScanQrCallback | null {
+  get callback(): ShowScanQrPopupCallback | null {
     return this.#data.callback ?? null;
   }
 }

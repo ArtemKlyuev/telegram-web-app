@@ -38,5 +38,3 @@ export type RequiredMainButtonParams = ToNonFalsyRequired<
 
 export type VisibleButtonParams = RequiredMainButtonParams & { is_visible: true };
 export type InvisibleButtonParams = { is_visible: false };
-
-export type ScanQrCallback = (text: string | null) => boolean;
