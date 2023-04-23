@@ -165,22 +165,24 @@ export interface EnhancedMainButton {
   readonly DEFAULT_TEXT_COLOR: HexColor;
 }
 
-/**
- * @see https://core.telegram.org/bots/webapps#hapticfeedback
- */
-export type ImpactStyle = 'light' | 'medium' | 'heavy' | 'rigid' | 'soft';
+export type HapticFeedbackType = 'impact' | 'notification' | 'selection_change';
 
 /**
  * @see https://core.telegram.org/bots/webapps#hapticfeedback
  */
-export type ImpactNotification = 'error' | 'success' | 'warning';
+export type HapticFeedbackImpactStyle = 'light' | 'medium' | 'heavy' | 'rigid' | 'soft';
+
+/**
+ * @see https://core.telegram.org/bots/webapps#hapticfeedback
+ */
+export type HapticFeedbackNotification = 'error' | 'success' | 'warning';
 
 /**
  * @see https://core.telegram.org/bots/webapps#hapticfeedback
  */
 export interface HapticFeedback {
-  impactOccurred: (style: ImpactStyle) => HapticFeedback;
-  notificationOccurred: (type: ImpactNotification) => HapticFeedback;
+  impactOccurred: (style: HapticFeedbackImpactStyle) => HapticFeedback;
+  notificationOccurred: (type: HapticFeedbackNotification) => HapticFeedback;
   selectionChanged: () => HapticFeedback;
 }
 
@@ -384,4 +386,252 @@ export interface WebApp {
   ready: () => void;
   expand: () => void;
   close: () => void;
+}
+
+// WebView stuff
+
+/**
+ * @see https://core.telegram.org/api/web-events#event-types
+ */
+export type WebViewEvent =
+  | 'web_app_ready'
+  | 'web_app_expand'
+  | 'web_app_close'
+  | 'web_app_open_popup'
+  | 'web_app_setup_closing_behavior'
+  | 'web_app_set_background_color'
+  | 'web_app_set_header_color'
+  | 'web_app_data_send'
+  | 'web_app_trigger_haptic_feedback'
+  | 'web_app_open_link'
+  | 'web_app_open_tg_link'
+  | 'web_app_open_invoice'
+  | 'web_app_request_viewport'
+  | 'web_app_request_theme'
+  | 'web_app_setup_main_button'
+  | 'web_app_setup_back_button'
+  | 'web_app_open_scan_qr_popup'
+  | 'web_app_close_scan_qr_popup'
+  | 'web_app_read_text_from_clipboard'
+  | 'web_app_switch_inline_query'
+  | 'payment_form_submit'
+  | 'share_score'
+  | 'share_game'
+  | 'game_over'
+  | 'game_loaded'
+  | 'resize_frame';
+
+export type EventPopupButton = PopupButtonWithRequiredText | PopupButtonWithOptionalText;
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-open-popup
+ */
+export interface PopupButtonWithRequiredText {
+  id: string;
+  type: 'default' | 'destructive';
+  text: string;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-open-popup
+ */
+export type EventPopupButtonsSet =
+  | [EventPopupButton]
+  | [EventPopupButton, EventPopupButton]
+  | [EventPopupButton, EventPopupButton, EventPopupButton];
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-open-popup
+ */
+export interface PopupButtonWithOptionalText {
+  id: string;
+  type: 'ok' | 'close' | 'cancel';
+  text?: string | undefined;
+}
+
+export interface OpenPopupEventData {
+  title: string;
+  message: string;
+  buttons: EventPopupButtonsSet;
+}
+
+export interface SetupClosingBehaviorEventData {
+  need_confirmation: boolean;
+}
+
+export interface SetBackgroundColorEventData {
+  color: HexColor;
+}
+
+export interface SetHeaderColorEventData {
+  color_key: 'bg_color' | 'secondary_bg_color';
+}
+
+export interface DataSendEventData {
+  data: string;
+}
+
+export interface TriggerHapticFeedbackEventData {
+  type: HapticFeedbackType;
+  impact_style: HapticFeedbackImpactStyle;
+  notification_type: HapticFeedbackNotification;
+}
+
+export interface OpenLinkEventData {
+  url: string;
+}
+
+export interface OpenTgLinkEventData {
+  path_full: string;
+}
+
+export interface OpenInvoiceEventData {
+  slug: string;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-setup-main-button
+ */
+export interface SetupMainButtonEventData {
+  is_visible: boolean;
+  is_active: boolean;
+  text: string;
+  color: HexColor;
+  text_color: HexColor;
+  is_progress_visible: boolean;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-setup-back-button
+ */
+export interface SetupBackButtonEventData {
+  is_visible: boolean;
+}
+
+export interface RedTextFromClipboardEventData {
+  req_id: string;
+}
+
+export interface SwitchInlineQueryEventData {
+  query: string;
+  chat_types: ChatType[];
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#payment-form-submit
+ */
+export interface PaymentFormSubmitEventData {
+  title: string;
+  credentials: any;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#resize-frame
+ */
+export interface ResizeFrameEventData {
+  height: any;
+}
+
+export interface PostEventCallbackData {
+  notAvailable: true;
+}
+
+export type PostEventCallback = (arg?: Nullable<PostEventCallbackData | Error>) => any;
+export type CallEventCallbackHandler = (cb: AnyCallback) => any;
+
+export interface WebView {
+  postEvent(event: 'web_app_ready', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'web_app_expand', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'web_app_close', callback?: Nullable<PostEventCallback>): void;
+  postEvent(
+    event: 'web_app_open_popup',
+    callback: Nullable<PostEventCallback>,
+    data: OpenPopupEventData
+  ): void;
+  postEvent(
+    event: 'web_app_setup_closing_behavior',
+    callback: Nullable<PostEventCallback>,
+    data: SetupClosingBehaviorEventData
+  ): void;
+  postEvent(
+    event: 'web_app_set_background_color',
+    callback: Nullable<PostEventCallback>,
+    data: SetBackgroundColorEventData
+  ): void;
+  postEvent(
+    event: 'web_app_set_header_color',
+    callback: Nullable<PostEventCallback>,
+    data: SetHeaderColorEventData
+  ): void;
+  postEvent(
+    event: 'web_app_data_send',
+    callback: Nullable<PostEventCallback>,
+    data: DataSendEventData
+  ): void;
+  postEvent(
+    event: 'web_app_trigger_haptic_feedback',
+    callback: Nullable<PostEventCallback>,
+    data: TriggerHapticFeedbackEventData
+  ): void;
+  postEvent(
+    event: 'web_app_open_link',
+    callback: Nullable<PostEventCallback>,
+    data: OpenLinkEventData
+  ): void;
+  postEvent(
+    event: 'web_app_open_tg_link',
+    callback: Nullable<PostEventCallback>,
+    data: OpenTgLinkEventData
+  ): void;
+  postEvent(
+    event: 'web_app_open_invoice',
+    callback: Nullable<PostEventCallback>,
+    data: OpenInvoiceEventData
+  ): void;
+  postEvent(event: 'web_app_request_viewport', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'web_app_request_theme', callback?: Nullable<PostEventCallback>): void;
+  postEvent(
+    event: 'web_app_setup_main_button',
+    callback: Nullable<PostEventCallback>,
+    data: SetupMainButtonEventData
+  ): void;
+  postEvent(
+    event: 'web_app_setup_back_button',
+    callback: Nullable<PostEventCallback>,
+    data: SetupBackButtonEventData
+  ): void;
+  postEvent(
+    event: 'web_app_open_scan_qr_popup',
+    callback: Nullable<PostEventCallback>,
+    data: ScanQrPopupParams
+  ): void;
+  postEvent(event: 'web_app_close_scan_qr_popup', callback?: Nullable<PostEventCallback>): void;
+  postEvent(
+    event: 'web_app_read_text_from_clipboard',
+    callback: Nullable<PostEventCallback>,
+    data: RedTextFromClipboardEventData
+  ): void;
+  postEvent(
+    event: 'web_app_switch_inline_query',
+    callback: Nullable<PostEventCallback>,
+    data: SwitchInlineQueryEventData
+  ): void;
+  postEvent(
+    event: 'payment_form_submit',
+    callback: Nullable<PostEventCallback>,
+    data: PaymentFormSubmitEventData
+  ): void;
+  postEvent(event: 'share_score', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'share_game', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'game_over', callback?: Nullable<PostEventCallback>): void;
+  postEvent(event: 'game_loaded', callback?: Nullable<PostEventCallback>): void;
+  postEvent(
+    event: 'resize_frame',
+    callback: Nullable<PostEventCallback>,
+    data: ResizeFrameEventData
+  ): void;
+  onEvent: (event: string, callback: AnyCallback) => void;
+  offEvent: (event: string, callback: AnyCallback) => void;
+  callEventCallbacks: (eventType: string, func: CallEventCallbackHandler) => void;
+  receiveEvent: (eventType: string, eventData: any) => void;
 }
