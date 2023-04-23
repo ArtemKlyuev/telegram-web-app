@@ -200,6 +200,27 @@ export type WebAppEvent =
   | 'qrTextReceived'
   | 'clipboardTextReceived';
 
+export interface ViewportChangedCallbackData {
+  isStateStable: boolean;
+}
+
+export interface InvoiceClosedCallbackData {
+  url: string;
+  status: InvoiceStatus;
+}
+
+export interface PopupClosedCallbackData {
+  button_id: string | null;
+}
+
+export interface QrTextReceivedCallbackData {
+  data: string | null;
+}
+
+export interface ClipboardTextReceivedCallbackData {
+  data: string | null;
+}
+
 /**
  * @see https://core.telegram.org/bots/webapps#events-available-for-web-apps
  */
@@ -218,6 +239,10 @@ export type ChatTypesToChoose =
   | [ChatType, ChatType]
   | [ChatType, ChatType, ChatType]
   | [ChatType, ChatType, ChatType, ChatType];
+
+export interface OpenLinkOptions {
+  try_instant_view: boolean;
+}
 
 /**
  * @see https://core.telegram.org/bots/webapps#initializing-web-apps
@@ -258,41 +283,41 @@ export interface WebApp {
   onEvent(eventType: 'themeChanged', eventHandler: NoParamsCallback): void;
   onEvent(
     eventType: 'viewportChanged',
-    eventHandler: (opt: { isStateStable: boolean }) => any
+    eventHandler: (data: ViewportChangedCallbackData) => any
   ): void;
   onEvent(eventType: 'mainButtonClicked', eventHandler: NoParamsCallback): void;
   onEvent(eventType: 'backButtonClicked', eventHandler: NoParamsCallback): void;
   onEvent(eventType: 'settingsButtonClicked', eventHandler: NoParamsCallback): void;
+  onEvent(eventType: 'invoiceClosed', eventHandler: (data: InvoiceClosedCallbackData) => any): void;
+  onEvent(eventType: 'popupClosed', eventHandler: (data: PopupClosedCallbackData) => any): void;
   onEvent(
-    eventType: 'invoiceClosed',
-    eventHandler: (opt: { url: string; status: InvoiceStatus }) => any
+    eventType: 'qrTextReceived',
+    eventHandler: (data: QrTextReceivedCallbackData) => any
   ): void;
-  onEvent(eventType: 'popupClosed', eventHandler: (opt: { button_id: string | null }) => any): void;
-  onEvent(eventType: 'qrTextReceived', eventHandler: (opt: { data: string | null }) => any): void;
   onEvent(
     eventType: 'clipboardTextReceived',
-    eventHandler: (opt: { data: string | null }) => any
+    eventHandler: (data: ClipboardTextReceivedCallbackData) => any
   ): void;
   offEvent(eventType: 'themeChanged', eventHandler: NoParamsCallback): void;
   offEvent(
     eventType: 'viewportChanged',
-    eventHandler: (opt: { isStateStable: boolean }) => any
+    eventHandler: (data: ViewportChangedCallbackData) => any
   ): void;
   offEvent(eventType: 'mainButtonClicked', eventHandler: NoParamsCallback): void;
   offEvent(eventType: 'backButtonClicked', eventHandler: NoParamsCallback): void;
   offEvent(eventType: 'settingsButtonClicked', eventHandler: NoParamsCallback): void;
   offEvent(
     eventType: 'invoiceClosed',
-    eventHandler: (opt: { url: string; status: InvoiceStatus }) => any
+    eventHandler: (data: InvoiceClosedCallbackData) => any
   ): void;
+  offEvent(eventType: 'popupClosed', eventHandler: (data: PopupClosedCallbackData) => any): void;
   offEvent(
-    eventType: 'popupClosed',
-    eventHandler: (opt: { button_id: string | null }) => any
+    eventType: 'qrTextReceived',
+    eventHandler: (data: QrTextReceivedCallbackData) => any
   ): void;
-  offEvent(eventType: 'qrTextReceived', eventHandler: (opt: { data: string | null }) => any): void;
   offEvent(
     eventType: 'clipboardTextReceived',
-    eventHandler: (opt: { data: string | null }) => any
+    eventHandler: (data: ClipboardTextReceivedCallbackData) => any
   ): void;
   /**
    * @throws {Error} If data is not provided or data is too long
@@ -306,7 +331,7 @@ export interface WebApp {
   /**
    * @throws {Error} If app version is not suitable with bot api version or url is invalid
    */
-  openLink: (url: string, options?: Nullable<{ try_instant_view: boolean }>) => void | never;
+  openLink: (url: string, options?: Nullable<OpenLinkOptions>) => void | never;
   /**
    * @throws {Error} If app version is not suitable with bot api version or url is invalid
    */
