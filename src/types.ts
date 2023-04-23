@@ -5,6 +5,7 @@ export type ValueOf<T> = T[keyof T];
 export type HexColor = string;
 export type AnyCallback = (...args: any[]) => any;
 export type NoParamsCallback = () => any;
+type Nullable<T> = T | null | undefined;
 
 export interface InitParams {
   /**
@@ -110,7 +111,7 @@ export interface PopupParams {
  * @see https://core.telegram.org/bots/webapps#scanqrpopupparams
  */
 export interface ScanQrPopupParams {
-  text?: string | undefined;
+  text?: Nullable<string>;
 }
 
 /**
@@ -129,8 +130,8 @@ export interface BackButton {
  */
 export interface MainButtonParams {
   text?: string | undefined;
-  color?: HexColor | false | null | undefined;
-  text_color?: HexColor | false | null | undefined;
+  color?: Nullable<HexColor | false>;
+  text_color?: Nullable<HexColor | false>;
   is_visible?: boolean | undefined;
   is_active?: boolean | undefined;
   is_progress_visible?: boolean | undefined;
