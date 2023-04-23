@@ -1,5 +1,5 @@
 import { HapticFeedback, ValueOf } from '../types';
-import { WebView } from '../WebView';
+import { TelegramWebView } from '../WebView';
 
 type Feedbacks = typeof FEEDBACK_TYPES;
 type ImpactStyles = typeof IMPACT_STYLES;
@@ -41,9 +41,9 @@ const VALID_NOTIFICATION_TYPES = Object.values(NOTIFICATION_TYPES);
 
 export class WebAppHapticFeedback implements HapticFeedback {
   #isSupported: boolean;
-  #webView: WebView;
+  #webView: TelegramWebView;
 
-  constructor(isSupported: boolean, webView: WebView) {
+  constructor(isSupported: boolean, webView: TelegramWebView) {
     this.#isSupported = isSupported;
     this.#webView = webView;
   }
@@ -110,6 +110,7 @@ export class WebAppHapticFeedback implements HapticFeedback {
       // no params needed
     }
 
+    // TODO: move to onUpdate
     this.#webView.postEvent('web_app_trigger_haptic_feedback', undefined, params);
 
     return this;

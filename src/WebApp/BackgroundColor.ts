@@ -1,5 +1,5 @@
 import { HexColor, ThemeParams } from '../types';
-import { WebView } from '../WebView';
+import { TelegramWebView } from '../WebView';
 import { parseColorToHex } from '../utils';
 
 import { HeaderBgColor } from './types';
@@ -8,7 +8,7 @@ import { HEADER_COLOR_KEYS } from './constants';
 interface Options {
   isSupported: boolean;
   webAppVersion: string;
-  webView: WebView;
+  webView: TelegramWebView;
   themeParams: ThemeParams;
 }
 
@@ -16,7 +16,7 @@ export class BackgroundColor {
   #backgroundColorKeyOrColor: HeaderBgColor | HexColor = HEADER_COLOR_KEYS.BG_COLOR;
   readonly #isSupported: boolean;
   readonly #webAppVersion: string;
-  readonly #webView: WebView;
+  readonly #webView: TelegramWebView;
   readonly #themeParams: ThemeParams;
   #appBackgroundColor: HexColor | null | undefined = null;
 
@@ -45,6 +45,7 @@ export class BackgroundColor {
     // FIXME `!=`
     if (this.#appBackgroundColor != color) {
       this.#appBackgroundColor = color;
+      // TODO: move to onUpdate
       this.#webView.postEvent('web_app_set_background_color', undefined, { color });
     }
   };

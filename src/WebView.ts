@@ -2,7 +2,7 @@ import { AnyCallback, InitParams } from './types';
 
 export type PostEventCb = (arg?: (Error | { notAvailable: true }) | undefined) => any;
 
-export class WebView {
+export class TelegramWebView {
   #initParams: InitParams;
   #eventHandlers = new Map<string, Set<AnyCallback>>();
   #isIframe: boolean = window.parent != null && window != window.parent;
@@ -41,9 +41,7 @@ export class WebView {
         }
 
         this.receiveEvent(dataParsed.eventType, dataParsed.eventData);
-      } catch {
-        return;
-      }
+      } catch {}
     });
   }
 
@@ -60,7 +58,7 @@ export class WebView {
     callback?: PostEventCb | undefined,
     eventData: any = ''
   ): void => {
-    if (window.TelegramWebviewProxy !== undefined) {
+    if (window.TelegramWebviewProxy) {
       window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData));
       callback?.();
       return;
@@ -118,11 +116,7 @@ export class WebView {
   callEventCallbacks = (eventType: string, func: (cb: AnyCallback) => any): void => {
     const eventHandlers = this.#eventHandlers.get(eventType);
 
-    if (!eventHandlers || eventHandlers.size === 0) {
-      return;
-    }
-
-    eventHandlers.forEach((handler) => {
+    eventHandlers?.forEach((handler) => {
       try {
         func(handler);
       } catch {}

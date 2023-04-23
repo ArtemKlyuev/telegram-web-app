@@ -33,7 +33,7 @@ import {
   parseColorToHex,
   SessionStorage,
 } from '../utils';
-import { WebView } from '../WebView';
+import { TelegramWebView } from '../WebView';
 
 import {
   ColorScheme,
@@ -77,7 +77,7 @@ export class TelegramWebApp implements WebApp {
   readonly #version: Version;
   readonly #theme: Theme;
   readonly #hapticFeedback: WebAppHapticFeedback;
-  readonly #webView: WebView;
+  readonly #webView: TelegramWebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
   readonly #backButton: WebAppBackButton;
@@ -189,7 +189,7 @@ export class TelegramWebApp implements WebApp {
   constructor(
     initData: InitData,
     version: Version,
-    webView: WebView,
+    webView: TelegramWebView,
     bgColor: BackgroundColor,
     viewport: Viewport,
     theme: Theme,
