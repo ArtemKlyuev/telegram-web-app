@@ -1,6 +1,7 @@
 import {
   AnyCallback,
   BackButton,
+  ChatTypesToChoose,
   HapticFeedback,
   HexColor,
   InitParams,
@@ -8,7 +9,7 @@ import {
   PopupParams,
   ScanQrPopupParams,
   ThemeParams,
-  ValueOf,
+  WebAppInitData,
 } from '../types';
 import {
   byteLength,
@@ -53,12 +54,6 @@ const CHAT_TYPES = {
 const VALID_CHAT_TYPES = Object.values(CHAT_TYPES);
 
 export type ChatTypes = typeof CHAT_TYPES;
-export type ChatType = ValueOf<ChatTypes>;
-export type ChatTypesToChoose =
-  | [ChatType]
-  | [ChatType, ChatType]
-  | [ChatType, ChatType, ChatType]
-  | [ChatType, ChatType, ChatType, ChatType];
 
 export class WebApp {
   readonly #webAppPlatform: string = 'unknown';
@@ -251,7 +246,7 @@ export class WebApp {
     return this.#initData.rawData;
   }
 
-  get initDataUnsafe() {
+  get initDataUnsafe(): WebAppInitData {
     return this.#initData.unsafeData;
   }
 
