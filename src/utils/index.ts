@@ -1,6 +1,7 @@
 export * from './byteLength';
 export * from './EventEmitter';
 export * from './generateId';
+export * from './getWebViewInitParams';
 export * from './isColorDark';
 export * from './isHTTPTypeProtocol';
 export * from './isTelegramHostname';
