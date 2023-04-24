@@ -24,6 +24,7 @@ import {
   ViewportChangedCallbackData,
   WebApp,
   WebAppInitData,
+  WebView,
 } from '../types';
 import {
   byteLength,
@@ -33,7 +34,6 @@ import {
   parseColorToHex,
   SessionStorage,
 } from '../utils';
-import { TelegramWebView } from '../WebView';
 
 import {
   ColorScheme,
@@ -68,6 +68,22 @@ const VALID_CHAT_TYPES = Object.values(CHAT_TYPES);
 
 export type ChatTypes = typeof CHAT_TYPES;
 
+interface Dependencies {
+  initData: InitData;
+  version: Version;
+  webView: WebView;
+  bgColor: BackgroundColor;
+  viewport: Viewport;
+  theme: Theme;
+  backButton: WebAppBackButton;
+  mainButton: WebAppMainButton;
+  invoices: Invoices;
+  popup: Popup;
+  clipboard: WebAppClipboard;
+  qrPopup: QrPopup;
+  hapticFeedback: WebAppHapticFeedback;
+}
+
 export class TelegramWebApp implements WebApp {
   readonly #platform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
@@ -77,7 +93,7 @@ export class TelegramWebApp implements WebApp {
   readonly #version: Version;
   readonly #theme: Theme;
   readonly #hapticFeedback: WebAppHapticFeedback;
-  readonly #webView: TelegramWebView;
+  readonly #webView: WebView;
   readonly #bgColor: BackgroundColor;
   readonly #viewport: Viewport;
   readonly #backButton: WebAppBackButton;
@@ -186,29 +202,27 @@ export class TelegramWebApp implements WebApp {
     }
   }
 
-  constructor(
-    initData: InitData,
-    version: Version,
-    webView: TelegramWebView,
-    bgColor: BackgroundColor,
-    viewport: Viewport,
-    theme: Theme,
-    backButton: WebAppBackButton,
-    mainButton: WebAppMainButton,
-    invoices: Invoices,
-    popup: Popup,
-    clipboard: WebAppClipboard,
-    qrPopup: QrPopup
-  ) {
+  constructor({
+    initData,
+    version,
+    webView,
+    bgColor,
+    viewport,
+    theme,
+    backButton,
+    mainButton,
+    invoices,
+    popup,
+    clipboard,
+    qrPopup,
+    hapticFeedback,
+  }: Dependencies) {
     this.#initData = initData;
     this.#version = version;
     this.#webView = webView;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
-    this.#hapticFeedback = new WebAppHapticFeedback(
-      this.#version.isSuitableTo('6.1'),
-      this.#webView
-    );
+    this.#hapticFeedback = hapticFeedback;
 
     this.#backButton = backButton;
     this.#initBackButton();
