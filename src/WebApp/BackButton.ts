@@ -1,6 +1,7 @@
 import { BackButton, NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
 import { bindMethods } from '../utils/decorators';
+import { FeatureSupport } from './FeatureSupport';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
@@ -11,8 +12,6 @@ type offClickListener = (callback: NoParamsCallback) => any;
 
 interface Options {
   eventEmitter: EventEmitter<ButtonEvent>;
-  isSupported: boolean;
-  webAppVersion: string;
 }
 
 interface BackButtonParams {
@@ -29,34 +28,31 @@ const BUTTON_EVENTS = {
 export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
+@FeatureSupport.inVersion<keyof BackButton>({
+  availableInVersion: '6.1',
+  methodsConfig: ({ appVersion, executeOriginalMethod, isSupported, thisArg }) => {
+    if (!isSupported) {
+      console.warn(`[Telegram.WebApp] BackButton is not supported in version ${appVersion}`);
+      return thisArg;
+    }
+
+    executeOriginalMethod();
+  },
+})
 @bindMethods
 export class WebAppBackButton implements BackButton {
-  readonly #eventEmitter: EventEmitter<ButtonEvent>;
+  readonly #eventEmitter: Options['eventEmitter'];
   #isVisible = false;
-  #isSupported: boolean;
-  #webAppVersion: string;
   #prevButtonState = this.#isVisible;
 
   static get [BACK_BUTTON_EVENTS_KEY](): ButtonEvents {
     return BUTTON_EVENTS;
   }
 
-  constructor({ eventEmitter, isSupported, webAppVersion }: Options) {
+  constructor({ eventEmitter }: Options) {
     this.#eventEmitter = eventEmitter;
-    this.#isSupported = isSupported;
-    this.#webAppVersion = webAppVersion;
 
     queueMicrotask(() => this.#eventEmitter.emit(BUTTON_EVENTS.CREATED));
-  }
-
-  #isButtonSupported(): boolean {
-    if (!this.#isSupported) {
-      console.warn(
-        '[Telegram.WebApp] BackButton is not supported in version ' + this.#webAppVersion
-      );
-    }
-
-    return this.#isSupported;
   }
 
   #update() {
@@ -72,10 +68,6 @@ export class WebAppBackButton implements BackButton {
   }
 
   #setParams(params: BackButtonParams): this {
-    if (!this.#isButtonSupported()) {
-      return this;
-    }
-
     if (typeof params.is_visible !== 'undefined') {
       this.#isVisible = Boolean(params.is_visible);
     }
@@ -106,17 +98,13 @@ export class WebAppBackButton implements BackButton {
   }
 
   onClick(callback: NoParamsCallback): this {
-    if (this.#isButtonSupported()) {
-      this.#eventEmitter.emit(BUTTON_EVENTS.CLICKED, callback);
-    }
+    this.#eventEmitter.emit(BUTTON_EVENTS.CLICKED, callback);
 
     return this;
   }
 
   offClick(callback: NoParamsCallback): this {
-    if (this.#isButtonSupported()) {
-      this.#eventEmitter.emit(BUTTON_EVENTS.OFF_CLICKED, callback);
-    }
+    this.#eventEmitter.emit(BUTTON_EVENTS.OFF_CLICKED, callback);
 
     return this;
   }
