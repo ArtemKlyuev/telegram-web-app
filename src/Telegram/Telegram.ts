@@ -1,4 +1,4 @@
-import { Nullable } from '../types';
+import { Nullable, WebApp, WebView } from '../types';
 import { TelegramWebView } from '../WebView';
 import {
   WebAppBackButton,
@@ -33,6 +33,9 @@ export interface TelegramOptions {
 const DEFAULT_VERSION = '6.0';
 
 export class Telegram {
+  readonly #webApp: WebApp;
+  readonly #webView: WebView;
+
   constructor({ exposeInMainWorld = true }: TelegramOptions) {
     if (typeof window === 'undefined') {
       throw new Error('Telegram web app can only be launched in browser');
@@ -76,10 +79,6 @@ export class Telegram {
     });
 
     if (exposeInMainWorld) {
-      if (window.Telegram) {
-        throw new Error('Can not expose!. Telegram already exist in window!');
-      }
-
       window.Telegram = {
         WebView: webView,
         WebApp: webApp,
@@ -99,5 +98,16 @@ export class Telegram {
         },
       };
     }
+
+    this.#webApp = webApp;
+    this.#webView = webView;
+  }
+
+  get WebApp() {
+    return this.#webApp;
+  }
+
+  get WebView() {
+    return this.#webView;
   }
 }
