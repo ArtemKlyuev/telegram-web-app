@@ -13,6 +13,7 @@ import {
   Nullable,
   OpenInvoiceCallback,
   OpenLinkOptions,
+  OpenPopupEventData,
   PopupClosedCallbackData,
   PopupParams,
   QrTextReceivedCallbackData,
@@ -53,7 +54,7 @@ import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
 import { Popup } from './Popup';
-import { WebAppPopupButton } from './WebAppPopupButton';
+import { WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
 
@@ -684,7 +685,9 @@ export class TelegramWebApp implements WebApp {
 
     this.#popup.open({ params, callback });
 
-    this.#webView.postEvent('web_app_open_popup', undefined, this.#popup.params);
+    const data = this.#popup.params ?? ({} as OpenPopupEventData);
+
+    this.#webView.postEvent('web_app_open_popup', undefined, data);
   }
 
   showAlert = (message: string, callback?: Nullable<NoParamsCallback>): void => {
