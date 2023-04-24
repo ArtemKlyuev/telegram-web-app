@@ -1,5 +1,6 @@
 import { BackButton, NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
+import { bindMethods } from '../utils/decorators';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
@@ -28,6 +29,7 @@ const BUTTON_EVENTS = {
 export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
+@bindMethods
 export class WebAppBackButton implements BackButton {
   readonly #eventEmitter: EventEmitter<ButtonEvent>;
   #isVisible = false;
@@ -103,24 +105,28 @@ export class WebAppBackButton implements BackButton {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
-  onClick = (callback: NoParamsCallback): this => {
+  onClick(callback: NoParamsCallback): this {
     if (this.#isButtonSupported()) {
       this.#eventEmitter.emit(BUTTON_EVENTS.CLICKED, callback);
     }
 
     return this;
-  };
+  }
 
-  offClick = (callback: NoParamsCallback): this => {
+  offClick(callback: NoParamsCallback): this {
     if (this.#isButtonSupported()) {
       this.#eventEmitter.emit(BUTTON_EVENTS.OFF_CLICKED, callback);
     }
 
     return this;
-  };
+  }
 
-  show = (): this => this.#setParams({ is_visible: true });
-  hide = (): this => this.#setParams({ is_visible: false });
+  show(): this {
+    return this.#setParams({ is_visible: true });
+  }
+  hide(): this {
+    return this.#setParams({ is_visible: false });
+  }
 
   get isVisible(): boolean {
     return this.#isVisible;
