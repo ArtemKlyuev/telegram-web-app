@@ -14,6 +14,7 @@ import {
   Version,
   Viewport,
   TelegramWebApp,
+  FeatureSupport,
 } from '../WebApp';
 import {
   EventBus,
@@ -41,6 +42,7 @@ export class Telegram {
     const eventEmitter = new EventBus();
     const webView = new TelegramWebView(initParams);
     const version = new Version(initParams.tgWebAppVersion ?? DEFAULT_VERSION);
+    FeatureSupport.version = version;
     const initData = new InitData(initParams.tgWebAppData);
     // TODO: pass args
     const viewport = new Viewport({ eventEmitter, mainButtonHeight: 0 });
