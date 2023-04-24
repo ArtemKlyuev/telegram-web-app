@@ -214,6 +214,12 @@ export class TelegramWebApp implements WebApp {
     });
   }
 
+  #initBgColor(): void {
+    this.#bgColor.on(BackgroundColor.EVENTS.UPDATED, (color) => {
+      this.#webView.postEvent('web_app_set_background_color', undefined, { color });
+    });
+  }
+
   constructor({
     initData,
     version,
@@ -233,6 +239,7 @@ export class TelegramWebApp implements WebApp {
     this.#version = version;
     this.#webView = webView;
     this.#bgColor = bgColor;
+    this.#initBgColor();
     this.#viewport = viewport;
     this.#initViewport();
     this.#hapticFeedback = hapticFeedback;
@@ -315,6 +322,7 @@ export class TelegramWebApp implements WebApp {
   }
 
   set backgroundColor(color: HeaderBgColor | HexColor) {
+    // FIXME: not supported in 6.1
     this.#bgColor.set(color);
   }
 
@@ -579,6 +587,7 @@ export class TelegramWebApp implements WebApp {
   };
 
   setBackgroundColor = (color: HeaderBgColor | string): void => {
+    // FIXME: not supported in 6.1
     this.backgroundColor = color;
   };
 
