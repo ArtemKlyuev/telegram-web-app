@@ -59,6 +59,16 @@ export function bindMethods<Class extends new (...args: any) => any>(
 
   wrapper.prototype = classArg.prototype;
 
+  Object.getOwnPropertyNames(classArg)
+    .filter(
+      (name) =>
+        name !== 'length' && name !== 'constructor' && name !== 'prototype' && name !== 'name'
+    )
+    .forEach((name) => {
+      const descr = Object.getOwnPropertyDescriptor(classArg, name)!;
+      Object.defineProperty(wrapper, name, descr);
+    });
+
   const methods = Object.getOwnPropertyNames(classArg.prototype).filter(
     (name) => name !== 'constructor'
   );
@@ -66,14 +76,16 @@ export function bindMethods<Class extends new (...args: any) => any>(
   methods.forEach((methodName) => {
     const descriptor = Object.getOwnPropertyDescriptor(classArg.prototype, methodName);
 
-    // FIXME: fix typescript error
-    // @ts-expect-error
-    bindMethod(descriptor!.value, {
-      kind: 'method',
-      name: methodName,
-      private: false,
-      addInitializer,
-    });
+    if (descriptor?.value) {
+      // FIXME: fix typescript error
+      // @ts-expect-error
+      bindMethod(descriptor.value, {
+        kind: 'method',
+        name: methodName,
+        private: false,
+        addInitializer,
+      });
+    }
   });
 
   return wrapper as unknown as Class;
