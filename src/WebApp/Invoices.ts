@@ -1,5 +1,5 @@
 import { Nullable, OpenInvoiceCallback } from '../types';
-import { isHTTPTypeProtocol } from '../utils';
+import { isHTTPTypeProtocol, isTelegramHostname } from '../utils';
 
 type InvoiceId = string;
 interface InvoiceData {
@@ -31,7 +31,7 @@ export class Invoices {
 
     if (
       !isHTTPTypeProtocol(parsedURL.protocol) ||
-      parsedURL.hostname !== 't.me' ||
+      !isTelegramHostname(parsedURL.hostname) ||
       !(match = parsedURL.pathname.match(/^\/(\$|invoice\/)([A-Za-z0-9\-_=]+)$/)) ||
       !(slug = match[2])
     ) {
