@@ -80,98 +80,116 @@ export abstract class FeatureSupport {
 
       wrapper.prototype = feature.prototype;
 
+      Object.getOwnPropertyNames(feature)
+        .filter(
+          (name) =>
+            name !== 'length' && name !== 'constructor' && name !== 'prototype' && name !== 'name'
+        )
+        .forEach((name) => {
+          const descr = Object.getOwnPropertyDescriptor(feature, name)!;
+          Object.defineProperty(wrapper, name, descr);
+        });
+
       const methods = Object.getOwnPropertyNames(feature.prototype).filter(
         (name) => name !== 'constructor'
       ) as Methods[];
 
-      methods.forEach((methodName) => {
-        const descriptor = Object.getOwnPropertyDescriptor(feature.prototype, methodName)!;
-        const originalMethod = descriptor.value;
-
-        const decorateWhenString = ({
-          feature,
-          method,
-          supportedVersion,
-        }: {
-          feature: string;
-          method: string;
-          supportedVersion: string;
-        }) => {
-          console.log('deorate when string');
-          if (!this.#version.isSuitableTo(supportedVersion)) {
-            throw new UnsupportedVersionError(feature, method, this.#version.value);
+      methods
+        .map((methodName) => {
+          return {
+            methodName,
+            descriptor: Object.getOwnPropertyDescriptor(feature.prototype, methodName),
+          };
+        })
+        .filter(({ descriptor }) => Boolean(descriptor?.value))
+        .forEach(({ methodName, descriptor }) => {
+          if (!descriptor) {
+            throw new Error(`Can not find descriptor for ${methodName}`);
           }
-        };
+          const originalMethod = descriptor.value;
 
-        const decorateWhenFunc = (config: Omit<MethodInfo, 'isSupported' | 'appVersion'>) =>
-          this.#decorateWhenFunc(config);
-
-        addInitializer(function () {
-          const thisArg = this;
-
-          descriptor.value = function (...args: any[]) {
-            console.log('inside decorator value');
-            if (typeof versionOrConfig === 'string') {
-              console.log('insise if string');
-              return decorateWhenString({
-                feature: feature.name,
-                method: methodName,
-                supportedVersion: versionOrConfig,
-              });
+          const decorateWhenString = ({
+            feature,
+            method,
+            supportedVersion,
+          }: {
+            feature: string;
+            method: string;
+            supportedVersion: string;
+          }) => {
+            console.log('deorate when string');
+            if (!this.#version.isSuitableTo(supportedVersion)) {
+              throw new UnsupportedVersionError(feature, method, this.#version.value);
             }
+          };
 
-            const executeOriginalMethod = () => originalMethod.apply(this, args);
+          const decorateWhenFunc = (config: Omit<MethodInfo, 'isSupported' | 'appVersion'>) =>
+            this.#decorateWhenFunc(config);
 
-            if (typeof versionOrConfig.methodsConfig === 'function') {
-              if (!versionOrConfig.availableInVersion) {
-                throw new TypeError(`Property 'availableInVersion' required in config`);
-              }
+          addInitializer(function () {
+            const thisArg = this;
 
-              const config = decorateWhenFunc({
-                availableInVersion: versionOrConfig.availableInVersion,
-                executeOriginalMethod,
-                name: methodName,
-                thisArg,
-              });
-              return versionOrConfig.methodsConfig(config);
-            }
-
-            if (versionOrConfig.methodsConfig[methodName]) {
-              const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName];
-
-              if (!versionOrConfig.availableInVersion && !availableInVersion) {
-                throw new TypeError(
-                  `Property 'availableInVersion' required either in top level config or in method ${methodName} config`
-                );
-              }
-
-              const supportedVersion = (availableInVersion ??
-                versionOrConfig.availableInVersion) as string;
-
-              if (!decorate) {
+            descriptor.value = function (...args: any[]) {
+              if (typeof versionOrConfig === 'string') {
                 return decorateWhenString({
                   feature: feature.name,
                   method: methodName,
-                  supportedVersion,
+                  supportedVersion: versionOrConfig,
                 });
               }
 
-              const config = decorateWhenFunc({
-                availableInVersion: supportedVersion,
-                executeOriginalMethod,
-                name: methodName,
-                thisArg,
-              });
+              const executeOriginalMethod = () => originalMethod.apply(this, args);
 
-              return decorate(config);
-            }
+              if (typeof versionOrConfig.methodsConfig === 'function') {
+                if (!versionOrConfig.availableInVersion) {
+                  throw new TypeError(`Property 'availableInVersion' required in config`);
+                }
 
-            return originalMethod.apply(this, args);
-          };
+                const config = decorateWhenFunc({
+                  availableInVersion: versionOrConfig.availableInVersion,
+                  executeOriginalMethod,
+                  name: methodName,
+                  thisArg,
+                });
+                return versionOrConfig.methodsConfig(config);
+              }
 
-          Object.defineProperty(feature.prototype, methodName, descriptor);
+              if (versionOrConfig.methodsConfig[methodName]) {
+                const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName];
+
+                if (!versionOrConfig.availableInVersion && !availableInVersion) {
+                  throw new TypeError(
+                    `Property 'availableInVersion' required either in top level config or in method ${methodName} config`
+                  );
+                }
+
+                const supportedVersion = (availableInVersion ??
+                  versionOrConfig.availableInVersion) as string;
+
+                if (!decorate) {
+                  return decorateWhenString({
+                    feature: feature.name,
+                    method: methodName,
+                    supportedVersion,
+                  });
+                }
+
+                const config = decorateWhenFunc({
+                  availableInVersion: supportedVersion,
+                  executeOriginalMethod,
+                  name: methodName,
+                  thisArg,
+                });
+
+                return decorate(config);
+              }
+
+              return originalMethod.apply(this, args);
+            };
+
+            Object.defineProperty(feature.prototype, methodName, descriptor);
+          });
         });
-      });
 
       return wrapper as unknown as Class;
     };
