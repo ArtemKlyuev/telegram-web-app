@@ -46,7 +46,7 @@ class UnsupportedVersionError extends RangeError {
 export abstract class FeatureSupport {
   static #version: Version;
 
-  static set verion(version: Version) {
+  static set version(version: Version) {
     this.#version ??= version;
   }
 
