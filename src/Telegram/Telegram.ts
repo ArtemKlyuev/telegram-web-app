@@ -44,7 +44,6 @@ export class Telegram {
     const version = new Version(initParams.tgWebAppVersion ?? DEFAULT_VERSION);
     FeatureSupport.version = version;
     const initData = new InitData(initParams.tgWebAppData);
-    // TODO: pass args
     const viewport = new Viewport({ eventEmitter, mainButtonHeight: 0 });
     const theme = new Theme(eventEmitter);
     const bgColor = new BackgroundColor({ eventEmitter, themeParams: () => theme.params });
@@ -52,7 +51,11 @@ export class Telegram {
     const clipboard = new WebAppClipboard();
     const hapticFeedback = new WebAppHapticFeedback(eventEmitter);
     const invoices = new Invoices();
-    const mainButton = new WebAppMainButton({ eventEmitter });
+    const mainButton = new WebAppMainButton({
+      eventEmitter,
+      theme,
+      isDebug: initParams.tgWebAppDebug ?? false,
+    });
     const popup = new Popup();
     const qrPopup = new QrPopup();
 
