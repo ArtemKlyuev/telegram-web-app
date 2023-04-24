@@ -1,8 +1,6 @@
-import { AnyCallback, InitParams } from './types';
+import { AnyCallback, InitParams, Nullable, PostEventCallback, WebView } from './types';
 
-export type PostEventCb = (arg?: (Error | { notAvailable: true }) | undefined) => any;
-
-export class TelegramWebView {
+export class TelegramWebView implements WebView {
   #initParams: InitParams;
   #eventHandlers = new Map<string, Set<AnyCallback>>();
   #isIframe: boolean = window.parent != null && window != window.parent;
@@ -55,7 +53,7 @@ export class TelegramWebView {
 
   postEvent = (
     eventType: string,
-    callback?: PostEventCb | undefined,
+    callback?: Nullable<PostEventCallback>,
     eventData: any = ''
   ): void => {
     if (window.TelegramWebviewProxy) {
