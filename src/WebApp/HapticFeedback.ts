@@ -96,16 +96,13 @@ export class WebAppHapticFeedback implements HapticFeedback {
     return VALID_NOTIFICATION_TYPES.includes(type);
   }
 
-  #triggerFeedback(params: {
-    type: Feedbacks['IMPACT'];
-    impact_style: ImpactStyle;
-  }): WebAppHapticFeedback | never;
+  #triggerFeedback(params: { type: Feedbacks['IMPACT']; impact_style: ImpactStyle }): this | never;
   #triggerFeedback(params: {
     type: Feedbacks['NOTIFICATION'];
     notification_type: NotificationType;
-  }): WebAppHapticFeedback | never;
-  #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): WebAppHapticFeedback | never;
-  #triggerFeedback(params: Params): WebAppHapticFeedback | never {
+  }): this | never;
+  #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): this | never;
+  #triggerFeedback(params: Params): this | never {
     if (!this.#isValidFeedbackType(params.type)) {
       console.error('[Telegram.WebApp] Haptic feedback type is invalid', params.type);
       throw new Error('WebAppHapticFeedbackTypeInvalid');
@@ -142,15 +139,15 @@ export class WebAppHapticFeedback implements HapticFeedback {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
-  impactOccurred(style: ImpactStyle): WebAppHapticFeedback | never {
+  impactOccurred(style: ImpactStyle): this | never {
     return this.#triggerFeedback({ type: 'impact', impact_style: style });
   }
 
-  notificationOccurred(type: NotificationType): WebAppHapticFeedback | never {
+  notificationOccurred(type: NotificationType): this | never {
     return this.#triggerFeedback({ type: 'notification', notification_type: type });
   }
 
-  selectionChanged(): WebAppHapticFeedback | never {
+  selectionChanged(): this | never {
     return this.#triggerFeedback({ type: 'selection_change' });
   }
 }

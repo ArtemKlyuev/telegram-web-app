@@ -111,10 +111,10 @@ export interface ScanQrPopupParams {
  */
 export interface BackButton {
   isVisible: boolean;
-  onClick: (callback: NoParamsCallback) => BackButton;
-  offClick: (callback: NoParamsCallback) => BackButton;
-  show: () => BackButton;
-  hide: () => BackButton;
+  onClick: (callback: NoParamsCallback) => this;
+  offClick: (callback: NoParamsCallback) => this;
+  show: () => this;
+  hide: () => this;
 }
 
 /**
@@ -139,16 +139,16 @@ export interface MainButton {
   isVisible: boolean;
   isActive: boolean;
   readonly isProgressVisible: boolean;
-  setText: (text: string) => MainButton;
-  onClick: (callback: NoParamsCallback) => MainButton;
-  offClick: (callback: NoParamsCallback) => MainButton;
-  show: () => MainButton;
-  hide: () => MainButton;
-  enable: () => MainButton;
-  disable: () => MainButton;
-  showProgress: (leaveActive: boolean) => MainButton;
-  hideProgress: () => MainButton;
-  setParams: (params: MainButtonParams) => MainButton;
+  setText: (text: string) => this;
+  onClick: (callback: NoParamsCallback) => this;
+  offClick: (callback: NoParamsCallback) => this;
+  show: () => this;
+  hide: () => this;
+  enable: () => this;
+  disable: () => this;
+  showProgress: (leaveActive: boolean) => this;
+  hideProgress: () => this;
+  setParams: (params: MainButtonParams) => this;
 }
 
 export interface EnhancedMainButton {
@@ -173,9 +173,9 @@ export type HapticFeedbackNotification = 'error' | 'success' | 'warning';
  * @see https://core.telegram.org/bots/webapps#hapticfeedback
  */
 export interface HapticFeedback {
-  impactOccurred: (style: HapticFeedbackImpactStyle) => HapticFeedback;
-  notificationOccurred: (type: HapticFeedbackNotification) => HapticFeedback;
-  selectionChanged: () => HapticFeedback;
+  impactOccurred: (style: HapticFeedbackImpactStyle) => this;
+  notificationOccurred: (type: HapticFeedbackNotification) => this;
+  selectionChanged: () => this;
 }
 
 export type ColorScheme = 'light' | 'dark';
