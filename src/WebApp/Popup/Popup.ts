@@ -1,27 +1,35 @@
-import { PopupButton, PopupButtonsSet, PopupParams } from '../types';
-import { WebAppPopupButton } from './WebAppPopupButton';
+import {
+  EventPopupButton,
+  EventPopupButtonsSet,
+  Nullable,
+  OpenPopupEventData,
+  PopupParams,
+} from '../../types';
+import { generateId } from '../../utils';
+import { WebAppPopupButton } from '../PopupButton';
 
 export type PopupCallback = (id: string) => any;
 
-export interface PopupData {
-  callback: PopupCallback;
-}
-
-interface Options {
+interface OpenPopupOptions {
   params: PopupParams;
-  callback?: PopupCallback | null | undefined;
+  callback?: Nullable<PopupCallback>;
 }
 
-const INITIAL_DATA = { params: {} as PopupParams, callback: null };
+interface PopupData {
+  params: OpenPopupEventData;
+  callback?: Nullable<PopupCallback>;
+}
+
+const createInitialState = () => ({ params: {} as OpenPopupEventData, callback: null });
 
 export class Popup {
   #isOpened = false;
-  #data: Required<Options> = INITIAL_DATA;
+  #data: Required<PopupData> = createInitialState();
 
-  static get MAXIMUM_TITLE_LENGTH() {
+  static get MAX_TITLE_LENGTH() {
     return 64;
   }
-  static get MAXIMUM_MESSAGE_LENGTH() {
+  static get MAX_MESSAGE_LENGTH() {
     return 256;
   }
   static get MIN_BUTTONS() {
@@ -31,7 +39,7 @@ export class Popup {
     return 3;
   }
 
-  #setCallback(callback?: PopupCallback | null | undefined): this {
+  #setCallback(callback?: Nullable<PopupCallback>): this {
     if (callback) {
       this.#data.callback = callback;
     }
@@ -50,7 +58,7 @@ export class Popup {
       return this;
     }
 
-    if (title.length > Popup.MAXIMUM_TITLE_LENGTH) {
+    if (title.length > Popup.MAX_TITLE_LENGTH) {
       console.error('[Telegram.WebApp] Popup title is too long', title);
       throw new Error('WebAppPopupParamInvalid');
     }
@@ -60,18 +68,14 @@ export class Popup {
   }
 
   #setMessage(message: PopupParams['message']): this {
-    if (!message) {
-      return this;
-    }
-
-    const trimmedMessage = message.trim();
+    const trimmedMessage = (message ?? '').trim();
 
     if (!trimmedMessage) {
       console.error('[Telegram.WebApp] Popup message is required', message);
       throw new Error('WebAppPopupParamInvalid');
     }
 
-    if (trimmedMessage.length > Popup.MAXIMUM_MESSAGE_LENGTH) {
+    if (trimmedMessage.length > Popup.MAX_MESSAGE_LENGTH) {
       console.error('[Telegram.WebApp] Popup message is too long', trimmedMessage);
       throw new Error('WebAppPopupParamInvalid');
     }
@@ -82,8 +86,8 @@ export class Popup {
 
   #setButtons(buttons: PopupParams['buttons'] | WebAppPopupButton[]): this {
     if (!buttons) {
-      const buttons: [PopupButton] = [
-        new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE }).data,
+      const buttons: [EventPopupButton] = [
+        new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE, id: generateId(5) }).data,
       ];
 
       this.#data.params.buttons = buttons;
@@ -109,12 +113,12 @@ export class Popup {
 
     const popupButtons = buttons.map(
       (button) => new WebAppPopupButton(button).data
-    ) as PopupButtonsSet;
+    ) as EventPopupButtonsSet;
     this.#data.params.buttons = popupButtons;
     return this;
   }
 
-  open({ params: { title, message, buttons }, callback }: Options): void {
+  open({ params: { title, message, buttons }, callback }: OpenPopupOptions): void {
     if (this.#isOpened) {
       return;
     }
@@ -126,14 +130,14 @@ export class Popup {
 
   close(): void {
     this.#isOpened = false;
-    this.#data = INITIAL_DATA;
+    this.#data = createInitialState();
   }
 
   get isOpened(): boolean {
     return this.#isOpened;
   }
 
-  get params(): PopupParams | null {
+  get params(): OpenPopupEventData | null {
     const hasData = Object.keys(this.#data.params).length > 0;
 
     return hasData ? this.#data.params : null;
