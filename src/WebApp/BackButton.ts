@@ -25,7 +25,6 @@ const BUTTON_EVENTS = {
   OFF_CLICKED: 'off_clicked',
 } as const;
 
-export const BACK_BUTTON_EVENTS_KEY = Symbol('EVENTS');
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
 @FeatureSupport.inVersion<keyof BackButton>({
@@ -45,7 +44,7 @@ export class WebAppBackButton implements BackButton {
   #isVisible = false;
   #prevButtonState = this.#isVisible;
 
-  static get [BACK_BUTTON_EVENTS_KEY](): ButtonEvents {
+  static get EVENTS(): ButtonEvents {
     return BUTTON_EVENTS;
   }
 

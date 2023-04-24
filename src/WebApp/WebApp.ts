@@ -44,7 +44,7 @@ import {
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
-import { BACK_BUTTON_EVENTS_KEY, BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
+import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
@@ -142,35 +142,23 @@ export class TelegramWebApp implements WebApp {
   }
 
   #initBackButton(): void {
-    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].CREATED,
-      () => {
-        this.#webView.onEvent('back_button_pressed', () => {
-          this.#receiveWebViewEvent('backButtonClicked');
-        });
-      }
-    );
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CREATED, () => {
+      this.#webView.onEvent('back_button_pressed', () => {
+        this.#receiveWebViewEvent('backButtonClicked');
+      });
+    });
 
-    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].UPDATED,
-      (params) => {
-        this.#webView.postEvent('web_app_setup_back_button', undefined, params);
-      }
-    );
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.UPDATED, (params) => {
+      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
+    });
 
-    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].CLICKED,
-      (callback) => {
-        this.#onWebViewEvent('backButtonClicked', callback);
-      }
-    );
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CLICKED, (callback) => {
+      this.#onWebViewEvent('backButtonClicked', callback);
+    });
 
-    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](
-      WebAppBackButton[BACK_BUTTON_EVENTS_KEY].OFF_CLICKED,
-      (callback) => {
-        this.#offWebViewEvent('backButtonClicked', callback);
-      }
-    );
+    this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.OFF_CLICKED, (callback) => {
+      this.#offWebViewEvent('backButtonClicked', callback);
+    });
   }
 
   #initTheme(rawTheme: InitParams['tgWebAppThemeParams']): void {
