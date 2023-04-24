@@ -8,24 +8,9 @@ interface InvoiceData {
 }
 
 export class Invoices {
-  #isSupported: boolean;
-  #appVersion: string;
   #store = new Map<InvoiceId, InvoiceData>();
 
-  constructor(isSupported: boolean, appVersion: string) {
-    this.#isSupported = isSupported;
-    this.#appVersion = appVersion;
-  }
-
   create(url: string): string | never {
-    if (!this.#isSupported) {
-      console.error(
-        '[Telegram.WebApp] Method openInvoice is not supported in version ' + this.#appVersion
-      );
-
-      throw new Error('WebAppMethodUnsupported');
-    }
-
     const parsedURL = new URL(url);
     let match: string[] | null, slug: string;
 
