@@ -1,4 +1,4 @@
-import { EventPopupButton, PopupButton, PopupButtonType } from '../types';
+import { EventPopupButton, PopupButton, PopupButtonType } from '../../types';
 
 const TYPES = {
   DEFAULT: 'default',
@@ -28,7 +28,7 @@ export class WebAppPopupButton {
   #setID(id: string): this {
     const stringifiedID = (id ?? '').toString();
 
-    if (stringifiedID.length > WebAppPopupButton.MAX_TEXT_LENGTH) {
+    if (stringifiedID.length > WebAppPopupButton.MAX_ID_LENGTH) {
       console.error('[Telegram.WebApp] Popup button id is too long', id);
       throw new Error('WebAppPopupParamInvalid');
     }
@@ -38,8 +38,8 @@ export class WebAppPopupButton {
     return this;
   }
 
-  #setType(type: PopupButton['type'] = WebAppPopupButton.TYPES.DEFAULT): this {
-    const isValidType = VALID_BUTTON_TYPES.includes(type.toLowerCase() as PopupButtonType);
+  #setType(type: PopupButtonType): this {
+    const isValidType = VALID_BUTTON_TYPES.includes(type);
 
     if (!isValidType) {
       console.error('[Telegram.WebApp] Popup button type is invalid', type);
@@ -51,7 +51,7 @@ export class WebAppPopupButton {
     return this;
   }
 
-  #setText(text: PopupButton['text'] = ''): void {
+  #setText(text: PopupButton['text']): void {
     if (!this.#button.type) {
       throw new Error('You should set type for `WebAppPopupButton` before setting the text');
     }
