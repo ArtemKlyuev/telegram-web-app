@@ -1,5 +1,7 @@
 import { HapticFeedback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
+import { bindMethods } from '../utils/decorators';
+import { FeatureSupport } from './FeatureSupport';
 
 type Feedbacks = typeof HAPTIC_FEEDBACK.FEEDBACK_TYPES;
 type ImpactStyles = typeof HAPTIC_FEEDBACK.IMPACT_STYLES;
@@ -47,6 +49,18 @@ const HAPTIC_FEEDBACK_EVENTS = {
 
 const ON_EVENT = Symbol('on_event');
 
+@FeatureSupport.inVersion<keyof HapticFeedback>({
+  availableInVersion: '6.1',
+  methodsConfig: ({ appVersion, executeOriginalMethod, isSupported, thisArg }) => {
+    if (!isSupported) {
+      console.warn(`[Telegram.WebApp] HapticFeedback is not supported in version ${appVersion}`);
+      return thisArg;
+    }
+
+    executeOriginalMethod();
+  },
+})
+@bindMethods
 export class WebAppHapticFeedback implements HapticFeedback {
   readonly #eventEmitter: EventEmitter<HapticFeedbackEvent>;
 
@@ -92,11 +106,6 @@ export class WebAppHapticFeedback implements HapticFeedback {
   }): WebAppHapticFeedback | never;
   #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): WebAppHapticFeedback | never;
   #triggerFeedback(params: Params): WebAppHapticFeedback | never {
-    if (!this.#isSupported) {
-      console.warn('[Telegram.WebApp] HapticFeedback is not supported in version ' + webAppVersion);
-      return this;
-    }
-
     if (!this.#isValidFeedbackType(params.type)) {
       console.error('[Telegram.WebApp] Haptic feedback type is invalid', params.type);
       throw new Error('WebAppHapticFeedbackTypeInvalid');
@@ -133,15 +142,15 @@ export class WebAppHapticFeedback implements HapticFeedback {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
-  impactOccurred = (style: ImpactStyle): WebAppHapticFeedback | never => {
+  impactOccurred(style: ImpactStyle): WebAppHapticFeedback | never {
     return this.#triggerFeedback({ type: 'impact', impact_style: style });
-  };
+  }
 
-  notificationOccurred = (type: NotificationType): WebAppHapticFeedback | never => {
+  notificationOccurred(type: NotificationType): WebAppHapticFeedback | never {
     return this.#triggerFeedback({ type: 'notification', notification_type: type });
-  };
+  }
 
-  selectionChanged = (): WebAppHapticFeedback | never => {
+  selectionChanged(): WebAppHapticFeedback | never {
     return this.#triggerFeedback({ type: 'selection_change' });
-  };
+  }
 }
