@@ -18,7 +18,7 @@ type ViewportChangeListener = (isStateStable: boolean) => any;
 type HeightCalculatedListener = (params: { height: number; stableHeight: number }) => any;
 
 export class Viewport {
-  #eventEmitter: EventEmitter<ViewportEvent>;
+  readonly #eventEmitter: EventEmitter<ViewportEvent>;
   #viewportHeight: number | false = false;
   #viewportStableHeight: number | false = false;
   #isExpanded: boolean = true;
