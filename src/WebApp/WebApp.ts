@@ -641,6 +641,7 @@ export class TelegramWebApp implements WebApp {
     });
   };
 
+  // TODO: version 6.1+
   openInvoice = (url: string, callback?: Nullable<OpenInvoiceCallback>): void | never => {
     const slug = this.#invoices.create(url);
     this.#invoices.save(slug, { url, callback });
