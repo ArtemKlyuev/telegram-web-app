@@ -91,20 +91,12 @@ export interface PopupButton {
 }
 
 /**
- * @see https://core.telegram.org/bots/webapps#popupbutton
- */
-export type PopupButtonsSet =
-  | [PopupButton]
-  | [PopupButton, PopupButton]
-  | [PopupButton, PopupButton, PopupButton];
-
-/**
  * @see https://core.telegram.org/bots/webapps#popupparams
  */
 export interface PopupParams {
   title?: string | undefined;
   message: string;
-  buttons?: PopupButtonsSet | undefined;
+  buttons?: EventPopupButtonsSet | undefined;
 }
 
 /**
@@ -450,7 +442,7 @@ export interface PopupButtonWithOptionalText {
 }
 
 export interface OpenPopupEventData {
-  title: string;
+  title?: Nullable<string>;
   message: string;
   buttons: EventPopupButtonsSet;
 }
@@ -540,6 +532,8 @@ export type PostEventCallback = (arg?: Nullable<PostEventCallbackData | Error>) 
 export type CallEventCallbackHandler = (cb: AnyCallback) => any;
 
 export interface WebView {
+  readonly isIframe: boolean;
+  readonly initParams: InitParams;
   postEvent(event: 'web_app_ready', callback?: Nullable<PostEventCallback>): void;
   postEvent(event: 'web_app_expand', callback?: Nullable<PostEventCallback>): void;
   postEvent(event: 'web_app_close', callback?: Nullable<PostEventCallback>): void;
