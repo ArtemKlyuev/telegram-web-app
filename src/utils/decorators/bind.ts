@@ -36,10 +36,10 @@ class Initializers<ThisArg> {
   }
 }
 
-export function bindMethods<Class extends new (...args: any) => Class>(
+export function bindMethods<Class extends new (...args: any) => any>(
   classArg: Class,
   context: ClassDecoratorContext<Class>
-) {
+): Class {
   if (!(context.kind === 'class')) {
     throw new TypeError(
       `'bindMethods' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`
@@ -76,5 +76,5 @@ export function bindMethods<Class extends new (...args: any) => Class>(
     });
   });
 
-  return wrapper;
+  return wrapper as unknown as Class;
 }
