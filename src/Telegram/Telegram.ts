@@ -43,7 +43,7 @@ export class Telegram {
     const version = new Version(initParams.tgWebAppVersion ?? DEFAULT_VERSION);
     const initData = new InitData(initParams.tgWebAppData);
     // TODO: pass args
-    const viewport = new Viewport({ mainButtonHeight: 0 });
+    const viewport = new Viewport({ eventEmitter, mainButtonHeight: 0 });
     const theme = new Theme(eventEmitter);
     const bgColor = new BackgroundColor({ themeParams: theme.params });
     const backButton = new WebAppBackButton({ eventEmitter });
