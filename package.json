@@ -4,6 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "build": "tsx scripts/build.ts",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
     "test": "jest",
     "test:watch": "jest --watch"
   },
