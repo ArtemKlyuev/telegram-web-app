@@ -4,4 +4,5 @@ interface Window {
         postEvent: (eventType: string, eventData: string) => any;
       }
     | undefined;
+  Telegram: any;
 }
