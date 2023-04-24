@@ -1,10 +1,10 @@
 import { HapticFeedback, ValueOf } from '../types';
 import { TelegramWebView } from '../WebView';
 
-type Feedbacks = typeof FEEDBACK_TYPES;
-type ImpactStyles = typeof IMPACT_STYLES;
+type Feedbacks = typeof HAPTIC_FEEDBACK.FEEDBACK_TYPES;
+type ImpactStyles = typeof HAPTIC_FEEDBACK.IMPACT_STYLES;
 type ImpactStyle = ValueOf<ImpactStyles>;
-type NotificationTypes = typeof NOTIFICATION_TYPES;
+type NotificationTypes = typeof HAPTIC_FEEDBACK.NOTIFICATION_TYPES;
 type NotificationType = ValueOf<NotificationTypes>;
 
 interface Params {
@@ -13,31 +13,29 @@ interface Params {
   notification_type?: NotificationType | undefined;
 }
 
-const IMPACT_STYLES = {
-  LIGHT: 'light',
-  MEDIUM: 'medium',
-  HEAVY: 'heavy',
-  RIGID: 'rigid',
-  SOFT: 'soft',
+export const HAPTIC_FEEDBACK = {
+  IMPACT_STYLES: {
+    LIGHT: 'light',
+    MEDIUM: 'medium',
+    HEAVY: 'heavy',
+    RIGID: 'rigid',
+    SOFT: 'soft',
+  },
+  FEEDBACK_TYPES: {
+    IMPACT: 'impact',
+    NOTIFICATION: 'notification',
+    SELECTION_CHANGE: 'selection_change',
+  },
+  NOTIFICATION_TYPES: {
+    ERROR: 'error',
+    SUCCESS: 'success',
+    WARNING: 'warning',
+  },
 } as const;
 
-const VALID_IMPACT_STYLES = Object.values(IMPACT_STYLES);
-
-const FEEDBACK_TYPES = {
-  IMPACT: 'impact',
-  NOTIFICATION: 'notification',
-  SELECTION_CHANGE: 'selection_change',
-} as const;
-
-const VALID_FEEDBACK_TYPES = Object.values(FEEDBACK_TYPES);
-
-const NOTIFICATION_TYPES = {
-  ERROR: 'error',
-  SUCCESS: 'success',
-  WARNING: 'warning',
-} as const;
-
-const VALID_NOTIFICATION_TYPES = Object.values(NOTIFICATION_TYPES);
+const VALID_IMPACT_STYLES = Object.values(HAPTIC_FEEDBACK.IMPACT_STYLES);
+const VALID_FEEDBACK_TYPES = Object.values(HAPTIC_FEEDBACK.FEEDBACK_TYPES);
+const VALID_NOTIFICATION_TYPES = Object.values(HAPTIC_FEEDBACK.NOTIFICATION_TYPES);
 
 export class WebAppHapticFeedback implements HapticFeedback {
   #isSupported: boolean;
