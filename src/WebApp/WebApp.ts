@@ -203,6 +203,17 @@ export class TelegramWebApp implements WebApp {
     }
   }
 
+  #initViewport(): void {
+    this.#viewport.on(Viewport.EVENTS.VIEWPORT_CHANGED, (isStateStable) => {
+      this.#receiveWebViewEvent('viewportChanged', { isStateStable });
+    });
+
+    this.#viewport.on(Viewport.EVENTS.HEIGHT_CALCULATED, ({ height, stableHeight }) => {
+      this.#setCssVar('viewport-height', height);
+      this.#setCssVar('viewport-stable-height', stableHeight);
+    });
+  }
+
   constructor({
     initData,
     version,
@@ -223,6 +234,7 @@ export class TelegramWebApp implements WebApp {
     this.#webView = webView;
     this.#bgColor = bgColor;
     this.#viewport = viewport;
+    this.#initViewport();
     this.#hapticFeedback = hapticFeedback;
 
     this.#backButton = backButton;
