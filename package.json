@@ -1,9 +1,22 @@
 {
   "name": "telegram-web-app",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "dist/cjs/index.js",
+  "typings": "dist/typings/index.d.ts",
+  "module": "dist2/esm/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist2/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/typings/index.d.ts"
+    }
+  },
   "scripts": {
+    "typecheck": "tsc --pretty --noEmit",
     "build": "tsx scripts/build.ts",
     "build:esm": "tsc -p tsconfig.build.esm.json",
     "test": "jest",
