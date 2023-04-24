@@ -1,11 +1,15 @@
 import { HapticFeedback, ValueOf } from '../types';
-import { TelegramWebView } from '../WebView';
+import { Disposer, EventEmitter } from '../utils';
 
 type Feedbacks = typeof HAPTIC_FEEDBACK.FEEDBACK_TYPES;
 type ImpactStyles = typeof HAPTIC_FEEDBACK.IMPACT_STYLES;
 type ImpactStyle = ValueOf<ImpactStyles>;
 type NotificationTypes = typeof HAPTIC_FEEDBACK.NOTIFICATION_TYPES;
 type NotificationType = ValueOf<NotificationTypes>;
+
+type HapticFeedbackEvents = typeof HAPTIC_FEEDBACK_EVENTS;
+type HapticFeedbackEvent = ValueOf<HapticFeedbackEvents>;
+type FeedbackTriggeredListener = (feedback: Params) => any;
 
 interface Params {
   type: ValueOf<Feedbacks>;
@@ -37,13 +41,25 @@ const VALID_IMPACT_STYLES = Object.values(HAPTIC_FEEDBACK.IMPACT_STYLES);
 const VALID_FEEDBACK_TYPES = Object.values(HAPTIC_FEEDBACK.FEEDBACK_TYPES);
 const VALID_NOTIFICATION_TYPES = Object.values(HAPTIC_FEEDBACK.NOTIFICATION_TYPES);
 
-export class WebAppHapticFeedback implements HapticFeedback {
-  #isSupported: boolean;
-  #webView: TelegramWebView;
+const HAPTIC_FEEDBACK_EVENTS = {
+  FEEDBACK_TRIGGERED: 'feedback_triggered',
+} as const;
 
-  constructor(isSupported: boolean, webView: TelegramWebView) {
-    this.#isSupported = isSupported;
-    this.#webView = webView;
+const ON_EVENT = Symbol('on_event');
+
+export class WebAppHapticFeedback implements HapticFeedback {
+  readonly #eventEmitter: EventEmitter<HapticFeedbackEvent>;
+
+  static get EVENTS() {
+    return HAPTIC_FEEDBACK_EVENTS;
+  }
+
+  static get PRIVATE_KEYS() {
+    return { ON_EVENT } as const;
+  }
+
+  constructor(eventEmitter: EventEmitter<HapticFeedbackEvent>) {
+    this.#eventEmitter = eventEmitter;
   }
 
   #isValidImpactStyle(style: Params['impact_style']): boolean {
@@ -108,10 +124,13 @@ export class WebAppHapticFeedback implements HapticFeedback {
       // no params needed
     }
 
-    // TODO: move to onUpdate
-    this.#webView.postEvent('web_app_trigger_haptic_feedback', undefined, params);
+    this.#eventEmitter.emit(WebAppHapticFeedback.EVENTS.FEEDBACK_TRIGGERED, params);
 
     return this;
+  }
+
+  [ON_EVENT](event: HapticFeedbackEvent, listener: FeedbackTriggeredListener): Disposer {
+    return this.#eventEmitter.subscribe(event, listener);
   }
 
   impactOccurred = (style: ImpactStyle): WebAppHapticFeedback | never => {

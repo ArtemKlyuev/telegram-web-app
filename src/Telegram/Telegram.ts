@@ -50,7 +50,7 @@ export class Telegram {
     const bgColor = new BackgroundColor({ eventEmitter, themeParams: () => theme.params });
     const backButton = new WebAppBackButton({ eventEmitter });
     const clipboard = new WebAppClipboard();
-    const hapticFeedback = new WebAppHapticFeedback();
+    const hapticFeedback = new WebAppHapticFeedback(eventEmitter);
     const invoices = new Invoices();
     const mainButton = new WebAppMainButton({ eventEmitter });
     const popup = new Popup();

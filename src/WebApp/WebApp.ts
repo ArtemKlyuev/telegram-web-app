@@ -220,6 +220,15 @@ export class TelegramWebApp implements WebApp {
     });
   }
 
+  #initHapticFeedback(): void {
+    this.#hapticFeedback[WebAppHapticFeedback.PRIVATE_KEYS.ON_EVENT](
+      WebAppHapticFeedback.EVENTS.FEEDBACK_TRIGGERED,
+      (feedback) => {
+        this.#webView.postEvent('web_app_trigger_haptic_feedback', undefined, feedback);
+      }
+    );
+  }
+
   constructor({
     initData,
     version,
@@ -238,11 +247,15 @@ export class TelegramWebApp implements WebApp {
     this.#initData = initData;
     this.#version = version;
     this.#webView = webView;
+
     this.#bgColor = bgColor;
     this.#initBgColor();
+
     this.#viewport = viewport;
     this.#initViewport();
+
     this.#hapticFeedback = hapticFeedback;
+    this.#initHapticFeedback();
 
     this.#backButton = backButton;
     this.#initBackButton();
