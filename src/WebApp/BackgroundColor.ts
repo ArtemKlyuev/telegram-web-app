@@ -1,4 +1,4 @@
-import { HexColor, ThemeParams } from '../types';
+import { HexColor, Nullable, ThemeParams } from '../types';
 import { TelegramWebView } from '../WebView';
 import { parseColorToHex } from '../utils';
 
@@ -17,8 +17,10 @@ export class BackgroundColor {
   readonly #isSupported: boolean;
   readonly #webAppVersion: string;
   readonly #webView: TelegramWebView;
+  // FIXME: THheme constructor instead of params, так как нужно всегда свежее значение
+  // параметров, либо сделать функцией, которая возвращает параметры
   readonly #themeParams: ThemeParams;
-  #appBackgroundColor: HexColor | null | undefined = null;
+  #appBackgroundColor: Nullable<HexColor> = null;
 
   constructor({ isSupported, webAppVersion, webView, themeParams }: Options) {
     this.#isSupported = isSupported;
