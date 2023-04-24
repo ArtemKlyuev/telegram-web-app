@@ -1,4 +1,4 @@
-import { PopupButton, PopupButtonType } from '../types';
+import { EventPopupButton, PopupButton, PopupButtonType } from '../types';
 
 const TYPES = {
   DEFAULT: 'default',
@@ -16,98 +16,77 @@ export class WebAppPopupButton {
   static get TYPES() {
     return TYPES;
   }
-  static get MAXIMUM_ID_LENGTH() {
+  static get MAX_ID_LENGTH() {
     return 64;
   }
-  static get MAXIMUM_TEXT_LENGTH() {
+  static get MAX_TEXT_LENGTH() {
     return 64;
   }
 
-  #data: { id: string; type: PopupButtonType; text?: string | undefined } = {
-    id: '',
-    type: WebAppPopupButton.TYPES.DEFAULT,
-  };
+  #button: EventPopupButton = {} as EventPopupButton;
 
-  #setID(id: string = ''): this {
-    if (id === null) {
-      return this;
-    }
+  #setID(id: string): this {
+    const stringifiedID = (id ?? '').toString();
 
-    const stringifiedID = id.toString();
-
-    if (!stringifiedID) {
-      return this;
-    }
-
-    if (stringifiedID.length > WebAppPopupButton.MAXIMUM_TEXT_LENGTH) {
+    if (stringifiedID.length > WebAppPopupButton.MAX_TEXT_LENGTH) {
       console.error('[Telegram.WebApp] Popup button id is too long', id);
       throw new Error('WebAppPopupParamInvalid');
     }
 
-    this.#data.id = stringifiedID;
+    this.#button.id = stringifiedID;
 
     return this;
   }
 
   #setType(type: PopupButton['type'] = WebAppPopupButton.TYPES.DEFAULT): this {
-    if (!type) {
-      return this;
-    }
+    const isValidType = VALID_BUTTON_TYPES.includes(type.toLowerCase() as PopupButtonType);
 
-    if (!VALID_BUTTON_TYPES.includes(type.toLowerCase() as PopupButtonType)) {
+    if (!isValidType) {
       console.error('[Telegram.WebApp] Popup button type is invalid', type);
       throw new Error('WebAppPopupParamInvalid');
     }
 
-    this.#data.type = type;
+    this.#button.type = type;
 
     return this;
   }
 
   #setText(text: PopupButton['text'] = ''): void {
-    const isTextRequired = TYPES_WITH_REQUIRED_TEXT.includes(this.#data.type);
+    if (!this.#button.type) {
+      throw new Error('You should set type for `WebAppPopupButton` before setting the text');
+    }
+
+    const isTextRequired = TYPES_WITH_REQUIRED_TEXT.includes(this.#button.type);
 
     if (!isTextRequired) {
       return;
     }
 
-    if (text === null) {
-      console.error(
-        '[Telegram.WebApp] Popup button text is required for type ' + this.#data.type,
-        text
-      );
-      throw new Error('WebAppPopupParamInvalid');
-    }
-
-    const normalizedText = text.toString().trim();
+    const normalizedText = (text ?? '').toString().trim();
 
     if (!normalizedText) {
       console.error(
-        '[Telegram.WebApp] Popup button text is required for type ' + this.#data.type,
+        '[Telegram.WebApp] Popup button text is required for type ' + this.#button.type,
         text
       );
       throw new Error('WebAppPopupParamInvalid');
     }
 
-    if (normalizedText.length > WebAppPopupButton.MAXIMUM_TEXT_LENGTH) {
+    if (normalizedText.length > WebAppPopupButton.MAX_TEXT_LENGTH) {
       console.error('[Telegram.WebApp] Popup button text is too long', normalizedText);
       throw new Error('WebAppPopupParamInvalid');
     }
 
-    this.#data.text = normalizedText;
+    this.#button.text = normalizedText;
   }
 
-  constructor(config?: PopupButton | WebAppPopupButton | undefined) {
-    if (!config) {
-      return;
-    }
+  constructor(config: EventPopupButton | WebAppPopupButton) {
+    const { id, type, text } = config instanceof WebAppPopupButton ? config.data : config;
 
-    const params = config instanceof WebAppPopupButton ? config.data : config;
-
-    this.#setID(params.id).#setType(params.type).#setText(params.text);
+    this.#setID(id).#setType(type).#setText(text);
   }
 
-  get data(): PopupButton {
-    return this.#data;
+  get data(): EventPopupButton {
+    return this.#button;
   }
 }
