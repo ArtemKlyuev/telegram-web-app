@@ -1,6 +1,7 @@
-export * from './BackButton';
+export { WebAppBackButton } from './BackButton';
 export * from './BackgroundColor';
 export * from './Clipboard';
+export * from './FeatureSupport';
 export * from './HapticFeedback';
 export * from './InitData';
 export * from './Invoices';
