@@ -18,8 +18,8 @@ export interface InitParams {
   tgWebAppThemeParams?: string | undefined;
   tgWebAppVersion?: string | undefined;
   tgWebAppPlatform?: string | undefined;
-  tgWebAppDebug?: boolean | undefined;
-  tgWebAppBotInline?: boolean | undefined;
+  tgWebAppDebug?: string | undefined;
+  tgWebAppBotInline?: '1' | '0' | undefined;
   _path?: string | undefined;
   [key: string]: any;
 }
