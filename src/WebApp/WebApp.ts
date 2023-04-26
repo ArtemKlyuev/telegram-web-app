@@ -724,8 +724,8 @@ export class TelegramWebApp implements WebApp {
       {
         message,
         buttons: [
-          { type: WebAppPopupButton.TYPES.OK, id: OK_BTN_ID },
-          { type: WebAppPopupButton.TYPES.CANCEL },
+          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.OK, id: OK_BTN_ID }).data,
+          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CANCEL, id: '' }).data,
         ],
       },
       popupCallback
