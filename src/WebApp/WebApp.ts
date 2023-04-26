@@ -203,8 +203,10 @@ export class TelegramWebApp implements WebApp {
   }
 
   #initBgColor(): void {
-    this.#bgColor.on(BackgroundColor.EVENTS.UPDATED, (color) => {
-      this.#webView.postEvent('web_app_set_background_color', undefined, { color });
+    this.#bgColor.on(BackgroundColor.EVENTS.UPDATED, (maybeColor) => {
+      this.#webView.postEvent('web_app_set_background_color', undefined, {
+        color: maybeColor ?? '',
+      });
     });
   }
 
