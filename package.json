@@ -20,7 +20,7 @@
   },
   "scripts": {
     "typecheck": "tsc --pretty --noEmit",
-    "build": "yarn build:esm && build:dist",
+    "build": "yarn build:esm && yarn build:dist",
     "build:dist": "tsx scripts/build.ts",
     "build:esm": "tsc -p tsconfig.build.esm.json",
     "test": "jest",
