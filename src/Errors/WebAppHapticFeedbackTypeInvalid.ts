@@ -1,7 +1,5 @@
-import { HapticFeedbackType } from '../types';
-
 export class WebAppHapticFeedbackTypeInvalidError extends Error {
-  constructor(type: HapticFeedbackType) {
+  constructor(type: any) {
     super(`[Telegram.WebApp] Haptic feedback type is invalid ${type}`);
   }
 }
