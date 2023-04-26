@@ -66,14 +66,19 @@ export interface WebAppChat {
  * @see https://core.telegram.org/bots/webapps#webappinitdata
  */
 export interface WebAppInitData {
-  auth_date: number;
-  hash: string;
   query_id?: string | undefined;
   user?: WebAppUser | undefined;
   receiver?: WebAppUser | undefined;
   chat?: WebAppChat | undefined;
+  chat_type?: 'sender' | 'private' | 'group' | 'supergroup' | 'channel' | undefined;
+  chat_instance?: string | undefined;
   start_param?: string | undefined;
   can_send_after?: number | undefined;
+  /**
+   * Unix time when the form was opened wrapped in string
+   */
+  auth_date: string;
+  hash: string;
 }
 
 /**
