@@ -1,7 +1,5 @@
-import { HapticFeedbackImpactStyle } from '../types';
-
 export class WebAppHapticImpactStyleInvalidError extends Error {
-  constructor(style: HapticFeedbackImpactStyle) {
+  constructor(style: any) {
     super(`[Telegram.WebApp] Haptic impact style is invalid ${style}`);
   }
 }
