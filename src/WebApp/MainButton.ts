@@ -1,9 +1,15 @@
-import { HexColor, MainButton, MainButtonParams, NoParamsCallback, ValueOf } from '../types';
+import {
+  HexColor,
+  MainButton,
+  MainButtonParams,
+  NoParamsCallback,
+  SetupMainButtonEventData,
+  ValueOf,
+} from '../types';
 import { Disposer, EventEmitter, parseColorToHex } from '../utils';
 
 import { MainButtonDebug } from './MainButtonDebug';
 import { Theme } from './Theme';
-import { InvisibleButtonParams, VisibleButtonParams } from './types';
 
 interface Options {
   eventEmitter: EventEmitter<ButtonEvent>;
@@ -16,7 +22,7 @@ type ButtonEvent = ValueOf<ButtonEvents>;
 
 type DebugButtonClickListener = (isActive: boolean) => any;
 type DebugButtonUpdateListener = () => any;
-type UpdateListener = (params: VisibleButtonParams | InvisibleButtonParams) => any;
+type UpdateListener = (params: SetupMainButtonEventData) => any;
 type OnClickListener = (callback: NoParamsCallback) => any;
 type OffClickListener = (callback: NoParamsCallback) => any;
 
@@ -44,7 +50,7 @@ export class WebAppMainButton implements MainButton {
   static get EVENTS() {
     return BUTTON_EVENTS;
   }
-  static get MAXIMUM_TEXT_LENGTH(): number {
+  static get MAX_TEXT_LENGTH(): number {
     return 64;
   }
   static get DEFAULT_COLOR(): string {
@@ -71,22 +77,18 @@ export class WebAppMainButton implements MainButton {
     }
   }
 
-  #buttonParams(): VisibleButtonParams | InvisibleButtonParams {
-    if (this.#isVisible) {
-      return {
-        is_visible: true,
-        is_active: this.#isActive,
-        is_progress_visible: this.#isProgressVisible,
-        text: this.#buttonText,
-        color: this.color,
-        text_color: this.textColor,
-      };
-    }
-
-    return { is_visible: false };
+  #buttonParams(): SetupMainButtonEventData {
+    return {
+      is_visible: this.#isVisible,
+      is_active: this.#isActive,
+      is_progress_visible: this.#isProgressVisible,
+      text: this.#buttonText,
+      color: this.color,
+      text_color: this.textColor,
+    };
   }
 
-  #updateButton() {
+  #update() {
     const btnParams = this.#buttonParams();
     const newState = JSON.stringify(btnParams);
 
@@ -106,9 +108,9 @@ export class WebAppMainButton implements MainButton {
     return value === false || value === null;
   }
 
-  #setText(value: MainButtonParams['text']): void | never {
+  #setText(value: MainButtonParams['text']): this | never {
     if (typeof value === 'undefined') {
-      return;
+      return this;
     }
 
     const text = value.trim();
@@ -118,22 +120,24 @@ export class WebAppMainButton implements MainButton {
       throw new Error('WebAppMainButtonParamInvalid');
     }
 
-    if (text.length > WebAppMainButton.MAXIMUM_TEXT_LENGTH) {
+    if (text.length > WebAppMainButton.MAX_TEXT_LENGTH) {
       console.error('[Telegram.WebApp] Main button text is too long', text);
       throw new Error('WebAppMainButtonParamInvalid');
     }
 
     this.#buttonText = text;
+
+    return this;
   }
 
-  #setButtonColor(value: MainButtonParams['color']): void | never {
+  #setButtonColor(value: MainButtonParams['color']): this | never {
     if (typeof value === 'undefined') {
-      return;
+      return this;
     }
 
     if (this.#isResettedValue(value)) {
       this.#buttonColor = false;
-      return;
+      return this;
     }
 
     const color = parseColorToHex(value);
@@ -144,16 +148,18 @@ export class WebAppMainButton implements MainButton {
     }
 
     this.#buttonColor = color;
+
+    return this;
   }
 
-  #setTextColor(value: MainButtonParams['text_color']): void | never {
+  #setTextColor(value: MainButtonParams['text_color']): this | never {
     if (typeof value === 'undefined') {
-      return;
+      return this;
     }
 
     if (this.#isResettedValue(value)) {
       this.#buttonTextColor = false;
-      return;
+      return this;
     }
 
     const textColor = parseColorToHex(value);
@@ -165,11 +171,13 @@ export class WebAppMainButton implements MainButton {
     }
 
     this.#buttonTextColor = textColor;
+
+    return this;
   }
 
-  #setIsVisible(visible: MainButtonParams['is_visible']): void | never {
+  #setIsVisible(visible: MainButtonParams['is_visible']): this | never {
     if (typeof visible === 'undefined') {
-      return;
+      return this;
     }
 
     if (visible && !this.text.length) {
@@ -178,14 +186,18 @@ export class WebAppMainButton implements MainButton {
     }
 
     this.#isVisible = visible;
+
+    return this;
   }
 
-  #setIsActive(active: MainButtonParams['is_active']): void | never {
+  #setIsActive(active: MainButtonParams['is_active']): this | never {
     if (typeof active === 'undefined') {
-      return;
+      return this;
     }
 
     this.#isActive = active;
+
+    return this;
   }
 
   on(event: ButtonEvents['DEBUG_BUTTON_CLICKED'], listener: DebugButtonClickListener): Disposer;
@@ -258,13 +270,12 @@ export class WebAppMainButton implements MainButton {
   }
 
   setParams = (params: MainButtonParams): this | never => {
-    this.#setText(params.text);
-    this.#setButtonColor(params.color);
-    this.#setTextColor(params.text_color);
-    this.#setIsVisible(params.is_visible);
-    this.#setIsActive(params.is_active);
-
-    this.#updateButton();
+    this.#setText(params.text)
+      .#setButtonColor(params.color)
+      .#setTextColor(params.text_color)
+      .#setIsVisible(params.is_visible)
+      .#setIsActive(params.is_active)
+      .#update();
 
     return this;
   };
@@ -290,7 +301,7 @@ export class WebAppMainButton implements MainButton {
   showProgress = (leaveActive: boolean): this => {
     this.isActive = Boolean(leaveActive);
     this.#isProgressVisible = true;
-    this.#updateButton();
+    this.#update();
 
     return this;
   };
@@ -301,7 +312,7 @@ export class WebAppMainButton implements MainButton {
     }
 
     this.#isProgressVisible = false;
-    this.#updateButton();
+    this.#update();
 
     return this;
   };

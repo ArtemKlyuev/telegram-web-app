@@ -1,4 +1,4 @@
-import { InvisibleButtonParams, VisibleButtonParams } from './types';
+import { SetupMainButtonEventData } from '../types';
 
 interface Options {
   onClick: (e: MouseEvent) => any;
@@ -39,7 +39,7 @@ export class MainButtonDebug {
       this.#btn.style[key as keyof typeof styles] = value;
     }
 
-    const onDomLoaded = (event: Event) => {
+    const onDomLoaded = (): void => {
       document.removeEventListener('DOMContentLoaded', onDomLoaded);
       document.body.appendChild(this.#btn);
       this.#btn.addEventListener('click', onClick, false);
@@ -48,7 +48,7 @@ export class MainButtonDebug {
     document.addEventListener('DOMContentLoaded', onDomLoaded);
   }
 
-  update = (params: VisibleButtonParams | InvisibleButtonParams): void => {
+  update = (params: SetupMainButtonEventData): void => {
     if (params.is_visible) {
       this.#btn.style.display = 'block';
       this.#height = 48;

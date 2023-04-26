@@ -1,5 +1,4 @@
-import { MainButtonParams } from '../types';
-import { HexColor, ValueOf } from '../types';
+import { ValueOf } from '../types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
 
 export type HeaderBgColor = ValueOf<typeof HEADER_COLOR_KEYS>;
@@ -23,18 +22,3 @@ export interface WebViewEventParams {
   button_id?: string | null | undefined;
   data?: any | undefined;
 }
-
-type ToNonFalsyRequired<Obj, K extends keyof Obj = keyof Obj> = Required<{
-  [key in K]: NonNullable<Obj[K]>;
-}>;
-
-export type RequiredMainButtonParams = ToNonFalsyRequired<
-  Omit<MainButtonParams, 'text' | 'color' | 'text_color'>
-> & {
-  text: string;
-  color: HexColor;
-  text_color: HexColor;
-};
-
-export type VisibleButtonParams = RequiredMainButtonParams & { is_visible: true };
-export type InvisibleButtonParams = { is_visible: false };
