@@ -1,4 +1,9 @@
 import {
+  WebAppHapticFeedbackTypeInvalidError,
+  WebAppHapticImpactStyleInvalidError,
+  WebAppHapticNotificationTypeInvalidError,
+} from '../Errors';
+import {
   HapticFeedback,
   HapticFeedbackImpactStyle,
   HapticFeedbackNotification,
@@ -108,25 +113,18 @@ export class WebAppHapticFeedback implements HapticFeedback {
   #triggerFeedback(params: { type: 'selection_change' }): this | never;
   #triggerFeedback(params: Params): this | never {
     if (!this.#isValidFeedbackType(params.type)) {
-      console.error('[Telegram.WebApp] Haptic feedback type is invalid', params.type);
-      throw new Error('WebAppHapticFeedbackTypeInvalid');
+      throw new WebAppHapticFeedbackTypeInvalidError(params.type);
     }
 
     if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT) {
       if (!this.#isValidImpactStyle(params.impact_style)) {
-        console.error('[Telegram.WebApp] Haptic impact style is invalid', params.impact_style);
-        throw new Error('WebAppHapticImpactStyleInvalid');
+        throw new WebAppHapticImpactStyleInvalidError(params.impact_style);
       }
     }
 
     if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION) {
       if (!this.#isValidNotificationType(params.notification_type)) {
-        console.error(
-          '[Telegram.WebApp] Haptic notification type is invalid',
-          params.notification_type
-        );
-
-        throw new Error('WebAppHapticNotificationTypeInvalid');
+        throw new WebAppHapticNotificationTypeInvalidError(params.notification_type);
       }
     }
 
