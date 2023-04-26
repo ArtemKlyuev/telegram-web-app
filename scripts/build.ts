@@ -3,20 +3,22 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { build, BuildOptions } from 'esbuild';
-import { dTSPathAliasPlugin } from 'esbuild-plugin-d-ts-path-alias';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DIST_DIR = 'dist';
+const DIST_DIR_PATH = path.resolve(process.cwd(), DIST_DIR);
+
+const isDev = process.env.NODE_ENV === 'development';
 
 const baseOptions: BuildOptions = {
   platform: 'browser',
   target: 'es2020',
-  entryPoints: ['./src/index.ts'],
+  entryPoints: ['./temp/esm/index.js'],
   bundle: true,
   treeShaking: true,
-  sourcemap: false,
+  sourcemap: isDev,
   minify: false,
 };
 
@@ -27,7 +29,6 @@ const esmBuild = build({
   splitting: true,
   format: 'esm',
   outdir: `${DIST_DIR}/esm`,
-  plugins: [dTSPathAliasPlugin({ outputPath: `${DIST_DIR}/typings`, debug: true })],
 });
 
 const cjsDevBuild = build({
@@ -45,7 +46,15 @@ const cjsProdBuild = build({
 
 await Promise.all([esmBuild, cjsDevBuild, cjsProdBuild]);
 
-await fs.copyFile(
+const cjsIndex = fs.copyFile(
   path.resolve(__dirname, './index-cjs.build.js'),
-  path.resolve(process.cwd(), `${DIST_DIR}/cjs/index.js`)
+  path.resolve(DIST_DIR_PATH, 'cjs/index.js')
 );
+
+const types = fs.cp(
+  path.resolve(process.cwd(), `temp/types`),
+  path.resolve(DIST_DIR_PATH, 'typings'),
+  { recursive: true }
+);
+
+await Promise.all([cjsIndex, types]);
