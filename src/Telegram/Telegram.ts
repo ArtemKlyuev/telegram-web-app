@@ -42,6 +42,14 @@ export class Telegram {
     }
 
     const initParams = getWebViewInitParams(location.hash);
+
+    let isDebug = false;
+
+    try {
+      // @ts-expect-error wrapped in try..catch
+      isDebug = Boolean(JSON.parse(initParams.tgWebAppDebug));
+    } catch {}
+
     const eventEmitter = new EventBus();
     const webView = new TelegramWebView(initParams);
     const version = new Version(initParams.tgWebAppVersion ?? DEFAULT_VERSION);
@@ -54,11 +62,7 @@ export class Telegram {
     const clipboard = new WebAppClipboard();
     const hapticFeedback = new WebAppHapticFeedback(eventEmitter);
     const invoices = new Invoices();
-    const mainButton = new WebAppMainButton({
-      eventEmitter,
-      theme,
-      isDebug: initParams.tgWebAppDebug ?? false,
-    });
+    const mainButton = new WebAppMainButton({ eventEmitter, theme, isDebug });
     const popup = new Popup();
     const qrPopup = new QrPopup();
 
