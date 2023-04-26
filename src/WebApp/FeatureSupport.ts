@@ -1,3 +1,5 @@
+import { UnsupportedVersionError } from '../Errors';
+
 import { Version } from './Version';
 
 interface MethodInfo {
@@ -33,13 +35,6 @@ class Initializers<ThisArg> {
 
   invoke(instance: ThisArg): void {
     this.#initizlizers.forEach((initializer) => initializer.call(instance));
-  }
-}
-
-class UnsupportedVersionError extends RangeError {
-  constructor(feature: string, method: string, version: string) {
-    const message = `[Telegram.WebApp] ${method} from feature ${feature} is unavailable in version ${version}`;
-    super(message);
   }
 }
 
