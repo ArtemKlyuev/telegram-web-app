@@ -430,10 +430,7 @@ export class TelegramWebApp implements WebApp {
     }
   };
 
-  #onInvoiceClosed = (
-    eventType: any,
-    { slug, status }: { slug?: string; status: InvoiceStatus }
-  ) => {
+  #onInvoiceClosed = (_: any, { slug, status }: { slug?: string; status: InvoiceStatus }) => {
     if (!slug) {
       return;
     }
@@ -449,7 +446,7 @@ export class TelegramWebApp implements WebApp {
     this.#receiveWebViewEvent('invoiceClosed', { url, status });
   };
 
-  #onThemeChanged = (eventType: any, eventData: { theme_params: ThemeParams }) => {
+  #onThemeChanged = (_: any, eventData: { theme_params: ThemeParams }) => {
     if (!eventData.theme_params) {
       return;
     }
@@ -460,7 +457,7 @@ export class TelegramWebApp implements WebApp {
     this.#receiveWebViewEvent('themeChanged');
   };
 
-  #onViewportChanged = (eventType: any, eventData: ViewportData): void => {
+  #onViewportChanged = (_: any, eventData: ViewportData): void => {
     if (!eventData.height) {
       return;
     }
@@ -471,7 +468,7 @@ export class TelegramWebApp implements WebApp {
 
   #onSettingsButtonPressed = (): void => this.#receiveWebViewEvent('settingsButtonClicked');
 
-  #onPopupClosed = (eventType: any, eventData: PopupClosedCallbackData): void => {
+  #onPopupClosed = (_: any, eventData: PopupClosedCallbackData): void => {
     if (!this.#popup.isOpened) {
       return;
     }
@@ -489,7 +486,7 @@ export class TelegramWebApp implements WebApp {
   };
 
   #onClipboardTextReceived = (
-    eventType: any,
+    _: any,
     {
       req_id: id,
       data = null,
@@ -507,7 +504,7 @@ export class TelegramWebApp implements WebApp {
     this.#receiveWebViewEvent('clipboardTextReceived', { data });
   };
 
-  #onQrTextReceived = (eventType: any, eventData: { data?: string | undefined }): void => {
+  #onQrTextReceived = (_: any, eventData: { data?: string | undefined }): void => {
     if (!this.#qrPopup.isOpened) {
       return;
     }

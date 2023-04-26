@@ -1,9 +1,6 @@
 type AnyFunction = (...args: any[]) => any;
 
-export function bindMethod<ThisArg>(
-  method: AnyFunction,
-  context: ClassMethodDecoratorContext<ThisArg>
-) {
+export function bindMethod<ThisArg>(_: AnyFunction, context: ClassMethodDecoratorContext<ThisArg>) {
   if (!(context.kind === 'method')) {
     throw new TypeError(
       `'bindMethod' cannot decorate kinds different from 'method'. Passed kind: ${context.kind}.`
