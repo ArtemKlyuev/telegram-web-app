@@ -1,22 +1,23 @@
-import { HapticFeedback, ValueOf } from '../types';
+import {
+  HapticFeedback,
+  HapticFeedbackImpactStyle,
+  HapticFeedbackNotification,
+  HapticFeedbackType,
+  TriggerHapticFeedbackEventData,
+  ValueOf,
+} from '../types';
 import { Disposer, EventEmitter } from '../utils';
 import { bindMethods } from '../utils/decorators';
 import { FeatureSupport } from './FeatureSupport';
 
-type Feedbacks = typeof HAPTIC_FEEDBACK.FEEDBACK_TYPES;
-type ImpactStyles = typeof HAPTIC_FEEDBACK.IMPACT_STYLES;
-type ImpactStyle = ValueOf<ImpactStyles>;
-type NotificationTypes = typeof HAPTIC_FEEDBACK.NOTIFICATION_TYPES;
-type NotificationType = ValueOf<NotificationTypes>;
-
 type HapticFeedbackEvents = typeof HAPTIC_FEEDBACK_EVENTS;
 type HapticFeedbackEvent = ValueOf<HapticFeedbackEvents>;
-type FeedbackTriggeredListener = (feedback: Params) => any;
+type FeedbackTriggeredListener = (feedback: TriggerHapticFeedbackEventData) => any;
 
 interface Params {
-  type: ValueOf<Feedbacks>;
-  impact_style?: ImpactStyle | undefined;
-  notification_type?: NotificationType | undefined;
+  type: HapticFeedbackType;
+  impact_style?: HapticFeedbackImpactStyle | undefined;
+  notification_type?: HapticFeedbackNotification | undefined;
 }
 
 export const HAPTIC_FEEDBACK = {
@@ -96,26 +97,29 @@ export class WebAppHapticFeedback implements HapticFeedback {
     return VALID_NOTIFICATION_TYPES.includes(type);
   }
 
-  #triggerFeedback(params: { type: Feedbacks['IMPACT']; impact_style: ImpactStyle }): this | never;
   #triggerFeedback(params: {
-    type: Feedbacks['NOTIFICATION'];
-    notification_type: NotificationType;
+    type: 'impact';
+    impact_style: HapticFeedbackImpactStyle;
   }): this | never;
-  #triggerFeedback(params: { type: Feedbacks['SELECTION_CHANGE'] }): this | never;
+  #triggerFeedback(params: {
+    type: 'notification';
+    notification_type: HapticFeedbackNotification;
+  }): this | never;
+  #triggerFeedback(params: { type: 'selection_change' }): this | never;
   #triggerFeedback(params: Params): this | never {
     if (!this.#isValidFeedbackType(params.type)) {
       console.error('[Telegram.WebApp] Haptic feedback type is invalid', params.type);
       throw new Error('WebAppHapticFeedbackTypeInvalid');
     }
 
-    if (params.type === 'impact') {
+    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT) {
       if (!this.#isValidImpactStyle(params.impact_style)) {
         console.error('[Telegram.WebApp] Haptic impact style is invalid', params.impact_style);
         throw new Error('WebAppHapticImpactStyleInvalid');
       }
     }
 
-    if (params.type === 'notification') {
+    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION) {
       if (!this.#isValidNotificationType(params.notification_type)) {
         console.error(
           '[Telegram.WebApp] Haptic notification type is invalid',
@@ -126,7 +130,7 @@ export class WebAppHapticFeedback implements HapticFeedback {
       }
     }
 
-    if (params.type === 'selection_change') {
+    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE) {
       // no params needed
     }
 
@@ -139,15 +143,21 @@ export class WebAppHapticFeedback implements HapticFeedback {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
-  impactOccurred(style: ImpactStyle): this | never {
-    return this.#triggerFeedback({ type: 'impact', impact_style: style });
+  impactOccurred(style: HapticFeedbackImpactStyle): this | never {
+    return this.#triggerFeedback({
+      type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT,
+      impact_style: style,
+    });
   }
 
-  notificationOccurred(type: NotificationType): this | never {
-    return this.#triggerFeedback({ type: 'notification', notification_type: type });
+  notificationOccurred(type: HapticFeedbackNotification): this | never {
+    return this.#triggerFeedback({
+      type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION,
+      notification_type: type,
+    });
   }
 
   selectionChanged(): this | never {
-    return this.#triggerFeedback({ type: 'selection_change' });
+    return this.#triggerFeedback({ type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE });
   }
 }

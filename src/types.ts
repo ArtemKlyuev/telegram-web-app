@@ -463,10 +463,35 @@ export interface DataSendEventData {
   data: string;
 }
 
-export interface TriggerHapticFeedbackEventData {
-  type: HapticFeedbackType;
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-trigger-haptic-feedback
+ */
+export type TriggerHapticFeedbackEventData =
+  | ImpactHapticFeedbackData
+  | NotificationHapticFeedbackData
+  | SelectionChangeHapticFeedbackData;
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-trigger-haptic-feedback
+ */
+export interface ImpactHapticFeedbackData {
+  type: 'impact';
   impact_style: HapticFeedbackImpactStyle;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-trigger-haptic-feedback
+ */
+export interface NotificationHapticFeedbackData {
+  type: 'notification';
   notification_type: HapticFeedbackNotification;
+}
+
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-trigger-haptic-feedback
+ */
+export interface SelectionChangeHapticFeedbackData {
+  type: 'selection_change';
 }
 
 export interface OpenLinkEventData {
@@ -562,6 +587,11 @@ export interface WebView {
     callback: Nullable<PostEventCallback>,
     data: DataSendEventData
   ): void;
+  // postEvent(
+  //   event: 'web_app_trigger_haptic_feedback',
+  //   callback: Nullable<PostEventCallback>,
+  //   data: TriggerHapticFeedbackEventData
+  // ): void;
   postEvent(
     event: 'web_app_trigger_haptic_feedback',
     callback: Nullable<PostEventCallback>,
