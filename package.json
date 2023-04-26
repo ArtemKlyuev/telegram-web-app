@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">= 16.20.0"
+  },
   "sideEffects": false,
   "main": "dist/cjs/index.js",
   "typings": "dist/typings/index.d.ts",
