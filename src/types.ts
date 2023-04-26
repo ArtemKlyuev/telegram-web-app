@@ -494,8 +494,12 @@ export interface SelectionChangeHapticFeedbackData {
   type: 'selection_change';
 }
 
+/**
+ * @see https://core.telegram.org/api/web-events#web-app-open-link
+ */
 export interface OpenLinkEventData {
   url: string;
+  try_instant_view: boolean;
 }
 
 export interface OpenTgLinkEventData {
