@@ -2,8 +2,12 @@
   "exclude": ["node_modules", "dist"],
   "include": ["src"],
   "compilerOptions": {
-    "outDir": "dist2/esm/index.js",
+    "outDir": "temp/esm",
     "lib": ["dom", "esnext", "dom.iterable"],
+    "declaration": true,
+    "declarationDir": "./temp/types",
+    "sourceMap": true,
+    "inlineSources": true,
     "target": "es2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
