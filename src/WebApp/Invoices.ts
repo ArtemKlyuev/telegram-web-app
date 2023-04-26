@@ -7,18 +7,23 @@ interface InvoiceData {
   callback?: Nullable<OpenInvoiceCallback>;
 }
 
+/**
+ * matches `/$abd-_012` or `/invoice/abd-_012`
+ */
+const INVOICE_REGEX = /^\/(\$|invoice\/)([A-Za-z0-9\-_=]+)$/;
+
 export class Invoices {
   #store = new Map<InvoiceId, InvoiceData>();
 
   create(url: string): string | never {
     const parsedURL = new URL(url);
-    let match: string[] | null, slug: string;
+    const match = parsedURL.pathname.match(INVOICE_REGEX) ?? [];
+    const slug = match[2];
 
     if (
       !isHTTPTypeProtocol(parsedURL.protocol) ||
       !isTelegramHostname(parsedURL.hostname) ||
-      !(match = parsedURL.pathname.match(/^\/(\$|invoice\/)([A-Za-z0-9\-_=]+)$/)) ||
-      !(slug = match[2])
+      !slug
     ) {
       console.error('[Telegram.WebApp] Invoice url is invalid', url);
       throw new Error('WebAppInvoiceUrlInvalid');
