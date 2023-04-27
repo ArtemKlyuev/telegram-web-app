@@ -1,3 +1,4 @@
+import { WebAppMainButtonParamInvalidError } from '../Errors';
 import {
   HexColor,
   MainButton,
@@ -116,13 +117,11 @@ export class WebAppMainButton implements MainButton {
     const text = value.trim();
 
     if (!text.length) {
-      console.error('[Telegram.WebApp] Main button text is required', value);
-      throw new Error('WebAppMainButtonParamInvalid');
+      throw new WebAppMainButtonParamInvalidError(`text is required ${value}`);
     }
 
     if (text.length > WebAppMainButton.MAX_TEXT_LENGTH) {
-      console.error('[Telegram.WebApp] Main button text is too long', text);
-      throw new Error('WebAppMainButtonParamInvalid');
+      throw new WebAppMainButtonParamInvalidError(`text is too long ${text}`);
     }
 
     this.#buttonText = text;
@@ -143,8 +142,7 @@ export class WebAppMainButton implements MainButton {
     const color = parseColorToHex(value);
 
     if (!color) {
-      console.error('[Telegram.WebApp] Main button color format is invalid', value);
-      throw new Error('WebAppMainButtonParamInvalid');
+      throw new WebAppMainButtonParamInvalidError(`color format is invalid ${value}`);
     }
 
     this.#buttonColor = color;
@@ -165,9 +163,7 @@ export class WebAppMainButton implements MainButton {
     const textColor = parseColorToHex(value);
 
     if (!textColor) {
-      console.error('[Telegram.WebApp] Main button text color format is invalid', value);
-
-      throw new Error('WebAppMainButtonParamInvalid');
+      throw new WebAppMainButtonParamInvalidError(`text color format is invalid ${value}`);
     }
 
     this.#buttonTextColor = textColor;
@@ -181,8 +177,7 @@ export class WebAppMainButton implements MainButton {
     }
 
     if (visible && !this.text.length) {
-      console.error('[Telegram.WebApp] Main button text is required');
-      throw new Error('WebAppMainButtonParamInvalid');
+      throw new WebAppMainButtonParamInvalidError('text is required');
     }
 
     this.#isVisible = visible;
