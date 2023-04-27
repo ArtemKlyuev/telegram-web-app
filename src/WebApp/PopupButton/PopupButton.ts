@@ -1,3 +1,4 @@
+import { WebAppPopupParamInvalidError } from '../../Errors';
 import { EventPopupButton, PopupButton, PopupButtonType } from '../../types';
 
 const TYPES = {
@@ -29,8 +30,7 @@ export class WebAppPopupButton {
     const stringifiedID = (id ?? '').toString();
 
     if (stringifiedID.length > WebAppPopupButton.MAX_ID_LENGTH) {
-      console.error('[Telegram.WebApp] Popup button id is too long', id);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`button id is too long ${id}`);
     }
 
     this.#button.id = stringifiedID;
@@ -42,8 +42,7 @@ export class WebAppPopupButton {
     const isValidType = VALID_BUTTON_TYPES.includes(type);
 
     if (!isValidType) {
-      console.error('[Telegram.WebApp] Popup button type is invalid', type);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`button type is invalid ${type}`);
     }
 
     this.#button.type = type;
@@ -53,7 +52,9 @@ export class WebAppPopupButton {
 
   #setText(text: PopupButton['text']): void {
     if (!this.#button.type) {
-      throw new Error('You should set type for `WebAppPopupButton` before setting the text');
+      throw new WebAppPopupParamInvalidError(
+        'You should set type for `WebAppPopupButton` before setting the text'
+      );
     }
 
     const isTextRequired = TYPES_WITH_REQUIRED_TEXT.includes(this.#button.type);
@@ -65,16 +66,13 @@ export class WebAppPopupButton {
     const normalizedText = (text ?? '').toString().trim();
 
     if (!normalizedText) {
-      console.error(
-        '[Telegram.WebApp] Popup button text is required for type ' + this.#button.type,
-        text
+      throw new WebAppPopupParamInvalidError(
+        `button text is required for type ${this.#button.type} ${text}`
       );
-      throw new Error('WebAppPopupParamInvalid');
     }
 
     if (normalizedText.length > WebAppPopupButton.MAX_TEXT_LENGTH) {
-      console.error('[Telegram.WebApp] Popup button text is too long', normalizedText);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`button text is too long ${normalizedText}`);
     }
 
     this.#button.text = normalizedText;

@@ -1,3 +1,4 @@
+import { WebAppPopupParamInvalidError } from '../../Errors';
 import {
   EventPopupButton,
   EventPopupButtonsSet,
@@ -59,8 +60,7 @@ export class Popup {
     }
 
     if (title.length > Popup.MAX_TITLE_LENGTH) {
-      console.error('[Telegram.WebApp] Popup title is too long', title);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`title is too long ${title}`);
     }
 
     this.#data.params.title = trimmedTitle;
@@ -71,13 +71,12 @@ export class Popup {
     const trimmedMessage = (message ?? '').trim();
 
     if (!trimmedMessage) {
-      console.error('[Telegram.WebApp] Popup message is required', message);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`message is required ${message}`);
     }
 
     if (trimmedMessage.length > Popup.MAX_MESSAGE_LENGTH) {
       console.error('[Telegram.WebApp] Popup message is too long', trimmedMessage);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`message is too long ${trimmedMessage}`);
     }
 
     this.#data.params.message = trimmedMessage;
@@ -95,20 +94,17 @@ export class Popup {
     }
 
     if (!Array.isArray(buttons)) {
-      console.error('[Telegram.WebApp] Popup buttons should be an array', buttons);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`buttons should be an array ${buttons}`);
     }
 
     if (buttons.length < Popup.MIN_BUTTONS) {
-      console.error(`[Telegram.WebApp] Popup should have at least ${Popup.MIN_BUTTONS} button`);
-      throw new Error('WebAppPopupParamInvalid');
+      throw new WebAppPopupParamInvalidError(`should have at least ${Popup.MIN_BUTTONS} button`);
     }
 
     if (buttons.length > Popup.MAX_BUTTONS) {
-      console.error(
-        `[Telegram.WebApp] Popup should not have more than ${Popup.MAX_BUTTONS} buttons`
+      throw new WebAppPopupParamInvalidError(
+        `should not have more than ${Popup.MAX_BUTTONS} buttons`
       );
-      throw new Error('WebAppPopupParamInvalid');
     }
 
     const popupButtons = buttons.map(
