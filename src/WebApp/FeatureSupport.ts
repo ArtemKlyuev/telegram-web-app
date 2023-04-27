@@ -15,7 +15,7 @@ interface Config<MethodName extends string = string> {
   availableInVersion?: string;
   methodsConfig:
     | {
-        [key in MethodName]: {
+        [key in MethodName]?: {
           // rewrites base `availableInVersion` for method
           availableInVersion?: string | undefined;
           decorate?: (info: MethodInfo) => any;
@@ -150,7 +150,7 @@ export abstract class FeatureSupport {
               }
 
               if (versionOrConfig.methodsConfig[methodName]) {
-                const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName];
+                const { availableInVersion, decorate } = versionOrConfig.methodsConfig[methodName]!;
 
                 if (!versionOrConfig.availableInVersion && !availableInVersion) {
                   throw new TypeError(
