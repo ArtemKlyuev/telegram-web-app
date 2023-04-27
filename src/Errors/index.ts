@@ -4,6 +4,7 @@ export * from './Popup';
 export * from './ScanQrPopup';
 export * from './UnsupportedVersion';
 export * from './WebAppBackgroundColorInvalid';
+export * from './WebAppDataInvalid';
 export * from './WebAppMainButtonParamInvalid';
 export * from './WebAppMethodUnsupported';
 export * from './WebAppTelegramUrlInvalid';
