@@ -38,6 +38,7 @@ import {
 import {
   WebAppDataInvalidError,
   WebAppHeaderColorKeyInvalidError,
+  WebAppInlineChooseChatTypeInvalidError,
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
@@ -749,8 +750,9 @@ export class TelegramWebApp implements WebApp {
     const chatTypes = chatTypesToChoose ? chatTypesToChoose : [];
 
     if (!Array.isArray(chatTypesToChoose)) {
-      console.error('[Telegram.WebApp] Choose chat types should be an array', chatTypesToChoose);
-      throw new Error('WebAppInlineChooseChatTypesInvalid');
+      throw new WebAppInlineChooseChatTypeInvalidError(
+        `types should be an array ${chatTypesToChoose}`
+      );
     }
 
     // remove duplicates
@@ -758,8 +760,7 @@ export class TelegramWebApp implements WebApp {
 
     chats.forEach((chat) => {
       if (!VALID_CHAT_TYPES.includes(chat)) {
-        console.error('[Telegram.WebApp] Choose chat type is invalid', chat);
-        throw new Error('WebAppInlineChooseChatTypeInvalid');
+        throw new WebAppInlineChooseChatTypeInvalidError(`type is invalid ${chat}`);
       }
     });
 
