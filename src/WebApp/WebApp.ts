@@ -39,6 +39,7 @@ import {
   WebAppDataInvalidError,
   WebAppHeaderColorKeyInvalidError,
   WebAppInlineChooseChatTypeInvalidError,
+  WebAppInlineModeDisabledError,
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
@@ -734,10 +735,7 @@ export class TelegramWebApp implements WebApp {
     }
 
     if (!this.#webView.initParams.tgWebAppBotInline) {
-      console.error(
-        '[Telegram.WebApp] Inline mode is disabled for this bot. Read more about inline mode: https://core.telegram.org/bots/inline'
-      );
-      throw new Error('WebAppInlineModeDisabled');
+      throw new WebAppInlineModeDisabledError();
     }
 
     const queryToSend = (query || '').trim();
