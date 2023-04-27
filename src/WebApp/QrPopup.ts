@@ -1,3 +1,4 @@
+import { WebAppScanQrPopupOpenedError, WebAppScanQrPopupParamInvalidError } from '../Errors';
 import { Nullable, ScanQrPopupParams, ShowScanQrPopupCallback } from '../types';
 
 interface Options {
@@ -18,15 +19,13 @@ export class QrPopup {
 
   open({ params: { text }, callback }: Options): void {
     if (this.#isOpened) {
-      console.error('[Telegram.WebApp] Popup is already opened');
-      throw new Error('WebAppScanQrPopupOpened');
+      throw new WebAppScanQrPopupOpenedError();
     }
 
     const trimmedText = (text ?? '').trim();
 
     if (trimmedText.length > QrPopup.MAX_TEXT_LENGTH) {
-      console.error('[Telegram.WebApp] Scan QR popup text is too long', text);
-      throw new Error('WebAppScanQrPopupParamInvalid');
+      throw new WebAppScanQrPopupParamInvalidError(`text is too long ${text}`);
     }
 
     if (trimmedText) {
