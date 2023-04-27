@@ -35,6 +35,7 @@ import {
   parseColorToHex,
   SessionStorage,
 } from '../utils';
+import { WebAppPopupOpenedError, WebAppPopupParamInvalidError } from '../Errors';
 
 import {
   ColorScheme,
@@ -697,12 +698,11 @@ export class TelegramWebApp implements WebApp {
     }
 
     if (this.#popup.isOpened) {
-      console.error('[Telegram.WebApp] Popup is already opened');
-      throw new Error('WebAppPopupOpened');
+      throw new WebAppPopupOpenedError();
     }
 
     if (typeof params !== 'object' && params === null) {
-      throw new Error('WebAppPopupParamsInvalid');
+      throw new WebAppPopupParamInvalidError(`params must be an object ${params}`);
     }
 
     this.#popup.open({ params, callback });
