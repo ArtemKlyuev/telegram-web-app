@@ -40,6 +40,7 @@ import {
   WebAppHeaderColorKeyInvalidError,
   WebAppInlineChooseChatTypeInvalidError,
   WebAppInlineModeDisabledError,
+  WebAppInlineQueryInvalidError,
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
@@ -741,8 +742,7 @@ export class TelegramWebApp implements WebApp {
     const queryToSend = (query || '').trim();
 
     if (queryToSend.length > TelegramWebApp.MAX_INLINE_QUERY_LENGTH) {
-      console.error('[Telegram.WebApp] Inline query is too long', query);
-      throw new Error('WebAppInlineQueryInvalid');
+      throw new WebAppInlineQueryInvalidError(`is too long ${query}`);
     }
 
     const chatTypes = chatTypesToChoose ? chatTypesToChoose : [];
