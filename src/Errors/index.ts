@@ -1,5 +1,6 @@
 export * from './HapticFeedback';
 export * from './Invoice';
+export * from './Popup';
 export * from './ScanQrPopup';
 export * from './UnsupportedVersion';
 export * from './WebAppBackgroundColorInvalid';
