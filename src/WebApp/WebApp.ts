@@ -39,6 +39,7 @@ import {
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
+  WebAppTelegramUrlInvalidError,
 } from '../Errors';
 
 import {
@@ -616,8 +617,7 @@ export class TelegramWebApp implements WebApp {
     const { protocol } = new URL(url);
 
     if (!isHTTPTypeProtocol(protocol)) {
-      console.error('[Telegram.WebApp] Url protocol is not supported', url);
-      throw new Error('WebAppTgUrlInvalid');
+      throw new WebAppTelegramUrlInvalidError(`protocol is not supported ${url}`);
     }
 
     if (!this.#version.isSuitableTo('6.1')) {
@@ -649,13 +649,11 @@ export class TelegramWebApp implements WebApp {
     const { protocol, hostname, pathname, search } = new URL(url);
 
     if (!isHTTPTypeProtocol(protocol)) {
-      console.error('[Telegram.WebApp] Url protocol is not supported', url);
-      throw new Error('WebAppTgUrlInvalid');
+      throw new WebAppTelegramUrlInvalidError(`protocol is not supported ${url}`);
     }
 
     if (!isTelegramHostname(hostname)) {
-      console.error('[Telegram.WebApp] Url host is not supported', url);
-      throw new Error('WebAppTgUrlInvalid');
+      throw new WebAppTelegramUrlInvalidError(`host is not supported ${url}`);
     }
 
     const fullPath = pathname + search;
