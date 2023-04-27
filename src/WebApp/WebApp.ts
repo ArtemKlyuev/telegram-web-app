@@ -36,6 +36,7 @@ import {
   SessionStorage,
 } from '../utils';
 import {
+  WebAppDataInvalidError,
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
@@ -599,13 +600,11 @@ export class TelegramWebApp implements WebApp {
 
   sendData = (data: string): void => {
     if (!data || !data.length) {
-      console.error('[Telegram.WebApp] Data is required', data);
-      throw new Error('WebAppDataInvalid');
+      throw new WebAppDataInvalidError(`is required ${data}`);
     }
 
     if (byteLength(data) > TelegramWebApp.MAXIMUM_BYTES_TO_SEND) {
-      console.error('[Telegram.WebApp] Data is too long', data);
-      throw new Error('WebAppDataInvalid');
+      throw new WebAppDataInvalidError(`is too long ${data}`);
     }
 
     this.#webView.postEvent('web_app_data_send', undefined, { data });
@@ -763,7 +762,7 @@ export class TelegramWebApp implements WebApp {
     chats.forEach((chat) => {
       if (!VALID_CHAT_TYPES.includes(chat)) {
         console.error('[Telegram.WebApp] Choose chat type is invalid', chat);
-        throw Error('WebAppInlineChooseChatTypeInvalid');
+        throw new Error('WebAppInlineChooseChatTypeInvalid');
       }
     });
 
