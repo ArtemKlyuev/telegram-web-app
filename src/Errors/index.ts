@@ -6,6 +6,7 @@ export * from './UnsupportedVersion';
 export * from './WebAppBackgroundColorInvalid';
 export * from './WebAppDataInvalid';
 export * from './WebAppHeaderColorKeyInvalid';
+export * from './WebAppInlineChooseChatTypeInvalid';
 export * from './WebAppMainButtonParamInvalid';
 export * from './WebAppMethodUnsupported';
 export * from './WebAppTelegramUrlInvalid';
