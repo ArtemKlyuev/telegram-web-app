@@ -5,6 +5,7 @@ export * from './getWebViewInitParams';
 export * from './isColorDark';
 export * from './isHTTPTypeProtocol';
 export * from './isTelegramHostname';
+export * from './isValidTelegramWebAppURL';
 export * from './parseColorToHex';
 export * from './sessionStorage';
 export * from './url';
