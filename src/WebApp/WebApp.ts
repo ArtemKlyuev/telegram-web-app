@@ -37,6 +37,7 @@ import {
 } from '../utils';
 import {
   WebAppDataInvalidError,
+  WebAppHeaderColorKeyInvalidError,
   WebAppMethodUnsupportedError,
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
@@ -581,11 +582,7 @@ export class TelegramWebApp implements WebApp {
       colorKey !== HEADER_COLOR_KEYS.BG_COLOR &&
       colorKey !== HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
     ) {
-      console.error(
-        "[Telegram.WebApp] Header color key should be one of Telegram.WebApp.themeParams.bg_color, Telegram.WebApp.themeParams.secondary_bg_color, 'bg_color', 'secondary_bg_color'",
-        colorKeyOrColor
-      );
-      throw new Error('WebAppHeaderColorKeyInvalid');
+      throw new WebAppHeaderColorKeyInvalidError(colorKeyOrColor);
     }
 
     this.#headerColorKey = colorKey;
