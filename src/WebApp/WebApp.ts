@@ -399,7 +399,7 @@ export class TelegramWebApp implements WebApp {
 
     if (shouldOpenLink) {
       e.preventDefault();
-      // WebApp.openTgLink(el.href);
+      this.openTelegramLink((el as HTMLAnchorElement).href);
     }
   };
 
