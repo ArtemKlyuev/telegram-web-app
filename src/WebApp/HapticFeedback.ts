@@ -12,7 +12,8 @@ import {
   ValueOf,
 } from '../types';
 import { Disposer, EventEmitter } from '../utils';
-import { bindMethods } from '../utils/decorators';
+import { bindMethods } from '../decorators';
+
 import { FeatureSupport } from './FeatureSupport';
 
 type HapticFeedbackEvents = typeof HAPTIC_FEEDBACK_EVENTS;
