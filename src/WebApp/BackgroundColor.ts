@@ -1,5 +1,6 @@
 import { HexColor, Nullable, ThemeParams, ValueOf } from '../types';
 import { EventEmitter, Disposer, parseColorToHex } from '../utils';
+import { WebAppBackgroundColorInvalidError } from '../Errors';
 
 import { HeaderBgColor } from './types';
 import { HEADER_COLOR_KEYS } from './constants';
@@ -54,7 +55,7 @@ export class BackgroundColor {
     }
   };
 
-  #getBgColor(color: HeaderBgColor | string): HeaderBgColor | HexColor {
+  #getBgColor(color: HeaderBgColor | HexColor): HeaderBgColor | HexColor {
     if (color === HEADER_COLOR_KEYS.BG_COLOR || color === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR) {
       return color;
     }
@@ -62,14 +63,13 @@ export class BackgroundColor {
     const bgColor = parseColorToHex(color);
 
     if (!bgColor) {
-      console.error('[Telegram.WebApp] Background color format is invalid', color);
-      throw new Error('WebAppBackgroundColorInvalid');
+      throw new WebAppBackgroundColorInvalidError(color);
     }
 
     return bgColor;
   }
 
-  set = (color: HeaderBgColor | string): void => {
+  set = (color: HeaderBgColor | HexColor): void => {
     this.#backgroundColorKeyOrColor = this.#getBgColor(color);
     this.update();
   };
