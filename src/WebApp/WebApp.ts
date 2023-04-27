@@ -46,6 +46,7 @@ import {
   WebAppPopupParamInvalidError,
   WebAppTelegramUrlInvalidError,
 } from '../Errors';
+import { bindMethods } from '../decorators';
 
 import {
   ColorScheme,
@@ -55,6 +56,7 @@ import {
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
+import { FeatureSupport } from './FeatureSupport';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';
@@ -68,7 +70,6 @@ import { Popup } from './Popup';
 import { WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
-import { bindMethods } from '../decorators';
 
 const CHAT_TYPES = {
   USERS: 'users',
@@ -97,6 +98,144 @@ interface Dependencies {
   hapticFeedback: WebAppHapticFeedback;
 }
 
+@FeatureSupport.inVersion<keyof WebApp>({
+  methodsConfig: {
+    setHeaderColor: {
+      availableInVersion: '6.1',
+      decorate: ({ appVersion, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          console.warn(`[Telegram.WebApp] Header color is not supported in version ${appVersion}`);
+
+          return;
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    setBackgroundColor: {
+      availableInVersion: '6.1',
+      decorate: ({ appVersion, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          console.warn(
+            `[Telegram.WebApp] Background color is not supported in version ${appVersion}`
+          );
+
+          return;
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    enableClosingConfirmation: {
+      availableInVersion: '6.2',
+      decorate: ({ appVersion, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          console.warn(
+            `[Telegram.WebApp] Closing confirmation is not supported in version ${appVersion}`
+          );
+
+          return;
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    disableClosingConfirmation: {
+      availableInVersion: '6.2',
+      decorate: ({ appVersion, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          console.warn(
+            `[Telegram.WebApp] Closing confirmation is not supported in version ${appVersion}`
+          );
+
+          return;
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    switchInlineQuery: {
+      availableInVersion: '6.7',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    openInvoice: {
+      availableInVersion: '6.1',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    showPopup: {
+      availableInVersion: '6.2',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    showAlert: {
+      availableInVersion: '6.2',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    showConfirm: {
+      availableInVersion: '6.2',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    showScanQrPopup: {
+      availableInVersion: '6.4',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    closeScanQrPopup: {
+      availableInVersion: '6.4',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+    readTextFromClipboard: {
+      availableInVersion: '6.4',
+      decorate: ({ appVersion, name, isSupported, executeOriginalMethod }) => {
+        if (!isSupported) {
+          throw new WebAppMethodUnsupportedError(name, appVersion);
+        }
+
+        executeOriginalMethod();
+      },
+    },
+  },
+})
 @bindMethods
 export class TelegramWebApp implements WebApp {
   readonly #platform: string = 'unknown';
@@ -370,6 +509,7 @@ export class TelegramWebApp implements WebApp {
     return this.#viewport.isExpanded;
   }
 
+  // FIXME: add `FeatureSupport`
   set isClosingConfirmationEnabled(isEnabled: boolean) {
     this.#setClosingConfirmation(isEnabled);
   }
@@ -576,11 +716,6 @@ export class TelegramWebApp implements WebApp {
   }
 
   setHeaderColor(colorKeyOrColor: HeaderBgColor | string): void | never {
-    if (!this.#version.isSuitableTo('6.1')) {
-      console.warn('[Telegram.WebApp] Header color is not supported in version ' + this.#version);
-      return;
-    }
-
     const colorKey = this.#getHeaderColorKey(colorKeyOrColor);
 
     if (
@@ -596,7 +731,6 @@ export class TelegramWebApp implements WebApp {
   }
 
   setBackgroundColor(color: HeaderBgColor | string): void {
-    // FIXME: not supported in 6.1
     this.backgroundColor = color;
   }
 
@@ -636,7 +770,6 @@ export class TelegramWebApp implements WebApp {
     });
   }
 
-  // TODO: version 6.1+
   openInvoice(url: string, callback?: Nullable<OpenInvoiceCallback>): void | never {
     const slug = this.#invoices.create(url);
     this.#invoices.save(slug, { url, callback });
@@ -670,10 +803,6 @@ export class TelegramWebApp implements WebApp {
   }
 
   readTextFromClipboard(callback?: ClipboardCallback | null | undefined): void {
-    if (!this.#version.isSuitableTo('6.4')) {
-      throw new WebAppMethodUnsupportedError('readTextFromClipboard', this.#version.value);
-    }
-
     const id = generateId(16);
 
     this.#clipboard.setRequest(id, callback);
@@ -690,10 +819,6 @@ export class TelegramWebApp implements WebApp {
   }
 
   showPopup(params: PopupParams, callback?: Nullable<ShowPopupCallback>): void | never {
-    if (!this.#version.isSuitableTo('6.2')) {
-      throw new WebAppMethodUnsupportedError('showPopup', this.#version.value);
-    }
-
     if (this.#popup.isOpened) {
       throw new WebAppPopupOpenedError();
     }
@@ -732,10 +857,6 @@ export class TelegramWebApp implements WebApp {
   }
 
   switchInlineQuery(query: string, chatTypesToChoose?: Nullable<ChatTypesToChoose>): void | never {
-    if (!this.#version.isSuitableTo('6.7')) {
-      throw new WebAppMethodUnsupportedError('switchInlineQuery', this.#version.value);
-    }
-
     if (!this.#webView.initParams.tgWebAppBotInline) {
       throw new WebAppInlineModeDisabledError();
     }
@@ -773,20 +894,12 @@ export class TelegramWebApp implements WebApp {
     params: ScanQrPopupParams,
     callback?: Nullable<ShowScanQrPopupCallback>
   ): void | never {
-    if (!this.#version.isSuitableTo('6.4')) {
-      throw new WebAppMethodUnsupportedError('showScanQrPopup', this.#version.value);
-    }
-
     this.#qrPopup.open({ params, callback });
 
     this.#webView.postEvent('web_app_open_scan_qr_popup', undefined, this.#qrPopup.params);
   }
 
   closeScanQrPopup(): void | never {
-    if (!this.#version.isSuitableTo('6.4')) {
-      throw new WebAppMethodUnsupportedError('closeScanQrPopup', this.#version.value);
-    }
-
     this.#qrPopup.close();
 
     this.#webView.postEvent('web_app_close_scan_qr_popup');
