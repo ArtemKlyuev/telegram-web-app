@@ -17,15 +17,11 @@ export class Invoices {
   #store = new Map<InvoiceId, InvoiceData>();
 
   create(url: string): string | never {
-    const parsedURL = new URL(url);
-    const match = parsedURL.pathname.match(INVOICE_REGEX) ?? [];
+    const { hostname, pathname, protocol } = new URL(url);
+    const match = pathname.match(INVOICE_REGEX) ?? [];
     const slug = match[2];
 
-    if (
-      !isHTTPTypeProtocol(parsedURL.protocol) ||
-      !isTelegramHostname(parsedURL.hostname) ||
-      !slug
-    ) {
+    if (!isHTTPTypeProtocol(protocol) || !isTelegramHostname(hostname) || !slug) {
       throw new WebAppInvoiceUrlInvalidError(url);
     }
 
