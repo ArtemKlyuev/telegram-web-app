@@ -256,6 +256,9 @@ export interface WebApp {
   readonly initData: string;
   readonly initDataUnsafe: WebAppInitData;
   readonly version: string;
+  /**
+   * might be `macos` | 'ios' | 'linux' | 'windows'| 'android'
+   */
   readonly platform: string;
   readonly colorScheme: ColorScheme;
   readonly themeParams: ThemeParams;
