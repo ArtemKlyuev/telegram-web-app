@@ -68,6 +68,7 @@ import { Popup } from './Popup';
 import { WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
+import { bindMethods } from '../decorators';
 
 const CHAT_TYPES = {
   USERS: 'users',
@@ -96,6 +97,7 @@ interface Dependencies {
   hapticFeedback: WebAppHapticFeedback;
 }
 
+@bindMethods
 export class TelegramWebApp implements WebApp {
   readonly #platform: string = 'unknown';
   #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
@@ -573,7 +575,7 @@ export class TelegramWebApp implements WebApp {
     return false;
   }
 
-  setHeaderColor = (colorKeyOrColor: HeaderBgColor | string): void | never => {
+  setHeaderColor(colorKeyOrColor: HeaderBgColor | string): void | never {
     if (!this.#version.isSuitableTo('6.1')) {
       console.warn('[Telegram.WebApp] Header color is not supported in version ' + this.#version);
       return;
@@ -591,14 +593,14 @@ export class TelegramWebApp implements WebApp {
     this.#headerColorKey = colorKey;
 
     this.#webView.postEvent('web_app_set_header_color', undefined, { color_key: colorKey });
-  };
+  }
 
-  setBackgroundColor = (color: HeaderBgColor | string): void => {
+  setBackgroundColor(color: HeaderBgColor | string): void {
     // FIXME: not supported in 6.1
     this.backgroundColor = color;
-  };
+  }
 
-  sendData = (data: string): void => {
+  sendData(data: string): void {
     if (!data || !data.length) {
       throw new WebAppDataInvalidError(`is required ${data}`);
     }
@@ -608,11 +610,13 @@ export class TelegramWebApp implements WebApp {
     }
 
     this.#webView.postEvent('web_app_data_send', undefined, { data });
-  };
+  }
 
-  isVersionAtLeast = (version: string): boolean => this.#version.isSuitableTo(version);
+  isVersionAtLeast(version: string): boolean {
+    return this.#version.isSuitableTo(version);
+  }
 
-  openLink = (url: string, options?: Nullable<OpenLinkOptions>): void | never => {
+  openLink(url: string, options?: Nullable<OpenLinkOptions>): void | never {
     const { protocol } = new URL(url);
 
     if (!isHTTPTypeProtocol(protocol)) {
@@ -630,17 +634,17 @@ export class TelegramWebApp implements WebApp {
       url,
       try_instant_view: this.#version.isSuitableTo('6.4') && linkOptions.try_instant_view,
     });
-  };
+  }
 
   // TODO: version 6.1+
-  openInvoice = (url: string, callback?: Nullable<OpenInvoiceCallback>): void | never => {
+  openInvoice(url: string, callback?: Nullable<OpenInvoiceCallback>): void | never {
     const slug = this.#invoices.create(url);
     this.#invoices.save(slug, { url, callback });
 
     this.#webView.postEvent('web_app_open_invoice', undefined, { slug });
-  };
+  }
 
-  openTelegramLink = (url: string): void => {
+  openTelegramLink(url: string): void {
     if (!this.#version.isSuitableTo('6.1')) {
       return;
     }
@@ -663,9 +667,9 @@ export class TelegramWebApp implements WebApp {
     }
 
     location.href = 'https://t.me' + fullPath;
-  };
+  }
 
-  readTextFromClipboard = (callback?: ClipboardCallback | null | undefined): void => {
+  readTextFromClipboard(callback?: ClipboardCallback | null | undefined): void {
     if (!this.#version.isSuitableTo('6.4')) {
       throw new WebAppMethodUnsupportedError('readTextFromClipboard', this.#version.value);
     }
@@ -675,15 +679,15 @@ export class TelegramWebApp implements WebApp {
     this.#clipboard.setRequest(id, callback);
 
     this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id: id });
-  };
+  }
 
-  enableClosingConfirmation = (): void | never => {
+  enableClosingConfirmation(): void | never {
     this.#isClosingConfirmationEnabled = true;
-  };
+  }
 
-  disableClosingConfirmation = (): void | never => {
+  disableClosingConfirmation(): void | never {
     this.#isClosingConfirmationEnabled = false;
-  };
+  }
 
   showPopup(params: PopupParams, callback?: Nullable<ShowPopupCallback>): void | never {
     if (!this.#version.isSuitableTo('6.2')) {
@@ -705,13 +709,13 @@ export class TelegramWebApp implements WebApp {
     this.#webView.postEvent('web_app_open_popup', undefined, data);
   }
 
-  showAlert = (message: string, callback?: Nullable<NoParamsCallback>): void => {
+  showAlert(message: string, callback?: Nullable<NoParamsCallback>): void {
     const callbackWithoutID = (): void => callback?.();
 
     this.showPopup({ message }, callbackWithoutID);
-  };
+  }
 
-  showConfirm = (message: string, callback?: Nullable<ShowConfirmCallback>): void => {
+  showConfirm(message: string, callback?: Nullable<ShowConfirmCallback>): void {
     const OK_BTN_ID = 'ok';
     const popupCallback = (pressedBtnID: string) => callback?.(pressedBtnID === OK_BTN_ID);
 
@@ -725,12 +729,9 @@ export class TelegramWebApp implements WebApp {
       },
       popupCallback
     );
-  };
+  }
 
-  switchInlineQuery = (
-    query: string,
-    chatTypesToChoose?: Nullable<ChatTypesToChoose>
-  ): void | never => {
+  switchInlineQuery(query: string, chatTypesToChoose?: Nullable<ChatTypesToChoose>): void | never {
     if (!this.#version.isSuitableTo('6.7')) {
       throw new WebAppMethodUnsupportedError('switchInlineQuery', this.#version.value);
     }
@@ -766,12 +767,12 @@ export class TelegramWebApp implements WebApp {
       query: queryToSend,
       chat_types: chats,
     });
-  };
+  }
 
-  showScanQrPopup = (
+  showScanQrPopup(
     params: ScanQrPopupParams,
     callback?: Nullable<ShowScanQrPopupCallback>
-  ): void | never => {
+  ): void | never {
     if (!this.#version.isSuitableTo('6.4')) {
       throw new WebAppMethodUnsupportedError('showScanQrPopup', this.#version.value);
     }
@@ -779,9 +780,9 @@ export class TelegramWebApp implements WebApp {
     this.#qrPopup.open({ params, callback });
 
     this.#webView.postEvent('web_app_open_scan_qr_popup', undefined, this.#qrPopup.params);
-  };
+  }
 
-  closeScanQrPopup = (): void | never => {
+  closeScanQrPopup(): void | never {
     if (!this.#version.isSuitableTo('6.4')) {
       throw new WebAppMethodUnsupportedError('closeScanQrPopup', this.#version.value);
     }
@@ -789,25 +790,25 @@ export class TelegramWebApp implements WebApp {
     this.#qrPopup.close();
 
     this.#webView.postEvent('web_app_close_scan_qr_popup');
-  };
+  }
 
-  onEvent = (eventType: string, callback: AnyCallback): void => {
+  onEvent(eventType: string, callback: AnyCallback): void {
     this.#onWebViewEvent(eventType, callback);
-  };
+  }
 
-  offEvent = (eventType: string, callback: AnyCallback): void => {
+  offEvent(eventType: string, callback: AnyCallback): void {
     this.#offWebViewEvent(eventType, callback);
-  };
+  }
 
-  ready = (): void => {
+  ready(): void {
     this.#webView.postEvent('web_app_ready');
-  };
+  }
 
-  expand = (): void => {
+  expand(): void {
     this.#webView.postEvent('web_app_expand');
-  };
+  }
 
-  close = (): void => {
+  close(): void {
     this.#webView.postEvent('web_app_close');
-  };
+  }
 }
