@@ -5,3 +5,4 @@ export * from './UnsupportedVersion';
 export * from './WebAppBackgroundColorInvalid';
 export * from './WebAppMainButtonParamInvalid';
 export * from './WebAppMethodUnsupported';
+export * from './WebAppPopupParamInvalid';
