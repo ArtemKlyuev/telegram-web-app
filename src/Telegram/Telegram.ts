@@ -1,4 +1,5 @@
 import { Nullable, WebApp, WebView } from '../types';
+import { FeatureSupport } from '../decorators';
 import { TelegramWebView } from '../WebView';
 import {
   WebAppBackButton,
@@ -14,7 +15,6 @@ import {
   Version,
   Viewport,
   TelegramWebApp,
-  FeatureSupport,
 } from '../WebApp';
 import {
   EventBus,

@@ -1,3 +1,5 @@
+import { Initializer, Initializers } from './Initializers';
+
 type AnyFunction = (...args: any[]) => any;
 
 export function bindMethod<ThisArg>(_: AnyFunction, context: ClassMethodDecoratorContext<ThisArg>) {
@@ -17,20 +19,6 @@ export function bindMethod<ThisArg>(_: AnyFunction, context: ClassMethodDecorato
     // @ts-expect-error
     this[context.name] = this[context.name].bind(this);
   });
-}
-
-type Initializer<ThisArg> = (this: ThisArg) => void;
-
-class Initializers<ThisArg> {
-  #initizlizers = new Set<Initializer<ThisArg>>();
-
-  add(initializer: Initializer<ThisArg>): void {
-    this.#initizlizers.add(initializer);
-  }
-
-  invoke(instance: ThisArg): void {
-    this.#initizlizers.forEach((initializer) => initializer.call(instance));
-  }
 }
 
 export function bindMethods<Class extends new (...args: any) => any>(

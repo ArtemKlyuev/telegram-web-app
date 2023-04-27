@@ -1,8 +1,6 @@
 import { BackButton, NoParamsCallback, ValueOf } from '../types';
 import { Disposer, EventEmitter } from '../utils';
-import { bindMethods } from '../decorators';
-
-import { FeatureSupport } from './FeatureSupport';
+import { bindMethods, FeatureSupport } from '../decorators';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
@@ -28,7 +26,7 @@ const BUTTON_EVENTS = {
 
 export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
 
-@FeatureSupport.inVersion<keyof BackButton>({
+@FeatureSupport.inVersion<BackButton>({
   availableInVersion: '6.1',
   methodsConfig: ({ appVersion, executeOriginalMethod, isSupported, thisArg }) => {
     if (!isSupported) {
@@ -36,7 +34,7 @@ export const BACK_BUTTON_ON_EVENT_KEY = Symbol('on_event');
       return thisArg;
     }
 
-    executeOriginalMethod();
+    return executeOriginalMethod();
   },
 })
 @bindMethods

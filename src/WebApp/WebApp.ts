@@ -46,7 +46,7 @@ import {
   WebAppPopupParamInvalidError,
   WebAppTelegramUrlInvalidError,
 } from '../Errors';
-import { bindMethods } from '../decorators';
+import { bindMethods, FeatureSupport } from '../decorators';
 
 import {
   ColorScheme,
@@ -56,7 +56,6 @@ import {
   WebViewEventParams,
 } from './types';
 import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
-import { FeatureSupport } from './FeatureSupport';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';
@@ -98,7 +97,7 @@ interface Dependencies {
   hapticFeedback: WebAppHapticFeedback;
 }
 
-@FeatureSupport.inVersion<keyof WebApp>({
+@FeatureSupport.inVersion<WebApp>({
   methodsConfig: {
     setHeaderColor: {
       availableInVersion: '6.1',

@@ -12,9 +12,7 @@ import {
   ValueOf,
 } from '../types';
 import { Disposer, EventEmitter } from '../utils';
-import { bindMethods } from '../decorators';
-
-import { FeatureSupport } from './FeatureSupport';
+import { bindMethods, FeatureSupport } from '../decorators';
 
 type HapticFeedbackEvents = typeof HAPTIC_FEEDBACK_EVENTS;
 type HapticFeedbackEvent = ValueOf<HapticFeedbackEvents>;
@@ -56,7 +54,7 @@ const HAPTIC_FEEDBACK_EVENTS = {
 
 const ON_EVENT = Symbol('on_event');
 
-@FeatureSupport.inVersion<keyof HapticFeedback>({
+@FeatureSupport.inVersion<HapticFeedback>({
   availableInVersion: '6.1',
   methodsConfig: ({ appVersion, executeOriginalMethod, isSupported, thisArg }) => {
     if (!isSupported) {
@@ -64,7 +62,7 @@ const ON_EVENT = Symbol('on_event');
       return thisArg;
     }
 
-    executeOriginalMethod();
+    return executeOriginalMethod();
   },
 })
 @bindMethods

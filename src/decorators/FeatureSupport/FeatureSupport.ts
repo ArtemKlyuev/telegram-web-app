@@ -1,41 +1,36 @@
-import { UnsupportedVersionError } from '../Errors';
+import { UnsupportedVersionError } from '../../Errors';
 
-import { Version } from './Version';
+import { Version } from '../../WebApp/Version';
 
-interface MethodInfo {
-  name: string;
+import { createWrapper } from '../wrapper';
+
+interface MethodInfo<Name extends string, Instance extends Record<string, any> = any> {
+  name: Name;
   isSupported: boolean;
-  thisArg: any;
+  thisArg: Instance;
   appVersion: string;
   availableInVersion: string;
-  executeOriginalMethod: () => any;
+  executeOriginalMethod: () => ReturnType<Instance[Name]>;
 }
 
-interface Config<MethodName extends string = string> {
+interface MethodNameWithDescriptor<Name extends string = string> {
+  methodName: Name;
+  descriptor: PropertyDescriptor;
+}
+
+type MethodsConfig<MethodName extends string, Instance extends Record<string, any>> = {
+  [key in MethodName]?: {
+    // rewrites base `availableInVersion` for method
+    availableInVersion?: string | undefined;
+    decorate?: (info: MethodInfo<key, Instance>) => any;
+  };
+};
+
+interface Config<MethodName extends string, Instance extends Record<string, any>> {
   availableInVersion?: string;
   methodsConfig:
-    | {
-        [key in MethodName]?: {
-          // rewrites base `availableInVersion` for method
-          availableInVersion?: string | undefined;
-          decorate?: (info: MethodInfo) => any;
-        };
-      }
-    | ((info: MethodInfo) => any);
-}
-
-type Initializer<ThisArg> = (this: ThisArg) => void;
-
-class Initializers<ThisArg> {
-  #initizlizers = new Set<Initializer<ThisArg>>();
-
-  add(initializer: Initializer<ThisArg>): void {
-    this.#initizlizers.add(initializer);
-  }
-
-  invoke(instance: ThisArg): void {
-    this.#initizlizers.forEach((initializer) => initializer.call(instance));
-  }
+    | MethodsConfig<MethodName, Instance>
+    | ((info: MethodInfo<MethodName, Instance>) => any);
 }
 
 export abstract class FeatureSupport {
@@ -45,12 +40,48 @@ export abstract class FeatureSupport {
     this.#version ??= version;
   }
 
-  static #decorateWhenFunc(config: Omit<MethodInfo, 'isSupported' | 'appVersion'>): MethodInfo {
+  static #getMethodsNames<Methods extends string, Class extends new (...args: any) => any>(
+    obj: Class
+  ): Methods[] {
+    const prototype = Object.getPrototypeOf(obj);
+
+    return Object.getOwnPropertyNames(prototype).filter(
+      (name) => name !== 'constructor'
+    ) as Methods[];
+  }
+
+  static #mapMethodNameWithDescriptor<
+    Class extends new (...args: any) => any,
+    Methods extends string
+  >(obj: Class) {
+    const prototype = Object.getPrototypeOf(obj);
+
+    return (methodName: Methods): MethodNameWithDescriptor<Methods> => {
+      const descriptor = Object.getOwnPropertyDescriptor(prototype, methodName);
+
+      if (!descriptor) {
+        throw new Error(`Cannot find descriptor for ${methodName}`);
+      }
+
+      return { methodName, descriptor };
+    };
+  }
+
+  static #isMethod({ descriptor }: MethodNameWithDescriptor): boolean {
+    return Boolean(descriptor?.value);
+  }
+
+  static #decorateWhenFunc<Name extends string, Instance extends Record<string, any>>(
+    config: Omit<MethodInfo<Name>, 'isSupported' | 'appVersion'>
+  ): MethodInfo<Name, Instance> {
     const isSupported = this.#version.isSuitableTo(config.availableInVersion);
     return { appVersion: this.#version.value, isSupported, ...config };
   }
 
-  static inVersion<Methods extends string>(versionOrConfig: string | Config<Methods>) {
+  static inVersion<
+    Kek extends Record<string, any>,
+    Methods extends Exclude<keyof Kek, number | symbol> = Exclude<keyof Kek, number | symbol>
+  >(versionOrConfig: string | Config<Methods, Kek>) {
     return <Class extends new (...args: any) => any>(
       feature: Class,
       context: ClassDecoratorContext<Class>
@@ -62,45 +93,14 @@ export abstract class FeatureSupport {
         );
       }
 
-      const initizlizers = new Initializers<Class>();
-      const addInitializer = (initializer: Initializer<Class>) => {
-        initizlizers.add(initializer);
-      };
+      const { wrapper, addInitializer } = createWrapper(feature);
 
-      const wrapper = function (...args: any[]) {
-        const instance = new feature(...args);
-        initizlizers.invoke(instance);
-        return instance;
-      };
-
-      wrapper.prototype = feature.prototype;
-
-      Object.getOwnPropertyNames(feature)
-        .filter(
-          (name) =>
-            name !== 'length' && name !== 'constructor' && name !== 'prototype' && name !== 'name'
-        )
-        .forEach((name) => {
-          const descr = Object.getOwnPropertyDescriptor(feature, name)!;
-          Object.defineProperty(wrapper, name, descr);
-        });
-
-      const methods = Object.getOwnPropertyNames(feature.prototype).filter(
-        (name) => name !== 'constructor'
-      ) as Methods[];
+      const methods = this.#getMethodsNames<Methods, Class>(feature);
 
       methods
-        .map((methodName) => {
-          return {
-            methodName,
-            descriptor: Object.getOwnPropertyDescriptor(feature.prototype, methodName),
-          };
-        })
-        .filter(({ descriptor }) => Boolean(descriptor?.value))
+        .map(this.#mapMethodNameWithDescriptor(feature))
+        .filter(this.#isMethod)
         .forEach(({ methodName, descriptor }) => {
-          if (!descriptor) {
-            throw new Error(`Can not find descriptor for ${methodName}`);
-          }
           const originalMethod = descriptor.value;
 
           const decorateWhenString = ({
@@ -118,8 +118,9 @@ export abstract class FeatureSupport {
             }
           };
 
-          const decorateWhenFunc = (config: Omit<MethodInfo, 'isSupported' | 'appVersion'>) =>
-            this.#decorateWhenFunc(config);
+          const decorateWhenFunc = <Instance extends Record<string, any>>(
+            config: Omit<MethodInfo<Methods>, 'isSupported' | 'appVersion'>
+          ) => this.#decorateWhenFunc<Methods, Instance>(config);
 
           addInitializer(function () {
             const thisArg = this;
@@ -140,7 +141,7 @@ export abstract class FeatureSupport {
                   throw new TypeError(`Property 'availableInVersion' required in config`);
                 }
 
-                const config = decorateWhenFunc({
+                const config = decorateWhenFunc<Kek>({
                   availableInVersion: versionOrConfig.availableInVersion,
                   executeOriginalMethod,
                   name: methodName,
@@ -169,7 +170,7 @@ export abstract class FeatureSupport {
                   });
                 }
 
-                const config = decorateWhenFunc({
+                const config = decorateWhenFunc<Kek>({
                   availableInVersion: supportedVersion,
                   executeOriginalMethod,
                   name: methodName,
