@@ -1,3 +1,4 @@
+import { WebAppInvoiceOpenedError, WebAppInvoiceUrlInvalidError } from '../Errors';
 import { Nullable, OpenInvoiceCallback } from '../types';
 import { isHTTPTypeProtocol, isTelegramHostname } from '../utils';
 
@@ -25,13 +26,11 @@ export class Invoices {
       !isTelegramHostname(parsedURL.hostname) ||
       !slug
     ) {
-      console.error('[Telegram.WebApp] Invoice url is invalid', url);
-      throw new Error('WebAppInvoiceUrlInvalid');
+      throw new WebAppInvoiceUrlInvalidError(url);
     }
 
     if (this.#store.has(slug)) {
-      console.error('[Telegram.WebApp] Invoice is already opened');
-      throw new Error('WebAppInvoiceOpened');
+      throw new WebAppInvoiceOpenedError();
     }
 
     return slug;
