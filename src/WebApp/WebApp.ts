@@ -35,7 +35,11 @@ import {
   parseColorToHex,
   SessionStorage,
 } from '../utils';
-import { WebAppPopupOpenedError, WebAppPopupParamInvalidError } from '../Errors';
+import {
+  WebAppMethodUnsupportedError,
+  WebAppPopupOpenedError,
+  WebAppPopupParamInvalidError,
+} from '../Errors';
 
 import {
   ColorScheme,
@@ -666,11 +670,7 @@ export class TelegramWebApp implements WebApp {
 
   readTextFromClipboard = (callback?: ClipboardCallback | null | undefined): void => {
     if (!this.#version.isSuitableTo('6.4')) {
-      console.error(
-        '[Telegram.WebApp] Method readTextFromClipboard is not supported in version ' +
-          this.#version
-      );
-      throw new Error('WebAppMethodUnsupported');
+      throw new WebAppMethodUnsupportedError('readTextFromClipboard', this.#version.value);
     }
 
     const id = generateId(16);
@@ -690,11 +690,7 @@ export class TelegramWebApp implements WebApp {
 
   showPopup(params: PopupParams, callback?: Nullable<ShowPopupCallback>): void | never {
     if (!this.#version.isSuitableTo('6.2')) {
-      console.error(
-        '[Telegram.WebApp] Method showPopup is not supported in version ' + this.#version.value
-      );
-
-      throw new Error('WebAppMethodUnsupported');
+      throw new WebAppMethodUnsupportedError('showPopup', this.#version.value);
     }
 
     if (this.#popup.isOpened) {
@@ -739,11 +735,7 @@ export class TelegramWebApp implements WebApp {
     chatTypesToChoose?: Nullable<ChatTypesToChoose>
   ): void | never => {
     if (!this.#version.isSuitableTo('6.7')) {
-      console.error(
-        '[Telegram.WebApp] Method switchInlineQuery is not supported in version ' +
-          this.#version.value
-      );
-      throw new Error('WebAppMethodUnsupported');
+      throw new WebAppMethodUnsupportedError('switchInlineQuery', this.#version.value);
     }
 
     if (!this.#webView.initParams.tgWebAppBotInline) {
@@ -788,11 +780,7 @@ export class TelegramWebApp implements WebApp {
     callback?: Nullable<ShowScanQrPopupCallback>
   ): void | never => {
     if (!this.#version.isSuitableTo('6.4')) {
-      console.error(
-        '[Telegram.WebApp] Method showScanQrPopup is not supported in version ' +
-          this.#version.value
-      );
-      throw new Error('WebAppMethodUnsupported');
+      throw new WebAppMethodUnsupportedError('showScanQrPopup', this.#version.value);
     }
 
     this.#qrPopup.open({ params, callback });
@@ -802,11 +790,7 @@ export class TelegramWebApp implements WebApp {
 
   closeScanQrPopup = (): void | never => {
     if (!this.#version.isSuitableTo('6.4')) {
-      console.error(
-        '[Telegram.WebApp] Method closeScanQrPopup is not supported in version ' +
-          this.#version.value
-      );
-      throw new Error('WebAppMethodUnsupported');
+      throw new WebAppMethodUnsupportedError('closeScanQrPopup', this.#version.value);
     }
 
     this.#qrPopup.close();
