@@ -15,10 +15,6 @@ export class QrPopup {
 
   #data: Options = INITIAL_DATA;
 
-  static get MAX_TEXT_LENGTH(): number {
-    return TELEGRAM_SCAN_QR_POPUP.MAX_TEXT_LENGTH;
-  }
-
   open({ params: { text }, callback }: Options): void {
     if (this.#isOpened) {
       throw new WebAppScanQrPopupOpenedError();
@@ -26,7 +22,7 @@ export class QrPopup {
 
     const trimmedText = (text ?? '').trim();
 
-    if (trimmedText.length > QrPopup.MAX_TEXT_LENGTH) {
+    if (trimmedText.length > TELEGRAM_SCAN_QR_POPUP.MAX_TEXT_LENGTH) {
       throw new WebAppScanQrPopupParamInvalidError(`text is too long ${text}`);
     }
 
