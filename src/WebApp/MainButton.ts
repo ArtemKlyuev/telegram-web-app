@@ -35,6 +35,12 @@ const BUTTON_EVENTS = {
   OFF_CLICKED: 'off_clicked',
 } as const;
 
+export const TELEGRAM_MAIN_BUTTON = {
+  MAX_TEXT_LENGTH: 64,
+  DEFAULT_COLOR: '#2481cc',
+  DEFAULT_TEXT_COLOR: '#ffffff',
+} as const;
+
 export class WebAppMainButton implements MainButton {
   #eventEmitter: Options['eventEmitter'];
   #theme: Theme;
@@ -52,13 +58,13 @@ export class WebAppMainButton implements MainButton {
     return BUTTON_EVENTS;
   }
   static get MAX_TEXT_LENGTH(): number {
-    return 64;
+    return TELEGRAM_MAIN_BUTTON.MAX_TEXT_LENGTH;
   }
   static get DEFAULT_COLOR(): string {
-    return '#2481cc';
+    return TELEGRAM_MAIN_BUTTON.DEFAULT_COLOR;
   }
   static get DEFAULT_TEXT_COLOR(): string {
-    return '#ffffff';
+    return TELEGRAM_MAIN_BUTTON.DEFAULT_TEXT_COLOR;
   }
 
   constructor({ eventEmitter, theme, isDebug = false }: Options) {
