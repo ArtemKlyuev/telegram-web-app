@@ -1,7 +1,5 @@
-import { HexColor, ThemeParams, ValueOf } from '../types';
+import { ColorScheme, HexColor, ThemeParams, ValueOf } from '../types';
 import { Disposer, EventEmitter, isColorDark, parseColorToHex } from '../utils';
-
-import { ColorScheme } from './types';
 
 type ThemeEvents = typeof THEME_EVENTS;
 type ThemeEvent = ValueOf<ThemeEvents>;

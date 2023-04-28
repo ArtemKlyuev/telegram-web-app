@@ -1,12 +1,9 @@
 import { ValueOf } from '../types';
 
 import { HEADER_COLOR_KEYS } from './constants';
-import { TELEGRAM_THEME } from './Theme';
 
 export type HeaderBgColor = ValueOf<typeof HEADER_COLOR_KEYS>;
 
-export type ColorSchemes = typeof TELEGRAM_THEME.COLOR_SCHEMES;
-export type ColorScheme = ValueOf<ColorSchemes>;
 export type WebViewEvent =
   | 'themeChanged'
   | 'viewportChanged'

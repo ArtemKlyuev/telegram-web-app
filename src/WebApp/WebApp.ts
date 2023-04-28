@@ -3,6 +3,7 @@ import {
   BackButton,
   ChatTypesToChoose,
   ClipboardTextReceivedCallbackData,
+  ColorScheme,
   HapticFeedback,
   HexColor,
   InitParams,
@@ -48,7 +49,7 @@ import {
 } from '../Errors';
 import { bindMethods, FeatureSupport } from '../decorators';
 
-import { ColorScheme, HeaderBgColor, WebViewEvent, WebViewEventParams } from './types';
+import { HeaderBgColor, WebViewEvent, WebViewEventParams } from './types';
 import { HEADER_COLOR_KEYS } from './constants';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
