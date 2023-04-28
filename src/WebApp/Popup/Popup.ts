@@ -21,6 +21,13 @@ interface PopupData {
   callback?: Nullable<PopupCallback>;
 }
 
+export const TELEGRAM_POPUP = {
+  MAX_TITLE_LENGTH: 64,
+  MAX_MESSAGE_LENGTH: 256,
+  MIN_BUTTONS: 1,
+  MAX_BUTTONS: 3,
+} as const;
+
 const createInitialState = () => ({ params: {} as OpenPopupEventData, callback: null });
 
 export class Popup {
@@ -28,16 +35,16 @@ export class Popup {
   #data: Required<PopupData> = createInitialState();
 
   static get MAX_TITLE_LENGTH() {
-    return 64;
+    return TELEGRAM_POPUP.MAX_TITLE_LENGTH;
   }
   static get MAX_MESSAGE_LENGTH() {
-    return 256;
+    return TELEGRAM_POPUP.MAX_MESSAGE_LENGTH;
   }
   static get MIN_BUTTONS() {
-    return 1;
+    return TELEGRAM_POPUP.MIN_BUTTONS;
   }
   static get MAX_BUTTONS() {
-    return 3;
+    return TELEGRAM_POPUP.MAX_BUTTONS;
   }
 
   #setCallback(callback?: Nullable<PopupCallback>): this {
