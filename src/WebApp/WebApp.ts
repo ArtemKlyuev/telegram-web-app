@@ -694,7 +694,7 @@ export class TelegramWebApp implements WebApp {
     });
   }
 
-  #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | string): HeaderBgColor | false {
+  #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | HexColor): HeaderBgColor | false {
     if (
       colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
       colorKeyOrColor === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
@@ -716,7 +716,7 @@ export class TelegramWebApp implements WebApp {
     return false;
   }
 
-  setHeaderColor(colorKeyOrColor: HeaderBgColor | string): void | never {
+  setHeaderColor(colorKeyOrColor: HeaderBgColor | HexColor): void | never {
     const colorKey = this.#getHeaderColorKey(colorKeyOrColor);
 
     if (
@@ -731,7 +731,7 @@ export class TelegramWebApp implements WebApp {
     this.#webView.postEvent('web_app_set_header_color', undefined, { color_key: colorKey });
   }
 
-  setBackgroundColor(color: HeaderBgColor | string): void {
+  setBackgroundColor(color: HeaderBgColor | HexColor): void {
     this.backgroundColor = color;
   }
 
