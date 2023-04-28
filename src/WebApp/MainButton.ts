@@ -10,7 +10,7 @@ import {
 import { Disposer, EventEmitter, parseColorToHex } from '../utils';
 
 import { MainButtonDebug } from './MainButtonDebug';
-import { Theme } from './Theme';
+import { TELEGRAM_THEME, Theme } from './Theme';
 
 interface Options {
   eventEmitter: EventEmitter<ButtonEvent>;
@@ -224,7 +224,7 @@ export class WebAppMainButton implements MainButton {
   get color(): HexColor {
     return (
       this.#buttonColor ||
-      this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_COLOR) ||
+      this.#theme.getParam(TELEGRAM_THEME.PARAMS.BUTTON_COLOR) ||
       TELEGRAM_MAIN_BUTTON.DEFAULT_COLOR
     );
   }
@@ -236,7 +236,7 @@ export class WebAppMainButton implements MainButton {
   get textColor(): HexColor {
     return (
       this.#buttonTextColor ||
-      this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_TEXT_COLOR) ||
+      this.#theme.getParam(TELEGRAM_THEME.PARAMS.BUTTON_TEXT_COLOR) ||
       TELEGRAM_MAIN_BUTTON.DEFAULT_TEXT_COLOR
     );
   }

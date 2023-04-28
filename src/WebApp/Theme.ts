@@ -42,9 +42,6 @@ export class Theme {
   static get EVENTS() {
     return THEME_EVENTS;
   }
-  static get PARAMS_KEYS() {
-    return TELEGRAM_THEME.PARAMS;
-  }
 
   constructor(eventEmitter: EventEmitter<ThemeEvent>) {
     this.#eventEmitter = eventEmitter;
