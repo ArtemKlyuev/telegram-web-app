@@ -24,7 +24,7 @@ interface Params {
   notification_type?: HapticFeedbackNotification | undefined;
 }
 
-export const HAPTIC_FEEDBACK = {
+export const TELEGRAM_HAPTIC_FEEDBACK = {
   IMPACT_STYLES: {
     LIGHT: 'light',
     MEDIUM: 'medium',
@@ -44,9 +44,9 @@ export const HAPTIC_FEEDBACK = {
   },
 } as const;
 
-const VALID_IMPACT_STYLES = Object.values(HAPTIC_FEEDBACK.IMPACT_STYLES);
-const VALID_FEEDBACK_TYPES = Object.values(HAPTIC_FEEDBACK.FEEDBACK_TYPES);
-const VALID_NOTIFICATION_TYPES = Object.values(HAPTIC_FEEDBACK.NOTIFICATION_TYPES);
+const VALID_IMPACT_STYLES = Object.values(TELEGRAM_HAPTIC_FEEDBACK.IMPACT_STYLES);
+const VALID_FEEDBACK_TYPES = Object.values(TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES);
+const VALID_NOTIFICATION_TYPES = Object.values(TELEGRAM_HAPTIC_FEEDBACK.NOTIFICATION_TYPES);
 
 const HAPTIC_FEEDBACK_EVENTS = {
   FEEDBACK_TRIGGERED: 'feedback_triggered',
@@ -115,19 +115,19 @@ export class WebAppHapticFeedback implements HapticFeedback {
       throw new WebAppHapticFeedbackTypeInvalidError(params.type);
     }
 
-    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT) {
+    if (params.type === TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT) {
       if (!this.#isValidImpactStyle(params.impact_style)) {
         throw new WebAppHapticImpactStyleInvalidError(params.impact_style);
       }
     }
 
-    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION) {
+    if (params.type === TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION) {
       if (!this.#isValidNotificationType(params.notification_type)) {
         throw new WebAppHapticNotificationTypeInvalidError(params.notification_type);
       }
     }
 
-    if (params.type === HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE) {
+    if (params.type === TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE) {
       // no params needed
     }
 
@@ -142,19 +142,21 @@ export class WebAppHapticFeedback implements HapticFeedback {
 
   impactOccurred(style: HapticFeedbackImpactStyle): this | never {
     return this.#triggerFeedback({
-      type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT,
+      type: TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.IMPACT,
       impact_style: style,
     });
   }
 
   notificationOccurred(type: HapticFeedbackNotification): this | never {
     return this.#triggerFeedback({
-      type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION,
+      type: TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.NOTIFICATION,
       notification_type: type,
     });
   }
 
   selectionChanged(): this | never {
-    return this.#triggerFeedback({ type: HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE });
+    return this.#triggerFeedback({
+      type: TELEGRAM_HAPTIC_FEEDBACK.FEEDBACK_TYPES.SELECTION_CHANGE,
+    });
   }
 }
