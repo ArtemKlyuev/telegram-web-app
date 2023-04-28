@@ -5,6 +5,7 @@ import {
   ClipboardTextReceivedCallbackData,
   ColorScheme,
   HapticFeedback,
+  HeaderBgColor,
   HexColor,
   InitParams,
   InvoiceClosedCallbackData,
@@ -50,7 +51,6 @@ import {
 } from '../Errors';
 import { bindMethods, FeatureSupport } from '../decorators';
 
-import { HeaderBgColor } from './types';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';

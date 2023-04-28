@@ -37,6 +37,8 @@ export interface ThemeParams {
   button_text_color?: HexColor | undefined;
 }
 
+export type HeaderBgColor = 'bg_color' | 'secondary_bg_color';
+
 /**
  * @see https://core.telegram.org/bots/webapps#webappuser
  */
