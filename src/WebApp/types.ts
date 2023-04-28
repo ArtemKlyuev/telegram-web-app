@@ -1,6 +1,7 @@
-import { TELEGRAM_THEME } from '.';
 import { ValueOf } from '../types';
+
 import { HEADER_COLOR_KEYS } from './constants';
+import { TELEGRAM_THEME } from './Theme';
 
 export type HeaderBgColor = ValueOf<typeof HEADER_COLOR_KEYS>;
 
