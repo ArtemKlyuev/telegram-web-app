@@ -25,6 +25,7 @@ import {
   ThemeParams,
   ViewportChangedCallbackData,
   WebApp,
+  WebAppEvent,
   WebAppInitData,
   WebView,
 } from '../types';
@@ -49,7 +50,7 @@ import {
 } from '../Errors';
 import { bindMethods, FeatureSupport } from '../decorators';
 
-import { HeaderBgColor, WebViewEvent, WebViewEventParams } from './types';
+import { HeaderBgColor } from './types';
 import { HEADER_COLOR_KEYS } from './constants';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
@@ -64,6 +65,13 @@ import { Popup } from './Popup';
 import { WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
+
+type WebViewEventParams =
+  | ViewportChangedCallbackData
+  | PopupClosedCallbackData
+  | QrTextReceivedCallbackData
+  | ClipboardTextReceivedCallbackData
+  | InvoiceClosedCallbackData;
 
 const CHAT_TYPES = {
   USERS: 'users',
@@ -554,7 +562,7 @@ export class TelegramWebApp implements WebApp {
     params: ClipboardTextReceivedCallbackData
   ): void;
   #receiveWebViewEvent(eventType: 'invoiceClosed', params: InvoiceClosedCallbackData): void;
-  #receiveWebViewEvent(eventType: WebViewEvent, params?: WebViewEventParams | undefined): void {
+  #receiveWebViewEvent(eventType: WebAppEvent, params?: WebViewEventParams | undefined): void {
     const callbackArgs = params ? [params] : [];
 
     this.#webView.callEventCallbacks('webview:' + eventType, (callback) => {
