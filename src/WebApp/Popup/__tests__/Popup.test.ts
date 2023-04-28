@@ -1,6 +1,6 @@
 import { generateId } from '../../../utils';
 
-import { WebAppPopupButton } from '../../PopupButton';
+import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from '../../PopupButton';
 
 import { Popup, TELEGRAM_POPUP } from '../Popup';
 
@@ -30,7 +30,7 @@ describe('Popup', () => {
         ...params,
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: expect.any(String),
           },
         ],
@@ -48,7 +48,7 @@ describe('Popup', () => {
         ...params,
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: expect.any(String),
           },
         ],
@@ -61,9 +61,10 @@ describe('Popup', () => {
         title: 'title',
         message: 'lorem ipsum',
         buttons: [
-          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE, id: generateId(4) }).data,
+          new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE, id: generateId(4) })
+            .data,
           new WebAppPopupButton({
-            type: WebAppPopupButton.TYPES.DEFAULT,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
             id: generateId(4),
             text: 'Lorem ipsum button',
           }).data,
@@ -83,9 +84,10 @@ describe('Popup', () => {
         title: 'title',
         message: 'lorem ipsum',
         buttons: [
-          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE, id: generateId(4) }).data,
+          new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE, id: generateId(4) })
+            .data,
           new WebAppPopupButton({
-            type: WebAppPopupButton.TYPES.DEFAULT,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
             id: generateId(4),
             text: 'Lorem ipsum button',
           }).data,
@@ -114,7 +116,7 @@ describe('Popup', () => {
         ...params,
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: expect.any(String),
           },
         ],
@@ -142,7 +144,7 @@ describe('Popup', () => {
         title: 'Title',
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: 'id',
           },
         ],
@@ -160,7 +162,7 @@ describe('Popup', () => {
         message: '   ',
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: 'id',
           },
         ],
@@ -178,7 +180,7 @@ describe('Popup', () => {
         message: generateId(TELEGRAM_POPUP.MAX_MESSAGE_LENGTH + 1),
         buttons: [
           {
-            type: WebAppPopupButton.TYPES.CLOSE,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
             id: 'id',
           },
         ],
@@ -236,9 +238,10 @@ describe('Popup', () => {
         title: 'title',
         message: 'lorem ipsum',
         buttons: [
-          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE, id: generateId(4) }).data,
+          new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE, id: generateId(4) })
+            .data,
           new WebAppPopupButton({
-            type: WebAppPopupButton.TYPES.DEFAULT,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
             id: generateId(4),
             text: 'Lorem ipsum button',
           }).data,

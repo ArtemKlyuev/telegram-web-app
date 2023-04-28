@@ -8,7 +8,7 @@ import {
 } from '../../types';
 import { generateId } from '../../utils';
 
-import { WebAppPopupButton } from '../PopupButton';
+import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from '../PopupButton';
 
 export type PopupCallback = (id: string) => any;
 
@@ -81,7 +81,7 @@ export class Popup {
   #setButtons(buttons: PopupParams['buttons'] | WebAppPopupButton[]): this {
     if (!buttons) {
       const buttons: [EventPopupButton] = [
-        new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CLOSE, id: generateId(5) }).data,
+        new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE, id: generateId(5) }).data,
       ];
 
       this.#data.params.buttons = buttons;

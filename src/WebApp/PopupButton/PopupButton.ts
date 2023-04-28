@@ -21,22 +21,12 @@ const TYPES_WITH_REQUIRED_TEXT = [
 ] as PopupButtonType[];
 
 export class WebAppPopupButton {
-  static get TYPES() {
-    return TELEGRAM_POPUP_BUTTON.TYPES;
-  }
-  static get MAX_ID_LENGTH() {
-    return TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH;
-  }
-  static get MAX_TEXT_LENGTH() {
-    return TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH;
-  }
-
   #button: EventPopupButton = {} as EventPopupButton;
 
   #setID(id: string): this {
     const stringifiedID = (id ?? '').toString();
 
-    if (stringifiedID.length > WebAppPopupButton.MAX_ID_LENGTH) {
+    if (stringifiedID.length > TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH) {
       throw new WebAppPopupParamInvalidError(`button id is too long ${id}`);
     }
 
@@ -78,7 +68,7 @@ export class WebAppPopupButton {
       );
     }
 
-    if (normalizedText.length > WebAppPopupButton.MAX_TEXT_LENGTH) {
+    if (normalizedText.length > TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH) {
       throw new WebAppPopupParamInvalidError(`button text is too long ${normalizedText}`);
     }
 

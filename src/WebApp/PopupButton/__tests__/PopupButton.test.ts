@@ -1,30 +1,30 @@
 import { generateId } from '../../../utils';
-import { WebAppPopupButton } from '../PopupButton';
+import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from '../PopupButton';
 
 describe('PopupButton', () => {
   let popupButton: WebAppPopupButton;
 
   it('should has static properties', () => {
-    expect(WebAppPopupButton.TYPES).toStrictEqual({
+    expect(TELEGRAM_POPUP_BUTTON.TYPES).toStrictEqual({
       DEFAULT: 'default',
       OK: 'ok',
       CLOSE: 'close',
       CANCEL: 'cancel',
       DESTRUCTIVE: 'destructive',
     });
-    expect(WebAppPopupButton.MAX_ID_LENGTH).toEqual(expect.any(Number));
-    expect(WebAppPopupButton.MAX_TEXT_LENGTH).toEqual(expect.any(Number));
+    expect(TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH).toEqual(expect.any(Number));
+    expect(TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH).toEqual(expect.any(Number));
   });
 
   describe('creation', () => {
     it.each([
       {
-        type: WebAppPopupButton.TYPES.DEFAULT,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
         text: 'default text',
         id: generateId(4),
       },
       {
-        type: WebAppPopupButton.TYPES.DESTRUCTIVE,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.DESTRUCTIVE,
         text: 'default text',
         id: generateId(4),
       },
@@ -36,15 +36,15 @@ describe('PopupButton', () => {
 
     it.each([
       {
-        type: WebAppPopupButton.TYPES.OK,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.OK,
         id: generateId(4),
       },
       {
-        type: WebAppPopupButton.TYPES.CANCEL,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.CANCEL,
         id: generateId(4),
       },
       {
-        type: WebAppPopupButton.TYPES.CLOSE,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.CLOSE,
         id: generateId(4),
       },
     ])('should create "$type" button', (button) => {
@@ -56,11 +56,11 @@ describe('PopupButton', () => {
 
   it.each([
     {
-      type: WebAppPopupButton.TYPES.DEFAULT,
+      type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
       id: 'abcd',
     },
     {
-      type: WebAppPopupButton.TYPES.DESTRUCTIVE,
+      type: TELEGRAM_POPUP_BUTTON.TYPES.DESTRUCTIVE,
       id: 'abcd',
     },
   ])('should throw error if text is not provided for "$type" button', (button) => {
@@ -75,9 +75,9 @@ describe('PopupButton', () => {
       expect(
         () =>
           new WebAppPopupButton({
-            type: WebAppPopupButton.TYPES.DEFAULT,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
             text: 'default text',
-            id: generateId(WebAppPopupButton.MAX_ID_LENGTH + 1),
+            id: generateId(TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH + 1),
           })
       ).toThrow(Error);
     });
@@ -86,16 +86,16 @@ describe('PopupButton', () => {
       expect(
         () =>
           new WebAppPopupButton({
-            type: WebAppPopupButton.TYPES.DEFAULT,
+            type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
             text: 'default text',
-            id: generateId(WebAppPopupButton.MAX_ID_LENGTH),
+            id: generateId(TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH),
           })
       ).not.toThrow(Error);
     });
 
     it('should set id event if nullable value provided in config', () => {
       const config = {
-        type: WebAppPopupButton.TYPES.OK,
+        type: TELEGRAM_POPUP_BUTTON.TYPES.OK,
         id: null,
       };
 
@@ -119,7 +119,7 @@ describe('PopupButton', () => {
 
   describe('text', () => {
     it('should throw if empty string provided', () => {
-      const config = { type: WebAppPopupButton.TYPES.DEFAULT, id: '', text: '   ' };
+      const config = { type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT, id: '', text: '   ' };
 
       expect(() => {
         return new WebAppPopupButton(config);
@@ -127,7 +127,7 @@ describe('PopupButton', () => {
     });
 
     it('should throw if no text provided', () => {
-      const config = { type: WebAppPopupButton.TYPES.DEFAULT };
+      const config = { type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT };
 
       expect(() => {
         // @ts-expect-error for test purposes
@@ -137,8 +137,8 @@ describe('PopupButton', () => {
 
     it('should throw if text length > MAX_TEXT_LENGTH', () => {
       const config = {
-        type: WebAppPopupButton.TYPES.DEFAULT,
-        text: generateId(WebAppPopupButton.MAX_TEXT_LENGTH + 1),
+        type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
+        text: generateId(TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH + 1),
       };
 
       expect(() => {
@@ -149,8 +149,8 @@ describe('PopupButton', () => {
 
     it('should not throw if text length <= MAX_TEXT_LENGTH', () => {
       const config = {
-        type: WebAppPopupButton.TYPES.DEFAULT,
-        text: generateId(WebAppPopupButton.MAX_TEXT_LENGTH),
+        type: TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
+        text: generateId(TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH),
       };
 
       expect(() => {

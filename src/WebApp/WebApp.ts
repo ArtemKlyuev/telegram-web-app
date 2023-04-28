@@ -61,7 +61,7 @@ import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
 import { Popup } from './Popup';
-import { WebAppPopupButton } from './PopupButton';
+import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
 
@@ -842,8 +842,8 @@ export class TelegramWebApp implements WebApp {
       {
         message,
         buttons: [
-          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.OK, id: OK_BTN_ID }).data,
-          new WebAppPopupButton({ type: WebAppPopupButton.TYPES.CANCEL, id: '' }).data,
+          new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.OK, id: OK_BTN_ID }).data,
+          new WebAppPopupButton({ type: TELEGRAM_POPUP_BUTTON.TYPES.CANCEL, id: '' }).data,
         ],
       },
       popupCallback
