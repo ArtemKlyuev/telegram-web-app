@@ -57,15 +57,6 @@ export class WebAppMainButton implements MainButton {
   static get EVENTS() {
     return BUTTON_EVENTS;
   }
-  static get MAX_TEXT_LENGTH(): number {
-    return TELEGRAM_MAIN_BUTTON.MAX_TEXT_LENGTH;
-  }
-  static get DEFAULT_COLOR(): string {
-    return TELEGRAM_MAIN_BUTTON.DEFAULT_COLOR;
-  }
-  static get DEFAULT_TEXT_COLOR(): string {
-    return TELEGRAM_MAIN_BUTTON.DEFAULT_TEXT_COLOR;
-  }
 
   constructor({ eventEmitter, theme, isDebug = false }: Options) {
     this.#eventEmitter = eventEmitter;
@@ -126,7 +117,7 @@ export class WebAppMainButton implements MainButton {
       throw new WebAppMainButtonParamInvalidError(`text is required ${value}`);
     }
 
-    if (text.length > WebAppMainButton.MAX_TEXT_LENGTH) {
+    if (text.length > TELEGRAM_MAIN_BUTTON.MAX_TEXT_LENGTH) {
       throw new WebAppMainButtonParamInvalidError(`text is too long ${text}`);
     }
 
@@ -234,7 +225,7 @@ export class WebAppMainButton implements MainButton {
     return (
       this.#buttonColor ||
       this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_COLOR) ||
-      WebAppMainButton.DEFAULT_COLOR
+      TELEGRAM_MAIN_BUTTON.DEFAULT_COLOR
     );
   }
 
@@ -246,7 +237,7 @@ export class WebAppMainButton implements MainButton {
     return (
       this.#buttonTextColor ||
       this.#theme.getParam(Theme.PARAMS_KEYS.BUTTON_TEXT_COLOR) ||
-      WebAppMainButton.DEFAULT_TEXT_COLOR
+      TELEGRAM_MAIN_BUTTON.DEFAULT_TEXT_COLOR
     );
   }
 
