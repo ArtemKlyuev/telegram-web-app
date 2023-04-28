@@ -8,13 +8,15 @@ interface Options {
 
 const INITIAL_DATA: Options = { params: {}, callback: null };
 
+export const TELEGRAM_SCAN_QR_POPUP = { MAX_TEXT_LENGTH: 64 } as const;
+
 export class QrPopup {
   #isOpened = false;
 
   #data: Options = INITIAL_DATA;
 
   static get MAX_TEXT_LENGTH(): number {
-    return 64;
+    return TELEGRAM_SCAN_QR_POPUP.MAX_TEXT_LENGTH;
   }
 
   open({ params: { text }, callback }: Options): void {
