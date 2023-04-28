@@ -392,6 +392,10 @@ export interface WebApp {
 
 // WebView stuff
 
+type ReceivedWebViewEventHandler<Event extends string, Data = undefined> = Data extends undefined
+  ? (event: Event) => any
+  : (event: Event, data: Data) => any;
+
 /**
  * @see https://core.telegram.org/api/web-events#event-types
  */
@@ -568,7 +572,60 @@ export interface PostEventCallbackData {
 }
 
 export type PostEventCallback = (arg?: Nullable<PostEventCallbackData | Error>) => any;
-export type CallEventCallbackHandler = (cb: AnyCallback) => any;
+type CallEventCallbackHandler<Callback extends AnyCallback> = (cb: Callback) => any;
+
+/**
+ * @see https://core.telegram.org/api/bots/webapps#invoice-closed
+ */
+export interface InvoiceClosedWebViewEventData {
+  slug: string;
+  status: InvoiceStatus;
+}
+
+/**
+ * @see https://core.telegram.org/api/bots/webapps#viewport-changed
+ */
+export interface ViewportChangedWebViewEventData {
+  height: number;
+  is_state_stable: boolean;
+  is_expanded: boolean;
+}
+
+/**
+ * @see https://core.telegram.org/api/bots/webapps#theme-changed
+ */
+export interface ThemeChangedWebViewEventData {
+  theme_params: Required<ThemeParams>;
+}
+
+/**
+ * @see https://core.telegram.org/api/bots/webapps#popup-closed
+ */
+export interface PopupClosedWebViewEventData {
+  button_id?: Nullable<string>;
+}
+
+export interface QrTextReceivedWebViewEventData {
+  data?: Nullable<string>;
+}
+
+export interface ClipboardTextReceivedWebViewEventData {
+  req_id?: Nullable<string>;
+  data?: Nullable<string | ''>;
+}
+
+interface ReceivedWebViewEventToData {
+  main_button_pressed: undefined;
+  settings_button_pressed: undefined;
+  back_button_pressed: undefined;
+  invoice_closed: InvoiceClosedWebViewEventData;
+  viewport_changed: ViewportChangedWebViewEventData;
+  theme_changed: ThemeChangedWebViewEventData;
+  popup_closed: PopupClosedWebViewEventData;
+  qr_text_received: QrTextReceivedWebViewEventData;
+  scan_qr_popup_closed: undefined;
+  clipboard_text_received: ClipboardTextReceivedWebViewEventData;
+}
 
 export interface WebView {
   readonly isIframe: boolean;
@@ -601,11 +658,6 @@ export interface WebView {
     callback: Nullable<PostEventCallback>,
     data: DataSendEventData
   ): void;
-  // postEvent(
-  //   event: 'web_app_trigger_haptic_feedback',
-  //   callback: Nullable<PostEventCallback>,
-  //   data: TriggerHapticFeedbackEventData
-  // ): void;
   postEvent(
     event: 'web_app_trigger_haptic_feedback',
     callback: Nullable<PostEventCallback>,
@@ -668,8 +720,24 @@ export interface WebView {
     callback: Nullable<PostEventCallback>,
     data: ResizeFrameEventData
   ): void;
-  onEvent: (event: string, callback: AnyCallback) => void;
-  offEvent: (event: string, callback: AnyCallback) => void;
-  callEventCallbacks: (eventType: string, func: CallEventCallbackHandler) => void;
-  receiveEvent: (eventType: string, eventData: any) => void;
+  onEvent: <Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData>(
+    event: Event,
+    callback: ReceivedWebViewEventHandler<Event, ReceivedWebViewEventToData[Event]>
+  ) => void;
+  offEvent: <Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData>(
+    event: Event,
+    callback: ReceivedWebViewEventHandler<Event, ReceivedWebViewEventToData[Event]>
+  ) => void;
+  callEventCallbacks: <
+    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData
+  >(
+    eventType: Event,
+    func: CallEventCallbackHandler<
+      ReceivedWebViewEventHandler<Event, ReceivedWebViewEventToData[Event]>
+    >
+  ) => void;
+  receiveEvent: <Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData>(
+    eventType: Event,
+    eventData: ReceivedWebViewEventToData[Event]
+  ) => void;
 }

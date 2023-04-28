@@ -3,6 +3,7 @@ import {
   BackButton,
   ChatTypesToChoose,
   ClipboardTextReceivedCallbackData,
+  ClipboardTextReceivedWebViewEventData,
   ColorScheme,
   HapticFeedback,
   HeaderBgColor,
@@ -17,6 +18,7 @@ import {
   OpenLinkOptions,
   OpenPopupEventData,
   PopupClosedCallbackData,
+  PopupClosedWebViewEventData,
   PopupParams,
   QrTextReceivedCallbackData,
   ScanQrPopupParams,
@@ -569,16 +571,20 @@ export class TelegramWebApp implements WebApp {
   #receiveWebViewEvent(eventType: WebAppEvent, params?: WebViewEventParams | undefined): void {
     const callbackArgs = params ? [params] : [];
 
+    // @ts-expect-error Not public events, so it's not in types
     this.#webView.callEventCallbacks('webview:' + eventType, (callback) => {
+      // @ts-expect-error Not public events, so it's not in types
       callback.apply(this, callbackArgs);
     });
   }
 
   #onWebViewEvent(eventType: string, callback: AnyCallback): void {
+    // @ts-expect-error Not public events, so it's not in types
     this.#webView.onEvent('webview:' + eventType, callback);
   }
 
   #offWebViewEvent(eventType: string, callback: AnyCallback) {
+    // @ts-expect-error Not public events, so it's not in types
     this.#webView.offEvent('webview:' + eventType, callback);
   }
 
@@ -630,7 +636,7 @@ export class TelegramWebApp implements WebApp {
     this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.SETTINGS_BUTTON_CLICKED);
   };
 
-  #onPopupClosed = (_: any, eventData: PopupClosedCallbackData): void => {
+  #onPopupClosed = (_: any, eventData: PopupClosedWebViewEventData): void => {
     if (!this.#popup.isOpened) {
       return;
     }
@@ -666,7 +672,7 @@ export class TelegramWebApp implements WebApp {
     this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.CLIPBOARD_TEXT_RECEIVED, { data });
   };
 
-  #onQrTextReceived = (_: any, eventData: { data?: string | undefined }): void => {
+  #onQrTextReceived = (_: any, eventData: { data?: Nullable<string> }): void => {
     if (!this.#qrPopup.isOpened) {
       return;
     }

@@ -111,6 +111,8 @@ export class TelegramWebView implements WebView {
     this.#eventHandlers.get(eventType)!.delete(callback);
   };
 
+  // FIXME: types
+  // @ts-expect-error
   callEventCallbacks = (eventType: string, func: (cb: AnyCallback) => any): void => {
     const eventHandlers = this.#eventHandlers.get(eventType);
 
