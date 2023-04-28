@@ -66,24 +66,6 @@ import { WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
 
-type WebViewEventParams =
-  | ViewportChangedCallbackData
-  | PopupClosedCallbackData
-  | QrTextReceivedCallbackData
-  | ClipboardTextReceivedCallbackData
-  | InvoiceClosedCallbackData;
-
-const CHAT_TYPES = {
-  USERS: 'users',
-  BOTS: 'bots',
-  GROUPS: 'groups',
-  CHANNELS: 'channels',
-} as const;
-
-const VALID_CHAT_TYPES = Object.values(CHAT_TYPES);
-
-export type ChatTypes = typeof CHAT_TYPES;
-
 interface Dependencies {
   initData: InitData;
   version: Version;
@@ -99,6 +81,26 @@ interface Dependencies {
   qrPopup: QrPopup;
   hapticFeedback: WebAppHapticFeedback;
 }
+
+type WebViewEventParams =
+  | ViewportChangedCallbackData
+  | PopupClosedCallbackData
+  | QrTextReceivedCallbackData
+  | ClipboardTextReceivedCallbackData
+  | InvoiceClosedCallbackData;
+
+export const TELEGRAM_WEB_APP = {
+  CHAT_TYPES: {
+    USERS: 'users',
+    BOTS: 'bots',
+    GROUPS: 'groups',
+    CHANNELS: 'channels',
+  },
+  MAX_BYTES_TO_SEND: 4096,
+  MAX_INLINE_QUERY_LENGTH: 256,
+} as const;
+
+const VALID_CHAT_TYPES = Object.values(TELEGRAM_WEB_APP.CHAT_TYPES);
 
 @FeatureSupport.inVersion<WebApp>({
   methodsConfig: {
@@ -257,14 +259,6 @@ export class TelegramWebApp implements WebApp {
   readonly #popup: Popup;
   readonly #clipboard: WebAppClipboard;
   readonly #qrPopup: QrPopup;
-
-  static readonly MAXIMUM_BYTES_TO_SEND = 4096;
-  static get MAX_INLINE_QUERY_LENGTH(): number {
-    return 256;
-  }
-  static get CHAT_TYPES(): ChatTypes {
-    return CHAT_TYPES;
-  }
 
   #initMainButton(): void {
     const onMainButtonClick = (isActive: boolean): void => {
@@ -740,7 +734,7 @@ export class TelegramWebApp implements WebApp {
       throw new WebAppDataInvalidError(`is required ${data}`);
     }
 
-    if (byteLength(data) > TelegramWebApp.MAXIMUM_BYTES_TO_SEND) {
+    if (byteLength(data) > TELEGRAM_WEB_APP.MAX_BYTES_TO_SEND) {
       throw new WebAppDataInvalidError(`is too long ${data}`);
     }
 
@@ -864,7 +858,7 @@ export class TelegramWebApp implements WebApp {
 
     const queryToSend = (query || '').trim();
 
-    if (queryToSend.length > TelegramWebApp.MAX_INLINE_QUERY_LENGTH) {
+    if (queryToSend.length > TELEGRAM_WEB_APP.MAX_INLINE_QUERY_LENGTH) {
       throw new WebAppInlineQueryInvalidError(`is too long ${query}`);
     }
 
