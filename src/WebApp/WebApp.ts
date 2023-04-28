@@ -66,6 +66,7 @@ import { Popup } from './Popup';
 import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from './PopupButton';
 import { ClipboardCallback, WebAppClipboard } from './Clipboard';
 import { QrPopup } from './QrPopup';
+import { TELEGRAM_WEB_VIEW } from '../WebView';
 
 interface Dependencies {
   initData: InitData;
@@ -279,7 +280,7 @@ export class TelegramWebApp implements WebApp {
       }
     };
 
-    this.#webView.onEvent('main_button_pressed', () => {
+    this.#webView.onEvent(TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.MAIN_BUTTON_PRESSED, () => {
       onMainButtonClick(this.#mainButton.isActive);
     });
 
@@ -288,7 +289,11 @@ export class TelegramWebApp implements WebApp {
     this.#mainButton.on(WebAppMainButton.EVENTS.DEBUG_BUTTON_UPDATED, this.#viewport.setHeight);
 
     this.#mainButton.on(WebAppMainButton.EVENTS.UPDATED, (params) => {
-      this.#webView.postEvent('web_app_setup_main_button', undefined, params);
+      this.#webView.postEvent(
+        TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SETUP_MAIN_BUTTON,
+        undefined,
+        params
+      );
     });
 
     this.#mainButton.on(WebAppMainButton.EVENTS.CLICKED, (callback) => {
@@ -302,13 +307,17 @@ export class TelegramWebApp implements WebApp {
 
   #initBackButton(): void {
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CREATED, () => {
-      this.#webView.onEvent('back_button_pressed', () => {
+      this.#webView.onEvent(TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.BACK_BUTTON_PRESSED, () => {
         this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.BACK_BUTTON_CLICKED);
       });
     });
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.UPDATED, (params) => {
-      this.#webView.postEvent('web_app_setup_back_button', undefined, params);
+      this.#webView.postEvent(
+        TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SETUP_BACK_BUTTON,
+        undefined,
+        params
+      );
     });
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CLICKED, (callback) => {
@@ -363,9 +372,13 @@ export class TelegramWebApp implements WebApp {
 
   #initBgColor(): void {
     this.#bgColor.on(BackgroundColor.EVENTS.UPDATED, (maybeColor) => {
-      this.#webView.postEvent('web_app_set_background_color', undefined, {
-        color: maybeColor ?? '',
-      });
+      this.#webView.postEvent(
+        TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SET_BACKGROUND_COLOR,
+        undefined,
+        {
+          color: maybeColor ?? '',
+        }
+      );
     });
   }
 
@@ -373,7 +386,11 @@ export class TelegramWebApp implements WebApp {
     this.#hapticFeedback[WebAppHapticFeedback.PRIVATE_KEYS.ON_EVENT](
       WebAppHapticFeedback.EVENTS.FEEDBACK_TRIGGERED,
       (feedback) => {
-        this.#webView.postEvent('web_app_trigger_haptic_feedback', undefined, feedback);
+        this.#webView.postEvent(
+          TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_TRIGGER_HAPTIC_FEEDBACK,
+          undefined,
+          feedback
+        );
       }
     );
   }
@@ -439,16 +456,31 @@ export class TelegramWebApp implements WebApp {
       document.addEventListener('click', this.#linkHandler);
     }
 
-    this.#webView.onEvent('theme_changed', this.#onThemeChanged);
-    this.#webView.onEvent('viewport_changed', this.#onViewportChanged);
-    this.#webView.onEvent('invoice_closed', this.#onInvoiceClosed);
-    this.#webView.onEvent('settings_button_pressed', this.#onSettingsButtonPressed);
-    this.#webView.onEvent('popup_closed', this.#onPopupClosed);
-    this.#webView.onEvent('qr_text_received', this.#onQrTextReceived);
-    this.#webView.onEvent('scan_qr_popup_closed', this.#onScanQrPopupClosed);
-    this.#webView.onEvent('clipboard_text_received', this.#onClipboardTextReceived);
-    this.#webView.postEvent('web_app_request_theme');
-    this.#webView.postEvent('web_app_request_viewport');
+    this.#webView.onEvent(TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.THEME_CHANGED, this.#onThemeChanged);
+    this.#webView.onEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.VIEWPORT_CHANGED,
+      this.#onViewportChanged
+    );
+    this.#webView.onEvent(TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.INVOICE_CLOSED, this.#onInvoiceClosed);
+    this.#webView.onEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.SETTINGS_BUTTON_PRESSED,
+      this.#onSettingsButtonPressed
+    );
+    this.#webView.onEvent(TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.POPUP_CLOSED, this.#onPopupClosed);
+    this.#webView.onEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.QR_TEXT_RECEIVED,
+      this.#onQrTextReceived
+    );
+    this.#webView.onEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.SCAN_QR_POPUP_CLOSED,
+      this.#onScanQrPopupClosed
+    );
+    this.#webView.onEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.RECEIVE.CLIPBOARD_TEXT_RECEIVED,
+      this.#onClipboardTextReceived
+    );
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_REQUEST_THEME);
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_REQUEST_VIEWPORT);
   }
 
   get initData(): string {
@@ -655,10 +687,7 @@ export class TelegramWebApp implements WebApp {
 
   #onClipboardTextReceived = (
     _: any,
-    {
-      req_id: id,
-      data = null,
-    }: { req_id?: string | undefined; data?: string | '' | null | undefined }
+    { req_id: id, data = null }: ClipboardTextReceivedWebViewEventData
   ) => {
     if (!id || !this.#clipboard.hasRequest(id)) {
       return;
@@ -682,7 +711,7 @@ export class TelegramWebApp implements WebApp {
 
     if (callback?.(data)) {
       this.#qrPopup.close();
-      this.#webView.postEvent('web_app_close_scan_qr_popup');
+      this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_CLOSE_SCAN_QR_POPUP);
     }
 
     this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.QR_TEXT_RECEIVED, { data });
@@ -701,9 +730,13 @@ export class TelegramWebApp implements WebApp {
 
     this.#isClosingConfirmationEnabled = Boolean(isEnabled);
 
-    this.#webView.postEvent('web_app_setup_closing_behavior', undefined, {
-      need_confirmation: this.#isClosingConfirmationEnabled,
-    });
+    this.#webView.postEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SETUP_CLOSING_BEHAVIOR,
+      undefined,
+      {
+        need_confirmation: this.#isClosingConfirmationEnabled,
+      }
+    );
   }
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | HexColor): HeaderBgColor | false {
@@ -740,7 +773,9 @@ export class TelegramWebApp implements WebApp {
 
     this.#headerColorKey = colorKey;
 
-    this.#webView.postEvent('web_app_set_header_color', undefined, { color_key: colorKey });
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SET_HEADER_COLOR, undefined, {
+      color_key: colorKey,
+    });
   }
 
   setBackgroundColor(color: HeaderBgColor | HexColor): void {
@@ -756,7 +791,7 @@ export class TelegramWebApp implements WebApp {
       throw new WebAppDataInvalidError(`is too long ${data}`);
     }
 
-    this.#webView.postEvent('web_app_data_send', undefined, { data });
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_DATA_SEND, undefined, { data });
   }
 
   isVersionAtLeast(version: string): boolean {
@@ -777,7 +812,7 @@ export class TelegramWebApp implements WebApp {
 
     const linkOptions: OpenLinkOptions = options ?? { try_instant_view: false };
 
-    this.#webView.postEvent('web_app_open_link', undefined, {
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_OPEN_LINK, undefined, {
       url,
       try_instant_view: this.#version.isSuitableTo('6.4') && linkOptions.try_instant_view,
     });
@@ -787,7 +822,9 @@ export class TelegramWebApp implements WebApp {
     const slug = this.#invoices.create(url);
     this.#invoices.save(slug, { url, callback });
 
-    this.#webView.postEvent('web_app_open_invoice', undefined, { slug });
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_OPEN_INVOICE, undefined, {
+      slug,
+    });
   }
 
   openTelegramLink(url: string): void {
@@ -808,7 +845,9 @@ export class TelegramWebApp implements WebApp {
     const fullPath = pathname + search;
 
     if (this.#webView.isIframe) {
-      this.#webView.postEvent('web_app_open_tg_link', undefined, { path_full: fullPath });
+      this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_OPEN_TG_LINK, undefined, {
+        path_full: fullPath,
+      });
       return;
     }
 
@@ -820,7 +859,13 @@ export class TelegramWebApp implements WebApp {
 
     this.#clipboard.setRequest(id, callback);
 
-    this.#webView.postEvent('web_app_read_text_from_clipboard', undefined, { req_id: id });
+    this.#webView.postEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_READ_TEXT_FROM_CLIPBOARD,
+      undefined,
+      {
+        req_id: id,
+      }
+    );
   }
 
   enableClosingConfirmation(): void | never {
@@ -844,7 +889,7 @@ export class TelegramWebApp implements WebApp {
 
     const data = this.#popup.params ?? ({} as OpenPopupEventData);
 
-    this.#webView.postEvent('web_app_open_popup', undefined, data);
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_OPEN_POPUP, undefined, data);
   }
 
   showAlert(message: string, callback?: Nullable<NoParamsCallback>): void {
@@ -897,7 +942,7 @@ export class TelegramWebApp implements WebApp {
       }
     });
 
-    this.#webView.postEvent('web_app_switch_inline_query', undefined, {
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_SWITCH_INLINE_QUERY, undefined, {
       query: queryToSend,
       chat_types: chats,
     });
@@ -909,13 +954,17 @@ export class TelegramWebApp implements WebApp {
   ): void | never {
     this.#qrPopup.open({ params, callback });
 
-    this.#webView.postEvent('web_app_open_scan_qr_popup', undefined, this.#qrPopup.params);
+    this.#webView.postEvent(
+      TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_OPEN_SCAN_QR_POPUP,
+      undefined,
+      this.#qrPopup.params
+    );
   }
 
   closeScanQrPopup(): void | never {
     this.#qrPopup.close();
 
-    this.#webView.postEvent('web_app_close_scan_qr_popup');
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_CLOSE_SCAN_QR_POPUP);
   }
 
   onEvent(eventType: string, callback: AnyCallback): void {
@@ -927,14 +976,14 @@ export class TelegramWebApp implements WebApp {
   }
 
   ready(): void {
-    this.#webView.postEvent('web_app_ready');
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_READY);
   }
 
   expand(): void {
-    this.#webView.postEvent('web_app_expand');
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_EXPAND);
   }
 
   close(): void {
-    this.#webView.postEvent('web_app_close');
+    this.#webView.postEvent(TELEGRAM_WEB_VIEW.EVENTS.SEND.WEB_APP_CLOSE);
   }
 }
