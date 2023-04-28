@@ -1,27 +1,34 @@
 import { WebAppPopupParamInvalidError } from '../../Errors';
 import { EventPopupButton, PopupButton, PopupButtonType } from '../../types';
 
-const TYPES = {
-  DEFAULT: 'default',
-  OK: 'ok',
-  CLOSE: 'close',
-  CANCEL: 'cancel',
-  DESTRUCTIVE: 'destructive',
+export const TELEGRAM_POPUP_BUTTON = {
+  TYPES: {
+    DEFAULT: 'default',
+    OK: 'ok',
+    CLOSE: 'close',
+    CANCEL: 'cancel',
+    DESTRUCTIVE: 'destructive',
+  },
+  MAX_ID_LENGTH: 64,
+  MAX_TEXT_LENGTH: 64,
 } as const;
 
-const VALID_BUTTON_TYPES = Object.values(TYPES);
+const VALID_BUTTON_TYPES = Object.values(TELEGRAM_POPUP_BUTTON.TYPES);
 
-const TYPES_WITH_REQUIRED_TEXT = [TYPES.DEFAULT, TYPES.DESTRUCTIVE] as PopupButtonType[];
+const TYPES_WITH_REQUIRED_TEXT = [
+  TELEGRAM_POPUP_BUTTON.TYPES.DEFAULT,
+  TELEGRAM_POPUP_BUTTON.TYPES.DESTRUCTIVE,
+] as PopupButtonType[];
 
 export class WebAppPopupButton {
   static get TYPES() {
-    return TYPES;
+    return TELEGRAM_POPUP_BUTTON.TYPES;
   }
   static get MAX_ID_LENGTH() {
-    return 64;
+    return TELEGRAM_POPUP_BUTTON.MAX_ID_LENGTH;
   }
   static get MAX_TEXT_LENGTH() {
-    return 64;
+    return TELEGRAM_POPUP_BUTTON.MAX_TEXT_LENGTH;
   }
 
   #button: EventPopupButton = {} as EventPopupButton;
