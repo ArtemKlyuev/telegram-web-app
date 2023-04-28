@@ -7,6 +7,7 @@ import {
   PopupParams,
 } from '../../types';
 import { generateId } from '../../utils';
+
 import { WebAppPopupButton } from '../PopupButton';
 
 export type PopupCallback = (id: string) => any;
@@ -34,19 +35,6 @@ export class Popup {
   #isOpened = false;
   #data: Required<PopupData> = createInitialState();
 
-  static get MAX_TITLE_LENGTH() {
-    return TELEGRAM_POPUP.MAX_TITLE_LENGTH;
-  }
-  static get MAX_MESSAGE_LENGTH() {
-    return TELEGRAM_POPUP.MAX_MESSAGE_LENGTH;
-  }
-  static get MIN_BUTTONS() {
-    return TELEGRAM_POPUP.MIN_BUTTONS;
-  }
-  static get MAX_BUTTONS() {
-    return TELEGRAM_POPUP.MAX_BUTTONS;
-  }
-
   #setCallback(callback?: Nullable<PopupCallback>): this {
     if (callback) {
       this.#data.callback = callback;
@@ -66,7 +54,7 @@ export class Popup {
       return this;
     }
 
-    if (title.length > Popup.MAX_TITLE_LENGTH) {
+    if (title.length > TELEGRAM_POPUP.MAX_TITLE_LENGTH) {
       throw new WebAppPopupParamInvalidError(`title is too long ${title}`);
     }
 
@@ -81,7 +69,7 @@ export class Popup {
       throw new WebAppPopupParamInvalidError(`message is required ${message}`);
     }
 
-    if (trimmedMessage.length > Popup.MAX_MESSAGE_LENGTH) {
+    if (trimmedMessage.length > TELEGRAM_POPUP.MAX_MESSAGE_LENGTH) {
       console.error('[Telegram.WebApp] Popup message is too long', trimmedMessage);
       throw new WebAppPopupParamInvalidError(`message is too long ${trimmedMessage}`);
     }
@@ -104,13 +92,15 @@ export class Popup {
       throw new WebAppPopupParamInvalidError(`buttons should be an array ${buttons}`);
     }
 
-    if (buttons.length < Popup.MIN_BUTTONS) {
-      throw new WebAppPopupParamInvalidError(`should have at least ${Popup.MIN_BUTTONS} button`);
+    if (buttons.length < TELEGRAM_POPUP.MIN_BUTTONS) {
+      throw new WebAppPopupParamInvalidError(
+        `should have at least ${TELEGRAM_POPUP.MIN_BUTTONS} button`
+      );
     }
 
-    if (buttons.length > Popup.MAX_BUTTONS) {
+    if (buttons.length > TELEGRAM_POPUP.MAX_BUTTONS) {
       throw new WebAppPopupParamInvalidError(
-        `should not have more than ${Popup.MAX_BUTTONS} buttons`
+        `should not have more than ${TELEGRAM_POPUP.MAX_BUTTONS} buttons`
       );
     }
 

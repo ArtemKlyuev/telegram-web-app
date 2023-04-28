@@ -2,7 +2,7 @@ import { generateId } from '../../../utils';
 
 import { WebAppPopupButton } from '../../PopupButton';
 
-import { Popup } from '../Popup';
+import { Popup, TELEGRAM_POPUP } from '../Popup';
 
 const generateArrayWithLength = (length: number) => Array.from(Array(length));
 
@@ -123,13 +123,16 @@ describe('Popup', () => {
     });
 
     it('should throw if title length > MAX_TITLE_LENGTH', () => {
-      const params = { title: generateId(Popup.MAX_TITLE_LENGTH + 1), message: 'lorem ipsum' };
+      const params = {
+        title: generateId(TELEGRAM_POPUP.MAX_TITLE_LENGTH + 1),
+        message: 'lorem ipsum',
+      };
 
       expect(() => popup.open({ params })).toThrow(Error);
     });
 
     it('should not throw if title length <= MAX_TITLE_LENGTH', () => {
-      const params = { title: generateId(Popup.MAX_TITLE_LENGTH), message: 'lorem ipsum' };
+      const params = { title: generateId(TELEGRAM_POPUP.MAX_TITLE_LENGTH), message: 'lorem ipsum' };
 
       expect(() => popup.open({ params })).not.toThrow(Error);
     });
@@ -172,7 +175,7 @@ describe('Popup', () => {
     it('should throw if message length > MAX_MESSAGE_LENGTH', () => {
       const params = {
         title: 'Title',
-        message: generateId(Popup.MAX_MESSAGE_LENGTH + 1),
+        message: generateId(TELEGRAM_POPUP.MAX_MESSAGE_LENGTH + 1),
         buttons: [
           {
             type: WebAppPopupButton.TYPES.CLOSE,
@@ -204,7 +207,7 @@ describe('Popup', () => {
       const params = {
         title: 'Title',
         message: 'abc',
-        buttons: generateArrayWithLength(Popup.MIN_BUTTONS - 1),
+        buttons: generateArrayWithLength(TELEGRAM_POPUP.MIN_BUTTONS - 1),
       };
 
       expect(() => {
@@ -217,7 +220,7 @@ describe('Popup', () => {
       const params = {
         title: 'Title',
         message: 'abc',
-        buttons: generateArrayWithLength(Popup.MAX_BUTTONS + 1),
+        buttons: generateArrayWithLength(TELEGRAM_POPUP.MAX_BUTTONS + 1),
       };
 
       expect(() => {
