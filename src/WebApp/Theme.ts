@@ -2,13 +2,13 @@ import { HexColor, ThemeParams, ValueOf } from '../types';
 import { Disposer, EventEmitter, isColorDark, parseColorToHex } from '../utils';
 
 import { ColorScheme } from './types';
-import { COLOR_SCHEMES } from './constants';
 
 type ThemeEvents = typeof THEME_EVENTS;
 type ThemeEvent = ValueOf<ThemeEvents>;
 type ColorSchemeChangeListener = (newColorScheme: ColorScheme) => void;
 type ThemeParamSetListener = (param: keyof Required<ThemeParams>, color: HexColor) => void;
 type ThemeParamsChangeListener = (params: ThemeParams) => void;
+type ThemeValues = ValueOf<Required<ThemeParams>>;
 
 const THEME_EVENTS = {
   COLOR_SCHEME_CHANGED: 'color_scheme_changed',
@@ -16,25 +16,33 @@ const THEME_EVENTS = {
   THEME_PARAMS_CHANGED: 'theme_params_changed',
 } as const;
 
-const PARAMS_KEYS = {
-  BG_COLOR: 'bg_color',
-  TEXT_COLOR: 'text_color',
-  HINT_COLOR: 'hint_color',
-  LINK_COLOR: 'link_color',
-  BUTTON_COLOR: 'button_color',
-  BUTTON_TEXT_COLOR: 'button_text_color',
-  SECONDARY_BG_COLOR: 'secondary_bg_color',
+export const TELEGRAM_THEME = {
+  COLOR_SCHEMES: {
+    LIGHT: 'light',
+    DARK: 'dark',
+  },
+  PARAMS: {
+    BG_COLOR: 'bg_color',
+    TEXT_COLOR: 'text_color',
+    HINT_COLOR: 'hint_color',
+    LINK_COLOR: 'link_color',
+    BUTTON_COLOR: 'button_color',
+    BUTTON_TEXT_COLOR: 'button_text_color',
+    SECONDARY_BG_COLOR: 'secondary_bg_color',
+  },
 } as const;
-
-type ThemeValues = ValueOf<Required<ThemeParams>>;
 
 export class Theme {
   #eventEmitter: EventEmitter<ThemeEvent>;
   #themeParams = new Map<keyof ThemeParams, ThemeValues>();
-  #colorScheme: ColorScheme = COLOR_SCHEMES.LIGHT;
+  #colorScheme: ColorScheme = TELEGRAM_THEME.COLOR_SCHEMES.LIGHT;
 
-  static readonly EVENTS = THEME_EVENTS;
-  static readonly PARAMS_KEYS = PARAMS_KEYS;
+  static get EVENTS() {
+    return THEME_EVENTS;
+  }
+  static get PARAMS_KEYS() {
+    return TELEGRAM_THEME.PARAMS;
+  }
 
   constructor(eventEmitter: EventEmitter<ThemeEvent>) {
     this.#eventEmitter = eventEmitter;
@@ -43,7 +51,9 @@ export class Theme {
   #toJSON = (): ThemeParams => Object.fromEntries(this.#themeParams);
 
   #defineColorScheme(color: HexColor): ColorScheme {
-    return isColorDark(color) ? COLOR_SCHEMES.DARK : COLOR_SCHEMES.LIGHT;
+    return isColorDark(color)
+      ? TELEGRAM_THEME.COLOR_SCHEMES.DARK
+      : TELEGRAM_THEME.COLOR_SCHEMES.LIGHT;
   }
 
   #setColorScheme(colorScheme: ColorScheme): void {

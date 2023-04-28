@@ -48,14 +48,8 @@ import {
 } from '../Errors';
 import { bindMethods, FeatureSupport } from '../decorators';
 
-import {
-  ColorScheme,
-  ColorSchemes,
-  HeaderBgColor,
-  WebViewEvent,
-  WebViewEventParams,
-} from './types';
-import { COLOR_SCHEMES, HEADER_COLOR_KEYS } from './constants';
+import { ColorScheme, HeaderBgColor, WebViewEvent, WebViewEventParams } from './types';
+import { HEADER_COLOR_KEYS } from './constants';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';
@@ -255,7 +249,6 @@ export class TelegramWebApp implements WebApp {
   readonly #clipboard: WebAppClipboard;
   readonly #qrPopup: QrPopup;
 
-  static readonly COLOR_SCHEMES: ColorSchemes = COLOR_SCHEMES;
   static readonly MAXIMUM_BYTES_TO_SEND = 4096;
   static get MAX_INLINE_QUERY_LENGTH(): number {
     return 256;
