@@ -3,7 +3,7 @@ import { EventEmitter, Disposer, parseColorToHex } from '../utils';
 import { WebAppBackgroundColorInvalidError } from '../Errors';
 
 import { HeaderBgColor } from './types';
-import { HEADER_COLOR_KEYS } from './constants';
+import { TELEGRAM_THEME } from './Theme';
 
 interface Options {
   eventEmitter: EventEmitter<BgColorEvent>;
@@ -17,7 +17,7 @@ type BgColorUpdateListener = (color: HexColor | undefined) => any;
 export class BackgroundColor {
   readonly #eventEmitter: Options['eventEmitter'];
   readonly #themeParams: Options['themeParams'];
-  #backgroundColorKeyOrColor: HeaderBgColor | HexColor = HEADER_COLOR_KEYS.BG_COLOR;
+  #backgroundColorKeyOrColor: HeaderBgColor | HexColor = TELEGRAM_THEME.HEADER_COLOR.BG_COLOR;
   #appBackgroundColor: Nullable<HexColor> = null;
 
   static get EVENTS() {
@@ -34,11 +34,11 @@ export class BackgroundColor {
   }
 
   get = (): HexColor | undefined => {
-    if (this.#backgroundColorKeyOrColor === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR) {
+    if (this.#backgroundColorKeyOrColor === TELEGRAM_THEME.HEADER_COLOR.SECONDARY_BG_COLOR) {
       return this.#themeParams().secondary_bg_color;
     }
 
-    if (this.#backgroundColorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR) {
+    if (this.#backgroundColorKeyOrColor === TELEGRAM_THEME.HEADER_COLOR.BG_COLOR) {
       return this.#themeParams().bg_color;
     }
 
@@ -56,7 +56,10 @@ export class BackgroundColor {
   };
 
   #getBgColor(color: HeaderBgColor | HexColor): HeaderBgColor | HexColor {
-    if (color === HEADER_COLOR_KEYS.BG_COLOR || color === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR) {
+    if (
+      color === TELEGRAM_THEME.HEADER_COLOR.BG_COLOR ||
+      color === TELEGRAM_THEME.HEADER_COLOR.SECONDARY_BG_COLOR
+    ) {
       return color;
     }
 

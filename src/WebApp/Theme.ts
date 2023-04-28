@@ -28,6 +28,10 @@ export const TELEGRAM_THEME = {
     BUTTON_TEXT_COLOR: 'button_text_color',
     SECONDARY_BG_COLOR: 'secondary_bg_color',
   },
+  HEADER_COLOR: {
+    BG_COLOR: 'bg_color',
+    SECONDARY_BG_COLOR: 'secondary_bg_color',
+  },
 } as const;
 
 export class Theme {

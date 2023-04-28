@@ -51,13 +51,12 @@ import {
 import { bindMethods, FeatureSupport } from '../decorators';
 
 import { HeaderBgColor } from './types';
-import { HEADER_COLOR_KEYS } from './constants';
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';
 import { WebAppHapticFeedback } from './HapticFeedback';
 import { InitData } from './InitData';
 import { WebAppMainButton } from './MainButton';
-import { Theme } from './Theme';
+import { TELEGRAM_THEME, Theme } from './Theme';
 import { Viewport, ViewportData } from './Viewport';
 import { Version } from './Version';
 import { Invoices } from './Invoices';
@@ -243,7 +242,7 @@ const VALID_CHAT_TYPES = Object.values(TELEGRAM_WEB_APP.CHAT_TYPES);
 @bindMethods
 export class TelegramWebApp implements WebApp {
   readonly #platform: string = 'unknown';
-  #headerColorKey: HeaderBgColor = HEADER_COLOR_KEYS.BG_COLOR;
+  #headerColorKey: HeaderBgColor = TELEGRAM_THEME.HEADER_COLOR.BG_COLOR;
   #lastWindowHeight = window.innerHeight;
   #isClosingConfirmationEnabled = false;
   readonly #initData: InitData;
@@ -690,8 +689,8 @@ export class TelegramWebApp implements WebApp {
 
   #getHeaderColorKey(colorKeyOrColor: HeaderBgColor | HexColor): HeaderBgColor | false {
     if (
-      colorKeyOrColor === HEADER_COLOR_KEYS.BG_COLOR ||
-      colorKeyOrColor === HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
+      colorKeyOrColor === TELEGRAM_THEME.HEADER_COLOR.BG_COLOR ||
+      colorKeyOrColor === TELEGRAM_THEME.HEADER_COLOR.SECONDARY_BG_COLOR
     ) {
       return colorKeyOrColor;
     }
@@ -700,11 +699,11 @@ export class TelegramWebApp implements WebApp {
     const themeParams = this.#theme.params;
 
     if (themeParams.bg_color && themeParams.bg_color === parsedColor) {
-      return HEADER_COLOR_KEYS.BG_COLOR;
+      return TELEGRAM_THEME.HEADER_COLOR.BG_COLOR;
     }
 
     if (themeParams.secondary_bg_color && themeParams.secondary_bg_color === parsedColor) {
-      return HEADER_COLOR_KEYS.SECONDARY_BG_COLOR;
+      return TELEGRAM_THEME.HEADER_COLOR.SECONDARY_BG_COLOR;
     }
 
     return false;
@@ -714,8 +713,8 @@ export class TelegramWebApp implements WebApp {
     const colorKey = this.#getHeaderColorKey(colorKeyOrColor);
 
     if (
-      colorKey !== HEADER_COLOR_KEYS.BG_COLOR &&
-      colorKey !== HEADER_COLOR_KEYS.SECONDARY_BG_COLOR
+      colorKey !== TELEGRAM_THEME.HEADER_COLOR.BG_COLOR &&
+      colorKey !== TELEGRAM_THEME.HEADER_COLOR.SECONDARY_BG_COLOR
     ) {
       throw new WebAppHeaderColorKeyInvalidError(colorKeyOrColor);
     }
