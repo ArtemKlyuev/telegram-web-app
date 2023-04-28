@@ -89,14 +89,25 @@ type WebViewEventParams =
   | InvoiceClosedCallbackData;
 
 export const TELEGRAM_WEB_APP = {
+  MAX_BYTES_TO_SEND: 4096,
+  MAX_INLINE_QUERY_LENGTH: 256,
   CHAT_TYPES: {
     USERS: 'users',
     BOTS: 'bots',
     GROUPS: 'groups',
     CHANNELS: 'channels',
   },
-  MAX_BYTES_TO_SEND: 4096,
-  MAX_INLINE_QUERY_LENGTH: 256,
+  EVENTS: {
+    THEME_CHANGED: 'themeChanged',
+    VIEWPORT_CHANGED: 'viewportChanged',
+    MAIN_BUTTON_CLICKED: 'mainButtonClicked',
+    BACK_BUTTON_CLICKED: 'backButtonClicked',
+    SETTINGS_BUTTON_CLICKED: 'settingsButtonClicked',
+    INVOICE_CLOSED: 'invoiceClosed',
+    POPUP_CLOSED: 'popupClosed',
+    QR_TEXT_RECEIVED: 'qrTextReceived',
+    CLIPBOARD_TEXT_RECEIVED: 'clipboardTextReceived',
+  },
 } as const;
 
 const VALID_CHAT_TYPES = Object.values(TELEGRAM_WEB_APP.CHAT_TYPES);
@@ -262,7 +273,7 @@ export class TelegramWebApp implements WebApp {
   #initMainButton(): void {
     const onMainButtonClick = (isActive: boolean): void => {
       if (isActive) {
-        this.#receiveWebViewEvent('mainButtonClicked');
+        this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.MAIN_BUTTON_CLICKED);
       }
     };
 
@@ -279,18 +290,18 @@ export class TelegramWebApp implements WebApp {
     });
 
     this.#mainButton.on(WebAppMainButton.EVENTS.CLICKED, (callback) => {
-      this.#onWebViewEvent('mainButtonClicked', callback);
+      this.#onWebViewEvent(TELEGRAM_WEB_APP.EVENTS.MAIN_BUTTON_CLICKED, callback);
     });
 
     this.#mainButton.on(WebAppMainButton.EVENTS.OFF_CLICKED, (callback) => {
-      this.#offWebViewEvent('mainButtonClicked', callback);
+      this.#offWebViewEvent(TELEGRAM_WEB_APP.EVENTS.MAIN_BUTTON_CLICKED, callback);
     });
   }
 
   #initBackButton(): void {
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CREATED, () => {
       this.#webView.onEvent('back_button_pressed', () => {
-        this.#receiveWebViewEvent('backButtonClicked');
+        this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.BACK_BUTTON_CLICKED);
       });
     });
 
@@ -299,11 +310,11 @@ export class TelegramWebApp implements WebApp {
     });
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.CLICKED, (callback) => {
-      this.#onWebViewEvent('backButtonClicked', callback);
+      this.#onWebViewEvent(TELEGRAM_WEB_APP.EVENTS.BACK_BUTTON_CLICKED, callback);
     });
 
     this.#backButton[BACK_BUTTON_ON_EVENT_KEY](WebAppBackButton.EVENTS.OFF_CLICKED, (callback) => {
-      this.#offWebViewEvent('backButtonClicked', callback);
+      this.#offWebViewEvent(TELEGRAM_WEB_APP.EVENTS.BACK_BUTTON_CLICKED, callback);
     });
   }
 
@@ -339,7 +350,7 @@ export class TelegramWebApp implements WebApp {
 
   #initViewport(): void {
     this.#viewport.on(Viewport.EVENTS.VIEWPORT_CHANGED, (isStateStable) => {
-      this.#receiveWebViewEvent('viewportChanged', { isStateStable });
+      this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.VIEWPORT_CHANGED, { isStateStable });
     });
 
     this.#viewport.on(Viewport.EVENTS.HEIGHT_CALCULATED, ({ height, stableHeight }) => {
@@ -575,7 +586,7 @@ export class TelegramWebApp implements WebApp {
     if (this.#lastWindowHeight !== window.innerHeight) {
       this.#lastWindowHeight = window.innerHeight;
 
-      this.#receiveWebViewEvent('viewportChanged', { isStateStable: true });
+      this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.VIEWPORT_CHANGED, { isStateStable: true });
     }
   };
 
@@ -592,7 +603,7 @@ export class TelegramWebApp implements WebApp {
 
     callback?.(status);
 
-    this.#receiveWebViewEvent('invoiceClosed', { url, status });
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.INVOICE_CLOSED, { url, status });
   };
 
   #onThemeChanged = (_: any, eventData: { theme_params: ThemeParams }) => {
@@ -603,7 +614,7 @@ export class TelegramWebApp implements WebApp {
     this.#theme.setParams(eventData.theme_params);
     this.#mainButton.setParams({});
     this.#bgColor.update();
-    this.#receiveWebViewEvent('themeChanged');
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.THEME_CHANGED);
   };
 
   #onViewportChanged = (_: any, eventData: ViewportData): void => {
@@ -615,7 +626,9 @@ export class TelegramWebApp implements WebApp {
     this.#viewport.setHeight(eventData);
   };
 
-  #onSettingsButtonPressed = (): void => this.#receiveWebViewEvent('settingsButtonClicked');
+  #onSettingsButtonPressed = (): void => {
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.SETTINGS_BUTTON_CLICKED);
+  };
 
   #onPopupClosed = (_: any, eventData: PopupClosedCallbackData): void => {
     if (!this.#popup.isOpened) {
@@ -631,7 +644,7 @@ export class TelegramWebApp implements WebApp {
       callback?.(buttonID);
     }
 
-    this.#receiveWebViewEvent('popupClosed', { button_id: buttonID });
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.POPUP_CLOSED, { button_id: buttonID });
   };
 
   #onClipboardTextReceived = (
@@ -650,7 +663,7 @@ export class TelegramWebApp implements WebApp {
 
     callback?.(data);
 
-    this.#receiveWebViewEvent('clipboardTextReceived', { data });
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.CLIPBOARD_TEXT_RECEIVED, { data });
   };
 
   #onQrTextReceived = (_: any, eventData: { data?: string | undefined }): void => {
@@ -666,7 +679,7 @@ export class TelegramWebApp implements WebApp {
       this.#webView.postEvent('web_app_close_scan_qr_popup');
     }
 
-    this.#receiveWebViewEvent('qrTextReceived', { data });
+    this.#receiveWebViewEvent(TELEGRAM_WEB_APP.EVENTS.QR_TEXT_RECEIVED, { data });
   };
 
   #onScanQrPopupClosed = (): void => this.#qrPopup.close();
