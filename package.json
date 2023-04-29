@@ -1,44 +1,16 @@
 {
-  "name": "telegram-web-app",
-  "version": "0.0.0",
+  "name": "root",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">= 16.20.0"
   },
-  "sideEffects": false,
-  "main": "dist/cjs/index.js",
-  "typings": "./dist/types/typings/public.d.ts",
-  "module": "dist/esm/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
-    },
-    "./errors": {
-      "import": "./dist/esm/Errors/index.js",
-      "require": "./dist/cjs/prod/Errors/index.js",
-      "types": "./dist/types/Errors/index.d.ts"
-    },
-    "./types": {
-      "types": "./dist/types/typings/public.d.ts"
-    }
-  },
   "scripts": {
-    "typecheck": "tsc --pretty --noEmit",
-    "build:dev": "yarn build:esm && yarn build:dist:dev",
-    "build:prod": "yarn build:esm && yarn build:dist:prod",
-    "build:dist:dev": "cross-env NODE_ENV=development tsx scripts/build.ts",
-    "build:dist:prod": "cross-env NODE_ENV=production tsx scripts/build.ts",
-    "build:esm": "tsc -p tsconfig.build.esm.json && tsc-alias -p tsconfig.build.esm.json",
-    "test": "jest",
-    "test:watch": "jest --watch"
-  },
-  "dependencies": {
-    "tslib": "2.5.0"
+    "core": "pnpm --filter @telegram-web-app/core"
   },
   "devDependencies": {
+    "@changesets/cli": "2.26.1",
     "@swc/core": "1.3.53",
     "@swc/jest": "0.2.26",
     "@types/jest": "29.5.1",
