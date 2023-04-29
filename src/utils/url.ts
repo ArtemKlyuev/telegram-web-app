@@ -1,5 +1,7 @@
 import { InitParams } from '../types';
 
+import { isNullable } from './isNullable';
+
 export const urlSafeDecode = (urlencoded: string): string => {
   try {
     urlencoded = urlencoded.replace(/\+/g, '%20');
@@ -29,10 +31,10 @@ export const urlParseHashParams = (locationHash: string): InitParams => {
     locationHash = locationHash.slice(queryStringIndex + 1);
   }
 
-  const query_params = urlParseQueryString(locationHash);
+  const queryParams = urlParseQueryString<InitParams>(locationHash);
 
-  for (const key in query_params) {
-    params[key] = query_params[key];
+  for (const [key, value] of Object.entries(queryParams)) {
+    params[key] = value;
   }
 
   return params;
@@ -48,7 +50,7 @@ export const urlParseQueryString = <T extends Record<string, any>>(queryString: 
   const params = queryStringParams.reduce<T>((acc, param) => {
     const [name, value] = param.split('=');
     const paramName = urlSafeDecode(name);
-    const paramValue = value == null ? null : urlSafeDecode(value);
+    const paramValue = isNullable(value) ? null : urlSafeDecode(value);
 
     return { ...acc, [paramName]: paramValue };
   }, {} as T);
