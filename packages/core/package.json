@@ -33,7 +33,8 @@
     "build:dist:prod": "cross-env NODE_ENV=production tsx scripts/build.ts",
     "build:esm": "tsc -p tsconfig.build.esm.json && tsc-alias -p tsconfig.build.esm.json",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:coverage": "pnpm test --coverage"
   },
   "dependencies": {
     "tslib": "2.5.0"
