@@ -68,7 +68,7 @@ export class Theme {
   on(event: ThemeEvents['THEME_PARAMS_CHANGED'], listener: ThemeParamsChangeListener): Disposer;
   on(
     event: ThemeEvent,
-    listener: ColorSchemeChangeListener | ThemeParamSetListener | ThemeParamsChangeListener
+    listener: ColorSchemeChangeListener | ThemeParamSetListener | ThemeParamsChangeListener,
   ): Disposer {
     return this.#eventEmitter.subscribe(event, listener);
   }
@@ -87,7 +87,7 @@ export class Theme {
       params.secondary_bg_color = '#2c2c2e';
     }
 
-    for (let key in params) {
+    for (const key in params) {
       const color = parseColorToHex(params[key as keyof ThemeParams]);
 
       if (color) {

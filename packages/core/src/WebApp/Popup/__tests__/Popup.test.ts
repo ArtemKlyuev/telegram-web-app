@@ -151,7 +151,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });
@@ -169,7 +169,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });
@@ -187,7 +187,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });
@@ -200,7 +200,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });
@@ -213,7 +213,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });
@@ -226,7 +226,7 @@ describe('Popup', () => {
       };
 
       expect(() => {
-        // @ts-expect-error
+        // @ts-expect-error for test purposes
         return popup.open({ params });
       }).toThrow(Error);
     });

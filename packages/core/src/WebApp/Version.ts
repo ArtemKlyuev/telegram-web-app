@@ -37,7 +37,7 @@ export class Version {
     return parsedInt;
   }
 
-  #compareVersions(v1: string = '', v2: string = ''): VersionDifference {
+  #compareVersions(v1 = '', v2 = ''): VersionDifference {
     if (typeof v1 !== 'string') {
       v1 = '';
     }

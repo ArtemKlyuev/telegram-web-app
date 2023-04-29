@@ -2,10 +2,13 @@ import { Initializer, Initializers } from './Initializers';
 
 type AnyFunction = (...args: any[]) => any;
 
-export function bindMethod<ThisArg>(_: AnyFunction, context: ClassMethodDecoratorContext<ThisArg>) {
+export function bindMethod<ThisArg extends Record<string | symbol, any>>(
+  _: AnyFunction,
+  context: ClassMethodDecoratorContext<ThisArg>,
+) {
   if (!(context.kind === 'method')) {
     throw new TypeError(
-      `'bindMethod' cannot decorate kinds different from 'method'. Passed kind: ${context.kind}.`
+      `'bindMethod' cannot decorate kinds different from 'method'. Passed kind: ${context.kind}.`,
     );
   }
 
@@ -16,18 +19,18 @@ export function bindMethod<ThisArg>(_: AnyFunction, context: ClassMethodDecorato
 
   context.addInitializer(function () {
     // FIXME: fix typescript error
-    // @ts-expect-error
+    // @ts-expect-error ts(2536)
     this[context.name] = this[context.name].bind(this);
   });
 }
 
 export function bindMethods<Class extends new (...args: any) => any>(
   classArg: Class,
-  context: ClassDecoratorContext<Class>
+  context: ClassDecoratorContext<Class>,
 ): Class {
   if (!(context.kind === 'class')) {
     throw new TypeError(
-      `'bindMethods' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`
+      `'bindMethods' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`,
     );
   }
 
@@ -47,7 +50,7 @@ export function bindMethods<Class extends new (...args: any) => any>(
   Object.getOwnPropertyNames(classArg)
     .filter(
       (name) =>
-        name !== 'length' && name !== 'constructor' && name !== 'prototype' && name !== 'name'
+        name !== 'length' && name !== 'constructor' && name !== 'prototype' && name !== 'name',
     )
     .forEach((name) => {
       const descr = Object.getOwnPropertyDescriptor(classArg, name)!;
@@ -55,7 +58,7 @@ export function bindMethods<Class extends new (...args: any) => any>(
     });
 
   const methods = Object.getOwnPropertyNames(classArg.prototype).filter(
-    (name) => name !== 'constructor'
+    (name) => name !== 'constructor',
   );
 
   methods.forEach((methodName) => {
@@ -63,7 +66,8 @@ export function bindMethods<Class extends new (...args: any) => any>(
 
     if (descriptor?.value) {
       // FIXME: fix typescript error
-      // @ts-expect-error
+      // @ts-expect-error not fully compatible with ts `ClassMethodDecoratorContext` but
+      // that's ok at that moment
       bindMethod(descriptor.value, {
         kind: 'method',
         name: methodName,

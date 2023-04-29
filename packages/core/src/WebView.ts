@@ -92,7 +92,7 @@ export class TelegramWebView implements WebView {
 
         this.receiveEvent(
           dataParsed.eventType as keyof ReceivedWebViewEventToData,
-          dataParsed.eventData
+          dataParsed.eventData,
         );
       } catch {}
     });
@@ -109,7 +109,7 @@ export class TelegramWebView implements WebView {
   postEvent = (
     eventType: string,
     callback?: Nullable<PostEventCallback>,
-    eventData: any = ''
+    eventData: any = '',
   ): void => {
     if (window.TelegramWebviewProxy) {
       window.TelegramWebviewProxy.postEvent(eventType, JSON.stringify(eventData));
@@ -138,8 +138,6 @@ export class TelegramWebView implements WebView {
         callback?.();
       } catch (e) {
         callback?.(e as Error);
-      } finally {
-        return;
       }
     }
 
@@ -167,30 +165,30 @@ export class TelegramWebView implements WebView {
   };
 
   callEventCallbacks = <
-    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData
+    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData,
   >(
     eventType: Event,
     func: CallEventCallbackHandler<
       EventCallbackWithOptionalData<Event, ReceivedWebViewEventToData[Event]>
-    >
+    >,
   ): void => {
     const eventHandlers = this.#eventHandlers.get(eventType);
 
     eventHandlers?.forEach((handler) => {
       try {
-        // @ts-expect-error
+        // @ts-expect-error type collision, nothing wrong
         func(handler);
       } catch {}
     });
   };
 
   receiveEvent = <
-    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData
+    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData,
   >(
     eventType: Event,
-    eventData: ReceivedWebViewEventToData[Event]
+    eventData: ReceivedWebViewEventToData[Event],
   ): void => {
-    // @ts-expect-error
+    // @ts-expect-error type collision, nothing wrong
     this.callEventCallbacks(eventType, (callback) => callback(eventType, eventData));
   };
 }

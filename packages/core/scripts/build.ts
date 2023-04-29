@@ -48,13 +48,13 @@ await Promise.all([esmBuild, cjsDevBuild, cjsProdBuild]);
 
 const cjsIndex = fs.copyFile(
   path.resolve(__dirname, './index-cjs.build.js'),
-  path.resolve(DIST_DIR_PATH, 'cjs/index.js')
+  path.resolve(DIST_DIR_PATH, 'cjs/index.js'),
 );
 
 const types = fs.cp(
   path.resolve(process.cwd(), `temp/types`),
   path.resolve(DIST_DIR_PATH, 'types'),
-  { recursive: true }
+  { recursive: true },
 );
 
 await Promise.all([cjsIndex, types]);

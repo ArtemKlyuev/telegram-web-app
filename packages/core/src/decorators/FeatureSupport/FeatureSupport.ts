@@ -41,18 +41,18 @@ export abstract class FeatureSupport {
   }
 
   static #getMethodsNames<Methods extends string, Class extends new (...args: any) => any>(
-    obj: Class
+    obj: Class,
   ): Methods[] {
     const prototype = Object.getPrototypeOf(obj);
 
     return Object.getOwnPropertyNames(prototype).filter(
-      (name) => name !== 'constructor'
+      (name) => name !== 'constructor',
     ) as Methods[];
   }
 
   static #mapMethodNameWithDescriptor<
     Class extends new (...args: any) => any,
-    Methods extends string
+    Methods extends string,
   >(obj: Class) {
     const prototype = Object.getPrototypeOf(obj);
 
@@ -72,7 +72,7 @@ export abstract class FeatureSupport {
   }
 
   static #decorateWhenFunc<Name extends string, Instance extends Record<string, any>>(
-    config: Omit<MethodInfo<Name>, 'isSupported' | 'appVersion'>
+    config: Omit<MethodInfo<Name>, 'isSupported' | 'appVersion'>,
   ): MethodInfo<Name, Instance> {
     const isSupported = this.#version.isSuitableTo(config.availableInVersion);
     return { appVersion: this.#version.value, isSupported, ...config };
@@ -80,16 +80,16 @@ export abstract class FeatureSupport {
 
   static inVersion<
     Kek extends Record<string, any>,
-    Methods extends Exclude<keyof Kek, number | symbol> = Exclude<keyof Kek, number | symbol>
+    Methods extends Exclude<keyof Kek, number | symbol> = Exclude<keyof Kek, number | symbol>,
   >(versionOrConfig: string | Config<Methods, Kek>) {
     return <Class extends new (...args: any) => any>(
       feature: Class,
-      context: ClassDecoratorContext<Class>
+      context: ClassDecoratorContext<Class>,
     ): Class => {
       console.log('inVersion', { feature, context, versionOrConfig });
       if (!(context.kind === 'class')) {
         throw new TypeError(
-          `'FeatureSupport' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`
+          `'FeatureSupport' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`,
         );
       }
 
@@ -119,10 +119,11 @@ export abstract class FeatureSupport {
           };
 
           const decorateWhenFunc = <Instance extends Record<string, any>>(
-            config: Omit<MethodInfo<Methods>, 'isSupported' | 'appVersion'>
+            config: Omit<MethodInfo<Methods>, 'isSupported' | 'appVersion'>,
           ) => this.#decorateWhenFunc<Methods, Instance>(config);
 
           addInitializer(function () {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             const thisArg = this;
 
             descriptor.value = function (...args: any[]) {
@@ -155,7 +156,7 @@ export abstract class FeatureSupport {
 
                 if (!versionOrConfig.availableInVersion && !availableInVersion) {
                   throw new TypeError(
-                    `Property 'availableInVersion' required either in top level config or in method ${methodName} config`
+                    `Property 'availableInVersion' required either in top level config or in method ${methodName} config`,
                   );
                 }
 

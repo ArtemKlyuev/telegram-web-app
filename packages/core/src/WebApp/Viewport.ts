@@ -22,7 +22,7 @@ export class Viewport {
   readonly #eventEmitter: EventEmitter<ViewportEvent>;
   #viewportHeight: number | false = false;
   #viewportStableHeight: number | false = false;
-  #isExpanded: boolean = true;
+  #isExpanded = true;
   #mainButtonHeight: number;
 
   static get EVENTS() {
