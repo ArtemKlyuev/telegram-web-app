@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./telegram-web-app.production.min.js');
+  module.exports = require('./prod/index.js');
 } else {
-  module.exports = require('./telegram-web-app.development.js');
+  module.exports = require('./dev/index.js');
 }
