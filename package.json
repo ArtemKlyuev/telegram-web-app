@@ -8,7 +8,7 @@
   },
   "sideEffects": false,
   "main": "dist/cjs/index.js",
-  "typings": "dist/types/index.d.ts",
+  "typings": "./dist/types/typings/public.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
