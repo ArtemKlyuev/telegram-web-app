@@ -392,9 +392,10 @@ export interface WebApp {
 
 // WebView stuff
 
-type ReceivedWebViewEventHandler<Event extends string, Data = undefined> = Data extends undefined
-  ? (event: Event) => any
-  : (event: Event, data: Data) => any;
+export type ReceivedWebViewEventHandler<
+  Event extends string,
+  Data = undefined
+> = Data extends undefined ? (event: Event) => any : (event: Event, data: Data) => any;
 
 /**
  * @see https://core.telegram.org/api/web-events#event-types
@@ -572,7 +573,7 @@ export interface PostEventCallbackData {
 }
 
 export type PostEventCallback = (arg?: Nullable<PostEventCallbackData | Error>) => any;
-type CallEventCallbackHandler<Callback extends AnyCallback> = (cb: Callback) => any;
+export type CallEventCallbackHandler<Callback extends AnyCallback> = (cb: Callback) => any;
 
 /**
  * @see https://core.telegram.org/api/bots/webapps#invoice-closed
@@ -614,7 +615,7 @@ export interface ClipboardTextReceivedWebViewEventData {
   data?: Nullable<string | ''>;
 }
 
-interface ReceivedWebViewEventToData {
+export interface ReceivedWebViewEventToData {
   main_button_pressed: undefined;
   settings_button_pressed: undefined;
   back_button_pressed: undefined;

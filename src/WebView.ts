@@ -1,4 +1,13 @@
-import { AnyCallback, InitParams, Nullable, PostEventCallback, WebView } from './types';
+import {
+  AnyCallback,
+  CallEventCallbackHandler,
+  InitParams,
+  Nullable,
+  PostEventCallback,
+  ReceivedWebViewEventHandler,
+  ReceivedWebViewEventToData,
+  WebView,
+} from './types';
 
 export const TELEGRAM_WEB_VIEW = {
   EVENTS: {
@@ -83,7 +92,10 @@ export class TelegramWebView implements WebView {
           return;
         }
 
-        this.receiveEvent(dataParsed.eventType, dataParsed.eventData);
+        this.receiveEvent(
+          dataParsed.eventType as keyof ReceivedWebViewEventToData,
+          dataParsed.eventData
+        );
       } catch {}
     });
   }
@@ -156,19 +168,31 @@ export class TelegramWebView implements WebView {
     this.#eventHandlers.get(eventType)!.delete(callback);
   };
 
-  // FIXME: types
-  // @ts-expect-error
-  callEventCallbacks = (eventType: string, func: (cb: AnyCallback) => any): void => {
+  callEventCallbacks = <
+    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData
+  >(
+    eventType: Event,
+    func: CallEventCallbackHandler<
+      ReceivedWebViewEventHandler<Event, ReceivedWebViewEventToData[Event]>
+    >
+  ): void => {
     const eventHandlers = this.#eventHandlers.get(eventType);
 
     eventHandlers?.forEach((handler) => {
       try {
+        // @ts-expect-error
         func(handler);
       } catch {}
     });
   };
 
-  receiveEvent = (eventType: string, eventData: any): void => {
+  receiveEvent = <
+    Event extends keyof ReceivedWebViewEventToData = keyof ReceivedWebViewEventToData
+  >(
+    eventType: Event,
+    eventData: ReceivedWebViewEventToData[Event]
+  ): void => {
+    // @ts-expect-error
     this.callEventCallbacks(eventType, (callback) => callback(eventType, eventData));
   };
 }
