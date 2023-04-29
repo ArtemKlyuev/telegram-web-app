@@ -1,18 +1,19 @@
+import { ValueOf } from '@typings/utils';
+import { TriggerHapticFeedbackEventData } from '@typings/WebView';
+import {
+  HapticFeedbackImpactStyle,
+  HapticFeedbackNotification,
+  HapticFeedbackType,
+} from '@typings/common';
+import { HapticFeedback } from '@typings/WebApp';
+
+import { Disposer, EventEmitter } from '@utils';
+import { bindMethods, FeatureSupport } from '@decorators';
 import {
   WebAppHapticFeedbackTypeInvalidError,
   WebAppHapticImpactStyleInvalidError,
   WebAppHapticNotificationTypeInvalidError,
-} from '../Errors';
-import {
-  HapticFeedback,
-  HapticFeedbackImpactStyle,
-  HapticFeedbackNotification,
-  HapticFeedbackType,
-  TriggerHapticFeedbackEventData,
-  ValueOf,
-} from '../types';
-import { Disposer, EventEmitter } from '../utils';
-import { bindMethods, FeatureSupport } from '../decorators';
+} from '@Errors';
 
 type HapticFeedbackEvents = typeof HAPTIC_FEEDBACK_EVENTS;
 type HapticFeedbackEvent = ValueOf<HapticFeedbackEvents>;

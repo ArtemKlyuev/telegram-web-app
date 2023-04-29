@@ -1,12 +1,10 @@
-import { WebAppPopupParamInvalidError } from '../../Errors';
-import {
-  EventPopupButton,
-  EventPopupButtonsSet,
-  Nullable,
-  OpenPopupEventData,
-  PopupParams,
-} from '../../types';
-import { generateId } from '../../utils';
+import { PopupParams } from '@typings/WebApp';
+import { Nullable } from '@typings/utils';
+import { OpenPopupEventData } from '@typings/WebView';
+import { EventPopupButton, EventPopupButtonsSet } from '@typings/common';
+
+import { generateId } from '@utils';
+import { WebAppPopupParamInvalidError } from '@Errors';
 
 import { TELEGRAM_POPUP_BUTTON, WebAppPopupButton } from '../PopupButton';
 

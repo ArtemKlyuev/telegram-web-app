@@ -1,4 +1,4 @@
-import { SetupMainButtonEventData } from '../types';
+import { SetupMainButtonEventData } from '@typings/WebView';
 
 interface Options {
   onClick: (e: MouseEvent) => any;

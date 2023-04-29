@@ -1,37 +1,35 @@
+import { ThemeParams, HexColor, InvoiceStatus, ScanQrPopupParams } from '@typings/common';
+import { AnyCallback, Nullable, NoParamsCallback } from '@typings/utils';
 import {
-  AnyCallback,
-  BackButton,
-  ChatTypesToChoose,
+  ViewportChangedCallbackData,
+  PopupClosedCallbackData,
+  QrTextReceivedCallbackData,
   ClipboardTextReceivedCallbackData,
-  ClipboardTextReceivedWebViewEventData,
+  InvoiceClosedCallbackData,
+  WebApp,
+  HeaderBgColor,
+  WebAppInitData,
   ColorScheme,
   HapticFeedback,
-  HeaderBgColor,
-  HexColor,
-  InitParams,
-  InvoiceClosedCallbackData,
-  InvoiceStatus,
+  BackButton,
   MainButton,
-  NoParamsCallback,
-  Nullable,
-  OpenInvoiceCallback,
-  OpenLinkOptions,
-  OpenPopupEventData,
-  PopupClosedCallbackData,
-  PopupClosedWebViewEventData,
-  PopupParams,
-  QrTextReceivedCallbackData,
-  ScanQrPopupParams,
-  ShowConfirmCallback,
-  ShowPopupCallback,
-  ShowScanQrPopupCallback,
-  ThemeParams,
-  ViewportChangedCallbackData,
-  WebApp,
   WebAppEvent,
-  WebAppInitData,
+  OpenLinkOptions,
+  OpenInvoiceCallback,
+  PopupParams,
+  ShowPopupCallback,
+  ShowConfirmCallback,
+  ChatTypesToChoose,
+  ShowScanQrPopupCallback,
+} from '@typings/WebApp';
+import {
   WebView,
-} from '../types';
+  InitParams,
+  PopupClosedWebViewEventData,
+  ClipboardTextReceivedWebViewEventData,
+  OpenPopupEventData,
+} from '@typings/WebView';
+
 import {
   byteLength,
   generateId,
@@ -39,7 +37,8 @@ import {
   isTelegramHostname,
   parseColorToHex,
   SessionStorage,
-} from '../utils';
+} from '@utils';
+import { bindMethods, FeatureSupport } from '@decorators';
 import {
   WebAppDataInvalidError,
   WebAppHeaderColorKeyInvalidError,
@@ -50,8 +49,7 @@ import {
   WebAppPopupOpenedError,
   WebAppPopupParamInvalidError,
   WebAppTelegramUrlInvalidError,
-} from '../Errors';
-import { bindMethods, FeatureSupport } from '../decorators';
+} from '@Errors';
 
 import { BACK_BUTTON_ON_EVENT_KEY, WebAppBackButton } from './BackButton';
 import { BackgroundColor } from './BackgroundColor';

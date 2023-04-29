@@ -1,4 +1,4 @@
-import { HexColor } from '../types';
+import { HexColor } from '@typings/common';
 
 // for example search for '#2c2c2e'
 const HEX_REGEXP = /^\s*#([0-9a-f]{6})\s*$/i;

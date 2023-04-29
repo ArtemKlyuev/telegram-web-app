@@ -1,5 +1,7 @@
-import { WebAppPopupParamInvalidError } from '../../Errors';
-import { EventPopupButton, PopupButton, PopupButtonType } from '../../types';
+import { PopupButton, PopupButtonType } from '@typings/WebApp';
+import { EventPopupButton } from '@typings/common';
+
+import { WebAppPopupParamInvalidError } from '@Errors';
 
 export const TELEGRAM_POPUP_BUTTON = {
   TYPES: {

@@ -1,13 +1,10 @@
-import { WebAppMainButtonParamInvalidError } from '../Errors';
-import {
-  HexColor,
-  MainButton,
-  MainButtonParams,
-  NoParamsCallback,
-  SetupMainButtonEventData,
-  ValueOf,
-} from '../types';
-import { Disposer, EventEmitter, parseColorToHex } from '../utils';
+import { NoParamsCallback, ValueOf } from '@typings/utils';
+import { HexColor } from '@typings/common';
+import { SetupMainButtonEventData } from '@typings/WebView';
+import { MainButton, MainButtonParams } from '@typings/WebApp';
+
+import { Disposer, EventEmitter, parseColorToHex } from '@utils';
+import { WebAppMainButtonParamInvalidError } from '@Errors';
 
 import { MainButtonDebug } from './MainButtonDebug';
 import { TELEGRAM_THEME, Theme } from './Theme';

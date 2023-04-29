@@ -1,13 +1,11 @@
 import {
-  AnyCallback,
   CallEventCallbackHandler,
   InitParams,
-  Nullable,
   PostEventCallback,
-  ReceivedWebViewEventHandler,
   ReceivedWebViewEventToData,
   WebView,
-} from './types';
+} from '@typings/WebView';
+import { AnyCallback, EventCallbackWithOptionalData, Nullable } from '@typings/utils';
 
 export const TELEGRAM_WEB_VIEW = {
   EVENTS: {
@@ -173,7 +171,7 @@ export class TelegramWebView implements WebView {
   >(
     eventType: Event,
     func: CallEventCallbackHandler<
-      ReceivedWebViewEventHandler<Event, ReceivedWebViewEventToData[Event]>
+      EventCallbackWithOptionalData<Event, ReceivedWebViewEventToData[Event]>
     >
   ): void => {
     const eventHandlers = this.#eventHandlers.get(eventType);

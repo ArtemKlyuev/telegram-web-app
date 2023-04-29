@@ -1,6 +1,8 @@
-import { WebAppInvoiceOpenedError, WebAppInvoiceUrlInvalidError } from '../Errors';
-import { Nullable, OpenInvoiceCallback } from '../types';
-import { isHTTPTypeProtocol, isTelegramHostname } from '../utils';
+import { Nullable } from '@typings/utils';
+import { OpenInvoiceCallback } from '@typings/WebApp';
+
+import { isHTTPTypeProtocol, isTelegramHostname } from '@utils';
+import { WebAppInvoiceOpenedError, WebAppInvoiceUrlInvalidError } from '@Errors';
 
 type InvoiceId = string;
 interface InvoiceData {

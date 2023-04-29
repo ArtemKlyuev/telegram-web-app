@@ -1,4 +1,4 @@
-import { InitParams } from '../types';
+import { InitParams } from '@typings/WebView';
 
 import { SessionStorage } from './sessionStorage';
 import { urlParseHashParams } from './url';

@@ -1,4 +1,4 @@
-import { ValueOf } from '../types';
+import { ValueOf } from '@typings/utils';
 
 type VersionDifference = ValueOf<typeof VERSION_DIFFERENCE>;
 

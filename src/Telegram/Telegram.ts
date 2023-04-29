@@ -1,5 +1,18 @@
-import { Nullable, WebApp, WebView } from '../types';
-import { FeatureSupport } from '../decorators';
+import { Nullable } from '@typings/utils';
+import { WebView } from '@typings/WebView';
+import { WebApp } from '@typings/WebApp';
+
+import {
+  EventBus,
+  SessionStorage,
+  getWebViewInitParams,
+  urlAppendHashParams,
+  urlParseHashParams,
+  urlParseQueryString,
+  urlSafeDecode,
+} from '@utils';
+import { FeatureSupport } from '@decorators';
+
 import { TelegramWebView } from '../WebView';
 import {
   WebAppBackButton,
@@ -16,15 +29,6 @@ import {
   Viewport,
   TelegramWebApp,
 } from '../WebApp';
-import {
-  EventBus,
-  SessionStorage,
-  getWebViewInitParams,
-  urlAppendHashParams,
-  urlParseHashParams,
-  urlParseQueryString,
-  urlSafeDecode,
-} from '../utils';
 
 export interface TelegramOptions {
   exposeInMainWorld?: Nullable<boolean>;

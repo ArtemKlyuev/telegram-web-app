@@ -1,5 +1,7 @@
-import { ValueOf, WebAppInitData } from '../types';
-import { urlParseQueryString } from '../utils';
+import { ValueOf } from '@typings/utils';
+import { WebAppInitData } from '@typings/WebApp';
+
+import { urlParseQueryString } from '@utils';
 
 type WebAppInitDataValues = ValueOf<WebAppInitData>;
 

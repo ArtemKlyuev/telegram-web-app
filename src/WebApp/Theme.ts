@@ -1,5 +1,8 @@
-import { ColorScheme, HexColor, ThemeParams, ValueOf } from '../types';
-import { Disposer, EventEmitter, isColorDark, parseColorToHex } from '../utils';
+import { ValueOf } from '@typings/utils';
+import { ColorScheme } from '@typings/WebApp';
+import { HexColor, ThemeParams } from '@typings/common';
+
+import { Disposer, EventEmitter, isColorDark, parseColorToHex } from '@utils';
 
 type ThemeEvents = typeof THEME_EVENTS;
 type ThemeEvent = ValueOf<ThemeEvents>;

@@ -1,5 +1,8 @@
-import { WebAppScanQrPopupOpenedError, WebAppScanQrPopupParamInvalidError } from '../Errors';
-import { Nullable, ScanQrPopupParams, ShowScanQrPopupCallback } from '../types';
+import { ScanQrPopupParams } from '@typings/common';
+import { Nullable } from '@typings/utils';
+import { ShowScanQrPopupCallback } from '@typings/WebApp';
+
+import { WebAppScanQrPopupOpenedError, WebAppScanQrPopupParamInvalidError } from '@Errors';
 
 interface Options {
   params: ScanQrPopupParams;

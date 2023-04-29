@@ -1,6 +1,9 @@
-import { HeaderBgColor, HexColor, Nullable, ThemeParams, ValueOf } from '../types';
-import { EventEmitter, Disposer, parseColorToHex } from '../utils';
-import { WebAppBackgroundColorInvalidError } from '../Errors';
+import { HexColor, ThemeParams } from '@typings/common';
+import { Nullable, ValueOf } from '@typings/utils';
+import { HeaderBgColor } from '@typings/WebApp';
+
+import { EventEmitter, Disposer, parseColorToHex } from '@utils';
+import { WebAppBackgroundColorInvalidError } from '@Errors';
 
 import { TELEGRAM_THEME } from './Theme';
 

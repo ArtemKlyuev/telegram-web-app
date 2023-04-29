@@ -1,5 +1,6 @@
-import { ValueOf } from '../types';
-import { Disposer, EventEmitter } from '../utils';
+import { ValueOf } from '@typings/utils';
+
+import { Disposer, EventEmitter } from '@utils';
 
 interface Options {
   eventEmitter: EventEmitter<ViewportEvent>;

@@ -1,6 +1,8 @@
-import { BackButton, NoParamsCallback, ValueOf } from '../types';
-import { Disposer, EventEmitter } from '../utils';
-import { bindMethods, FeatureSupport } from '../decorators';
+import { NoParamsCallback, ValueOf } from '@typings/utils';
+import { BackButton } from '@typings/WebApp';
+
+import { Disposer, EventEmitter } from '@utils';
+import { bindMethods, FeatureSupport } from '@decorators';
 
 type ButtonEvents = typeof BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
