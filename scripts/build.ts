@@ -15,7 +15,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const baseOptions: BuildOptions = {
   platform: 'browser',
   target: 'es2020',
-  entryPoints: ['./temp/esm/index.js'],
+  entryPoints: ['./temp/esm/index.js', './temp/esm/Errors/index.js'],
   bundle: true,
   treeShaking: true,
   sourcemap: isDev,
@@ -34,14 +34,14 @@ const esmBuild = build({
 const cjsDevBuild = build({
   ...baseOptions,
   format: 'cjs',
-  outfile: `${DIST_DIR}/cjs/telegram-web-app.development.js`,
+  outdir: `${DIST_DIR}/cjs/dev`,
 });
 
 const cjsProdBuild = build({
   ...baseOptions,
   format: 'cjs',
   minify: true,
-  outfile: `${DIST_DIR}/cjs/telegram-web-app.production.min.js`,
+  outdir: `${DIST_DIR}/cjs/prod`,
 });
 
 await Promise.all([esmBuild, cjsDevBuild, cjsProdBuild]);
@@ -53,7 +53,7 @@ const cjsIndex = fs.copyFile(
 
 const types = fs.cp(
   path.resolve(process.cwd(), `temp/types`),
-  path.resolve(DIST_DIR_PATH, 'typings'),
+  path.resolve(DIST_DIR_PATH, 'types'),
   { recursive: true }
 );
 

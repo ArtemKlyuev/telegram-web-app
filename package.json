@@ -8,14 +8,22 @@
   },
   "sideEffects": false,
   "main": "dist/cjs/index.js",
-  "typings": "dist/typings/index.d.ts",
+  "typings": "dist/types/index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/typings/index.d.ts"
+      "types": "./dist/types/index.d.ts"
+    },
+    "./errors": {
+      "import": "./dist/esm/Errors/index.js",
+      "require": "./dist/cjs/prod/Errors/index.js",
+      "types": "./dist/types/Errors/index.d.ts"
+    },
+    "./types": {
+      "types": "./dist/types/types.d.ts"
     }
   },
   "scripts": {
