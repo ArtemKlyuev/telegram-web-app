@@ -1,5 +1,9 @@
 import { Nullable } from './utils';
 
+export interface TelegramOptions {
+  exposeInMainWorld?: Nullable<boolean>;
+}
+
 /**
  * color in `#RRGGBB` format
  */

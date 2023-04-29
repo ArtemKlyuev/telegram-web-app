@@ -1,4 +1,4 @@
-import { Nullable } from '@typings/utils';
+import { TelegramOptions } from '@typings/common';
 import { WebView } from '@typings/WebView';
 import { WebApp } from '@typings/WebApp';
 
@@ -29,10 +29,6 @@ import {
   Viewport,
   TelegramWebApp,
 } from '../WebApp';
-
-export interface TelegramOptions {
-  exposeInMainWorld?: Nullable<boolean>;
-}
 
 const DEFAULT_VERSION = '6.0';
 
