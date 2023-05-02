@@ -7,14 +7,11 @@
     "node": ">=16.10.0"
   },
   "sideEffects": false,
-  "main": "dist/cjs/index.js",
-  "typings": "./dist/types/typings/public.d.ts",
-  "module": "dist/esm/index.js",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/cjs/index.js"
     }
   },
   "scripts": {
