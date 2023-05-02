@@ -1,6 +1,6 @@
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
-  ignorePatterns: ['temp', 'dist'],
+  ignorePatterns: ['temp', 'dist', 'coverage'],
   root: true,
   env: {
     node: true,
