@@ -9,14 +9,14 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "require": "./dist/cjs/index.js"
     },
     "./errors": {
+      "types": "./dist/types/Errors/index.d.ts",
       "import": "./dist/esm/Errors/index.js",
-      "require": "./dist/cjs/prod/Errors/index.js",
-      "types": "./dist/types/Errors/index.d.ts"
+      "require": "./dist/cjs/prod/Errors/index.js"
     },
     "./types": {
       "types": "./dist/types/typings/public.d.ts"
