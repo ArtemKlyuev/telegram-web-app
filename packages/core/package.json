@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">= 16.20.0"
+    "node": ">=16.10.0"
   },
   "sideEffects": false,
   "exports": {
