@@ -8,6 +8,7 @@
   },
   "scripts": {
     "core": "pnpm --filter @telegram-web-app/core",
+    "react": "pnpm --filter @telegram-web-app/react",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}' --quiet",
     "lint:fix": "pnpm lint:js --fix --no-error-on-unmatched-pattern"
   },
