@@ -1,4 +1,6 @@
 // package public types exports
+export type { Telegram, TelegramOptions } from '../Telegram';
+
 export * from './common';
 export * from './WebApp';
 export type {

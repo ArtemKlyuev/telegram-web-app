@@ -1,4 +1,4 @@
-import { TelegramOptions } from '@typings/common';
+import { Nullable } from '@typings/utils';
 import { WebView } from '@typings/WebView';
 import { WebApp } from '@typings/WebApp';
 
@@ -30,13 +30,22 @@ import {
   TelegramWebApp,
 } from '../WebApp';
 
+export interface TelegramOptions {
+  exposeInMainWorld?: Nullable<boolean>;
+}
+
+export interface Telegram {
+  WebApp: WebApp;
+  WebView: WebView;
+}
+
 const DEFAULT_VERSION = '6.0';
 
-export class Telegram {
+export class TelegramWebAppContainer {
   readonly #webApp: WebApp;
   readonly #webView: WebView;
 
-  constructor({ exposeInMainWorld = true }: TelegramOptions) {
+  constructor({ exposeInMainWorld = false }: TelegramOptions = {}) {
     if (typeof window === 'undefined') {
       throw new Error('Telegram web app can only be launched in browser');
     }

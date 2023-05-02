@@ -1,4 +1,4 @@
-export * from './Telegram';
+export { TelegramWebAppContainer } from './Telegram';
 export {
   TELEGRAM_HAPTIC_FEEDBACK,
   TELEGRAM_MAIN_BUTTON,
