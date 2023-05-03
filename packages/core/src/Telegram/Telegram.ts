@@ -41,7 +41,7 @@ export interface Telegram {
 
 const DEFAULT_VERSION = '6.0';
 
-export class TelegramWebAppContainer {
+export class TelegramWebAppContainer implements Telegram {
   readonly #webApp: WebApp;
   readonly #webView: WebView;
 
