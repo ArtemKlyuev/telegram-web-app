@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { build, BuildOptions } from 'esbuild';
+import { dTSPathAliasPlugin } from 'esbuild-plugin-d-ts-path-alias';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,14 @@ const esmBuild = build({
   outdir: `${DIST_DIR}/esm`,
 });
 
+const declarationsBuild = build({
+  ...baseOptions,
+  entryPoints: ['./src/index.ts', './src/typings/public.ts'],
+  outdir: DIST_DIR,
+  write: false,
+  plugins: [dTSPathAliasPlugin({ debug: true, outputPath: `${DIST_DIR}/types` })],
+});
+
 const cjsDevBuild = build({
   ...baseOptions,
   format: 'cjs',
@@ -44,17 +53,11 @@ const cjsProdBuild = build({
   outdir: `${DIST_DIR}/cjs/prod`,
 });
 
-await Promise.all([esmBuild, cjsDevBuild, cjsProdBuild]);
+await Promise.all([esmBuild, declarationsBuild, cjsDevBuild, cjsProdBuild]);
 
 const cjsIndex = fs.copyFile(
   path.resolve(__dirname, './index-cjs.build.js'),
   path.resolve(DIST_DIR_PATH, 'cjs/index.js'),
 );
 
-const types = fs.cp(
-  path.resolve(process.cwd(), `temp/types`),
-  path.resolve(DIST_DIR_PATH, 'types'),
-  { recursive: true },
-);
-
-await Promise.all([cjsIndex, types]);
+await cjsIndex;

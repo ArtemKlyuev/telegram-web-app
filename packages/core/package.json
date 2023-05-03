@@ -28,15 +28,12 @@
     "build:prod": "pnpm build:esm && pnpm build:dist:prod",
     "build:dist:dev": "cross-env NODE_ENV=development tsx scripts/build.ts",
     "build:dist:prod": "cross-env NODE_ENV=production tsx scripts/build.ts",
-    "build:esm": "tsc -p tsconfig.build.esm.json && tsc-alias -p tsconfig.build.esm.json",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "pnpm test --coverage"
   },
   "dependencies": {
     "tslib": "2.5.0"
-  },
-  "devDependencies": {
-    "tsc-alias": "1.8.6"
   }
 }

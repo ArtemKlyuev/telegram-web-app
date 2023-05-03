@@ -2,8 +2,7 @@
   "extends": ["./tsconfig.json"],
   "compilerOptions": {
     "outDir": "temp/esm",
-    "declaration": true,
-    "declarationDir": "temp/types",
+    "declaration": false,
     "sourceMap": true,
     "noEmit": false,
     "noEmitOnError": false
