@@ -5,6 +5,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "author": "Artem Klyuev",
   "description": "Unofficial telegram web app for bots npm package. Based on https://telegram.org/js/telegram-web-app.js.",
   "keywords": [

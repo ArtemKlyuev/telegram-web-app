@@ -5,6 +5,10 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "author": "Artem Klyuev",
   "description": "@telegram-web-app/core binding for react",
   "keywords": [
