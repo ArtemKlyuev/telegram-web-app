@@ -29,7 +29,6 @@
   "devDependencies": {
     "@telegram-web-app/core": "workspace:*",
     "@types/react": "18.2.0",
-    "esbuild-plugin-d-ts-path-alias": "4.0.0",
     "react": "18.2.0"
   }
 }
