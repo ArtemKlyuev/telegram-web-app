@@ -76,7 +76,7 @@ Available subpath imports:
 
 `@telegram-web-app/core/errors`
 
-Contains custom errors throwed by the library.
+Contains [custom errors](#exceptions) throwed by the library.
 
 Example:
 
