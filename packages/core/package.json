@@ -2,6 +2,26 @@
   "name": "@telegram-web-app/core",
   "version": "0.0.0",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Artem Klyuev",
+  "description": "Unofficial telegram web app for bots npm package. Based on https://telegram.org/js/telegram-web-app.js.",
+  "keywords": [
+    "telegram",
+    "web app",
+    "telegram bot",
+    "telegram web app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtemKlyuev/telegram-web-app.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/ArtemKlyuev/telegram-web-app/tree/main/packages/core",
+  "bugs": {
+    "url": "https://github.com/ArtemKlyuev/telegram-web-app/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=16.10.0"

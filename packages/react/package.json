@@ -2,6 +2,29 @@
   "name": "@telegram-web-app/react",
   "version": "0.0.0",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Artem Klyuev",
+  "description": "@telegram-web-app/core binding for react",
+  "keywords": [
+    "telegram",
+    "web app",
+    "react",
+    "telegram bot",
+    "telegram bot react",
+    "telegram web app",
+    "telegram web app react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtemKlyuev/telegram-web-app.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/ArtemKlyuev/telegram-web-app/tree/main/packages/react",
+  "bugs": {
+    "url": "https://github.com/ArtemKlyuev/telegram-web-app/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=16.10.0"
