@@ -1,0 +1,6 @@
+.vscode
+coverage
+dist
+examples
+node_modules
+temp

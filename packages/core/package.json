@@ -1,0 +1,39 @@
+{
+  "name": "@telegram-web-app/core",
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=16.10.0"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./errors": {
+      "types": "./dist/types/Errors/index.d.ts",
+      "import": "./dist/esm/Errors/index.js",
+      "require": "./dist/cjs/prod/Errors/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/typings/public.d.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --pretty --noEmit",
+    "build:dev": "pnpm build:esm && pnpm build:dist:dev",
+    "build:prod": "pnpm build:esm && pnpm build:dist:prod",
+    "build:dist:dev": "cross-env NODE_ENV=development tsx scripts/build.ts",
+    "build:dist:prod": "cross-env NODE_ENV=production tsx scripts/build.ts",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "pnpm test --coverage"
+  },
+  "dependencies": {
+    "tslib": "2.5.0"
+  }
+}

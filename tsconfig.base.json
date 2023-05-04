@@ -1,6 +1,5 @@
 {
   "exclude": ["node_modules", "dist"],
-  "include": ["src"],
   "compilerOptions": {
     "lib": ["dom", "esnext", "dom.iterable"],
     "target": "es2020",
@@ -22,15 +21,6 @@
     "useDefineForClassFields": true,
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "isolatedModules": true,
-    "paths": {
-      "@typings/common": ["./src/typings/common.ts"],
-      "@typings/utils": ["./src/typings/utils.ts"],
-      "@typings/WebApp": ["./src/typings/WebApp.ts"],
-      "@typings/WebView": ["./src/typings/WebView.ts"],
-      "@Errors": ["./src/Errors/index.ts"],
-      "@decorators": ["./src/decorators/index.ts"],
-      "@utils": ["./src/utils/index.ts"]
-    }
+    "isolatedModules": true
   }
 }
