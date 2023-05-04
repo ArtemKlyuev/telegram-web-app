@@ -201,40 +201,31 @@ try {
 
 Table of all methods and setters that can throw custom errors:
 
-| Method                                                                    | Type   | Errors                                                           |
-| ------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------- |
-| `Telegram.WebApp.switchInlineQuery`                                       | method | `WebAppMethodUnsupportedError`, `WebAppInlineModeDisabledError`, |
-| `WebAppInlineQueryInvalidError`, `WebAppInlineChooseChatTypeInvalidError` |
-| `Telegram.WebApp.openInvoice`                                             | method | `WebAppMethodUnsupportedError`                                   |
-| `Telegram.WebApp.showPopup`                                               | method | `WebAppMethodUnsupportedError`, `WebAppPopupOpenedError`,        |
-| `WebAppPopupParamInvalidError`                                            |
-| `Telegram.WebApp.showAlert`                                               | method | `WebAppMethodUnsupportedError`,`WebAppPopupOpenedError`,         |
-| `WebAppPopupParamInvalidError`                                            |
-| `Telegram.WebApp.showConfirm`                                             | method | `WebAppMethodUnsupportedError`,`WebAppPopupOpenedError`,         |
-| `WebAppPopupParamInvalidError`                                            |
-| `Telegram.WebApp.showScanQrPopup`                                         | method | `WebAppMethodUnsupportedError`, `WebAppScanQrPopupOpenedError`,  |
-| `WebAppScanQrPopupParamInvalidError`                                      |
-| `Telegram.WebApp.closeScanQrPopup`                                        | method | `WebAppMethodUnsupportedError`                                   |
-| `Telegram.WebApp.readTextFromClipboard`                                   | method | `WebAppMethodUnsupportedError`                                   |
-| `Telegram.WebApp.setHeaderColor`                                          | method | `WebAppHeaderColorKeyInvalidError`                               |
-| `Telegram.WebApp.sendData`                                                | method | `WebAppDataInvalidError`                                         |
-| `Telegram.WebApp.openLink`                                                | method | `WebAppTelegramUrlInvalidError`                                  |
-| `Telegram.WebApp.openTelegramLink`                                        | method | `WebAppTelegramUrlInvalidError`                                  |
-| `Telegram.WebApp.backgroundColor`                                         | setter | `WebAppBackgroundColorInvalidError`                              |
-| `Telegram.WebApp.HapticFeedback.impactOccurred`                           | method |
-
-`WebAppHapticFeedbackTypeInvalidError`,
-`WebAppHapticImpactStyleInvalidError`|
-| `Telegram.WebApp.HapticFeedback.notificationOccurred` | method |`WebAppHapticFeedbackTypeInvalidError`, `WebAppHapticNotificationTypeInvalidError`|
-|`Telegram.WebApp.HapticFeedback.selectionChanged` | method |`WebAppHapticFeedbackTypeInvalidError`, |
-| `WebAppHapticImpactStyleInvalidError` |
-|`Telegram.WebApp.MainButton.setParams` | method |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.setText` | method |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.isActive` | setter |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.isVisible` | setter |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.textColor` | setter |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.color` | setter |`WebAppMainButtonParamInvalidError` |
-|`Telegram.WebApp.MainButton.text` | setter |`WebAppMainButtonParamInvalidError` |
+| Method                                                | Type   | Errors                                                                                                                                     |
+| ----------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Telegram.WebApp.switchInlineQuery`                   | method | `WebAppMethodUnsupportedError`, `WebAppInlineModeDisabledError`, `WebAppInlineQueryInvalidError`, `WebAppInlineChooseChatTypeInvalidError` |
+| `Telegram.WebApp.openInvoice`                         | method | `WebAppMethodUnsupportedError`                                                                                                             |
+| `Telegram.WebApp.showPopup`                           | method | `WebAppMethodUnsupportedError`, `WebAppPopupOpenedError`, `WebAppPopupParamInvalidError`                                                   |
+| `Telegram.WebApp.showAlert`                           | method | `WebAppMethodUnsupportedError`,`WebAppPopupOpenedError`, `WebAppPopupParamInvalidError`                                                    |
+| `Telegram.WebApp.showConfirm`                         | method | `WebAppMethodUnsupportedError`,`WebAppPopupOpenedError`, `WebAppPopupParamInvalidError`                                                    |
+| `Telegram.WebApp.showScanQrPopup`                     | method | `WebAppMethodUnsupportedError`, `WebAppScanQrPopupOpenedError`, `WebAppScanQrPopupParamInvalidError`                                       |
+| `Telegram.WebApp.closeScanQrPopup`                    | method | `WebAppMethodUnsupportedError`                                                                                                             |
+| `Telegram.WebApp.readTextFromClipboard`               | method | `WebAppMethodUnsupportedError`                                                                                                             |
+| `Telegram.WebApp.setHeaderColor`                      | method | `WebAppHeaderColorKeyInvalidError`                                                                                                         |
+| `Telegram.WebApp.sendData`                            | method | `WebAppDataInvalidError`                                                                                                                   |
+| `Telegram.WebApp.openLink`                            | method | `WebAppTelegramUrlInvalidError`                                                                                                            |
+| `Telegram.WebApp.openTelegramLink`                    | method | `WebAppTelegramUrlInvalidError`                                                                                                            |
+| `Telegram.WebApp.backgroundColor`                     | setter | `WebAppBackgroundColorInvalidError`                                                                                                        |
+| `Telegram.WebApp.HapticFeedback.impactOccurred`       | method | `WebAppHapticFeedbackTypeInvalidError`, `WebAppHapticImpactStyleInvalidError`                                                              |
+| `Telegram.WebApp.HapticFeedback.notificationOccurred` | method | `WebAppHapticFeedbackTypeInvalidError`, `WebAppHapticNotificationTypeInvalidError`                                                         |
+| `Telegram.WebApp.HapticFeedback.selectionChanged`     | method | `WebAppHapticFeedbackTypeInvalidError`                                                                                                     |
+| `Telegram.WebApp.MainButton.setParams`                | method | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.setText`                  | method | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.isActive`                 | setter | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.isVisible`                | setter | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.textColor`                | setter | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.color`                    | setter | `WebAppMainButtonParamInvalidError`                                                                                                        |
+| `Telegram.WebApp.MainButton.text`                     | setter | `WebAppMainButtonParamInvalidError`                                                                                                        |
 
 ## Differences from the original library
 
