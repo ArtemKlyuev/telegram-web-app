@@ -47,6 +47,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "echo 'prepublishOnly' && pnpm build:prod",
     "typecheck": "tsc --pretty --noEmit",
     "build:dev": "pnpm build:esm && pnpm build:dist:dev",
     "build:prod": "pnpm build:esm && pnpm build:dist:prod",

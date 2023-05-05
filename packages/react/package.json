@@ -42,6 +42,7 @@
     }
   },
   "scripts": {
+    "prepublishOnly": "echo 'prepublishOnly' && pnpm build:prod",
     "typecheck": "tsc --pretty --noEmit",
     "build:dev": "cross-env NODE_ENV=development tsx scripts/build.ts",
     "build:prod": "cross-env NODE_ENV=production tsx scripts/build.ts",
