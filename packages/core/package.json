@@ -1,6 +1,6 @@
 {
   "name": "@telegram-web-app/core",
-  "version": "0.0.0",
+  "version": "0.0.1-beta.0",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -49,6 +49,7 @@
   "scripts": {
     "prepublishOnly": "echo 'prepublishOnly' && pnpm build:prod",
     "typecheck": "tsc --pretty --noEmit",
+    "lint": "eslint '**/*.{js,jsx,ts,tsx}' --quiet",
     "build:dev": "pnpm build:esm && pnpm build:dist:dev",
     "build:prod": "pnpm build:esm && pnpm build:dist:prod",
     "build:dist:dev": "cross-env NODE_ENV=development tsx scripts/build.ts",

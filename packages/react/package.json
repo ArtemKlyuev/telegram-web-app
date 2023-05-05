@@ -1,6 +1,6 @@
 {
   "name": "@telegram-web-app/react",
-  "version": "0.0.0",
+  "version": "0.0.1-beta.0",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -51,7 +51,7 @@
     "test:coverage": "pnpm test --coverage"
   },
   "peerDependencies": {
-    "@telegram-web-app/core": "*",
+    "@telegram-web-app/core": "0.0.1-beta.0",
     "react": ">=16.8.0"
   },
   "devDependencies": {
