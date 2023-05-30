@@ -86,7 +86,6 @@ export abstract class FeatureSupport {
       feature: Class,
       context: ClassDecoratorContext<Class>,
     ): Class => {
-      console.log('inVersion', { feature, context, versionOrConfig });
       if (!(context.kind === 'class')) {
         throw new TypeError(
           `'FeatureSupport' cannot decorate kinds different from 'class'. Passed kind: ${context.kind}.`,
