@@ -4,7 +4,7 @@ import { BackButton } from '@typings/WebApp';
 import { Disposer, EventEmitter } from '@utils';
 import { bindMethods, FeatureSupport } from '@decorators';
 
-type ButtonEvents = typeof BUTTON_EVENTS;
+type ButtonEvents = typeof BACK_BUTTON_EVENTS;
 type ButtonEvent = ValueOf<ButtonEvents>;
 type ButtonCreateListener = () => any;
 type ButtonUpdateListener = (params: Required<BackButtonParams>) => any;
@@ -19,8 +19,7 @@ interface BackButtonParams {
   is_visible?: boolean | undefined;
 }
 
-const BUTTON_EVENTS = {
-  CREATED: 'created',
+export const BACK_BUTTON_EVENTS = {
   UPDATED: 'updated',
   CLICKED: 'clicked',
   OFF_CLICKED: 'off_clicked',
@@ -45,14 +44,8 @@ export class WebAppBackButton implements BackButton {
   #isVisible = false;
   #prevButtonState = this.#isVisible;
 
-  static get EVENTS(): ButtonEvents {
-    return BUTTON_EVENTS;
-  }
-
   constructor({ eventEmitter }: Options) {
     this.#eventEmitter = eventEmitter;
-
-    queueMicrotask(() => this.#eventEmitter.emit(BUTTON_EVENTS.CREATED));
   }
 
   #update() {
@@ -64,7 +57,7 @@ export class WebAppBackButton implements BackButton {
 
     this.#prevButtonState = newState;
 
-    this.#eventEmitter.emit(BUTTON_EVENTS.UPDATED, { is_visible: this.#isVisible });
+    this.#eventEmitter.emit(BACK_BUTTON_EVENTS.UPDATED, { is_visible: this.#isVisible });
   }
 
   #setParams(params: BackButtonParams): this {
@@ -78,33 +71,29 @@ export class WebAppBackButton implements BackButton {
   }
 
   [BACK_BUTTON_ON_EVENT_KEY](
-    event: ButtonEvents['CREATED'],
-    listener: ButtonCreateListener
-  ): Disposer;
-  [BACK_BUTTON_ON_EVENT_KEY](
     event: ButtonEvents['UPDATED'],
-    listener: ButtonUpdateListener
+    listener: ButtonUpdateListener,
   ): Disposer;
   [BACK_BUTTON_ON_EVENT_KEY](event: ButtonEvents['CLICKED'], listener: onClickListener): Disposer;
   [BACK_BUTTON_ON_EVENT_KEY](
     event: ButtonEvents['OFF_CLICKED'],
-    listener: offClickListener
+    listener: offClickListener,
   ): Disposer;
   [BACK_BUTTON_ON_EVENT_KEY](
     event: ButtonEvent,
-    listener: ButtonCreateListener | ButtonUpdateListener | onClickListener | offClickListener
+    listener: ButtonCreateListener | ButtonUpdateListener | onClickListener | offClickListener,
   ): Disposer {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
   onClick(callback: NoParamsCallback): this {
-    this.#eventEmitter.emit(BUTTON_EVENTS.CLICKED, callback);
+    this.#eventEmitter.emit(BACK_BUTTON_EVENTS.CLICKED, callback);
 
     return this;
   }
 
   offClick(callback: NoParamsCallback): this {
-    this.#eventEmitter.emit(BUTTON_EVENTS.OFF_CLICKED, callback);
+    this.#eventEmitter.emit(BACK_BUTTON_EVENTS.OFF_CLICKED, callback);
 
     return this;
   }
@@ -112,6 +101,7 @@ export class WebAppBackButton implements BackButton {
   show(): this {
     return this.#setParams({ is_visible: true });
   }
+
   hide(): this {
     return this.#setParams({ is_visible: false });
   }
