@@ -1,9 +1,7 @@
 /** @type {import('jest').Config} */
 export default {
   roots: ['<rootDir>/src/'],
-  transform: {
-    '^.+\\.(t|j)sx?$': '@swc/jest',
-  },
+  preset: 'ts-jest',
   moduleNameMapper: {
     '^@typings/common$': '<rootDir>/src/typings/common.ts',
     '^@typings/utils$': '<rootDir>/src/typings/utils.ts',
