@@ -50,7 +50,7 @@ export class BackgroundColor {
   update = (): void => {
     const color = this.get();
 
-    // FIXME `!=`
+    // FIXME `!=` to strict `===` equal
     if (this.#appBackgroundColor != color) {
       this.#appBackgroundColor = color;
       this.#eventEmitter.emit(BackgroundColor.EVENTS.UPDATED, color);
