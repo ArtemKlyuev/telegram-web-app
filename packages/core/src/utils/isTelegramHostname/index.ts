@@ -1,0 +1,1 @@
+export { isTelegramHostname } from './isTelegramHostname';
