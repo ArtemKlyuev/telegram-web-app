@@ -1,8 +1,8 @@
-import { isHTTPTypeProtocol } from './isHTTPTypeProtocol';
-import { isTelegramHostname } from './isTelegramHostname';
+import { isHTTPTypeProtocol } from '../isHTTPTypeProtocol';
+import { isTelegramHostname } from '../isTelegramHostname';
 
 export const isValidTelegramWebAppURL = (
-  url: string
+  url: string,
 ): { valid: true } | { valid: false; reason: string } => {
   const { protocol, hostname } = new URL(url);
 
