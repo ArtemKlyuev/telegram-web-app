@@ -21,4 +21,5 @@ export default {
       lines: 90,
     },
   },
+  coveragePathIgnorePatterns: ['<rootDir>/src/Errors', '<rootDir>/src/typings', 'global.d.ts'],
 };
