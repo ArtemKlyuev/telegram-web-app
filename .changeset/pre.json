@@ -6,6 +6,7 @@
     "@telegram-web-app/react": "0.0.0"
   },
   "changesets": [
-    "beige-garlics-drop"
+    "beige-garlics-drop",
+    "rich-knives-admire"
   ]
 }

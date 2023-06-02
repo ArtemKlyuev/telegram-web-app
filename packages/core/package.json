@@ -1,6 +1,6 @@
 {
   "name": "@telegram-web-app/core",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
