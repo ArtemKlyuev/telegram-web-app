@@ -1,11 +1,11 @@
 import { InitParams } from '@typings/WebView';
 
-import { isNullable } from './isNullable';
+import { isNullable } from '../isNullable';
 
 export const urlSafeDecode = (urlencoded: string): string => {
   try {
     urlencoded = urlencoded.replace(/\+/g, '%20');
-    return decodeURIComponent(urlencoded);
+    return window.decodeURIComponent(urlencoded);
   } catch {
     return urlencoded;
   }
@@ -40,22 +40,26 @@ export const urlParseHashParams = (locationHash: string): InitParams => {
   return params;
 };
 
-export const urlParseQueryString = <T extends Record<string, any>>(queryString: string): T => {
+export const urlParseQueryString = <Params extends Record<string, any>>(
+  queryString: string,
+): Params => {
   if (!queryString.length) {
-    return {} as T;
+    return {} as Params;
   }
 
   const queryStringParams = queryString.split('&');
 
-  const params = queryStringParams.reduce<T>((acc, param) => {
+  const params = queryStringParams.reduce((acc, param) => {
     const [name, value] = param.split('=');
     const paramName = urlSafeDecode(name);
     const paramValue = isNullable(value) ? null : urlSafeDecode(value);
 
-    return { ...acc, [paramName]: paramValue };
-  }, {} as T);
+    acc[paramName] = paramValue;
 
-  return params;
+    return acc;
+  }, {} as Record<string, any>);
+
+  return params as Params;
 };
 
 // Telegram apps will implement this logic to add service params (e.g. tgShareScoreUrl) to game URL
@@ -70,9 +74,9 @@ export const urlAppendHashParams = (url: string, addHash: string): string => {
     return url + '#' + addHash;
   }
 
-  const curHash = url.substr(hashIndex + 1);
+  const curHash = url.slice(hashIndex + 1);
 
-  if (curHash.indexOf('=') >= 0 || curHash.indexOf('?') >= 0) {
+  if (curHash.includes('=') || curHash.includes('?')) {
     // https://game.com/#hash=1 -> https://game.com/#hash=1&tgShareScoreUrl=etc
     // https://game.com/#path?query -> https://game.com/#path?query&tgShareScoreUrl=etc
     return url + '&' + addHash;
