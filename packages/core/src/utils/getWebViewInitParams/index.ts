@@ -1,0 +1,1 @@
+export { getWebViewInitParams } from './getWebViewInitParams';

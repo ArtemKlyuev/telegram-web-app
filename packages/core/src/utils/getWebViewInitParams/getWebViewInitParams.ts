@@ -1,9 +1,9 @@
 import { InitParams } from '@typings/WebView';
 
-import { SessionStorage } from './sessionStorage';
-import { urlParseHashParams } from './url';
+import { SessionStorage } from '../sessionStorage';
+import { urlParseHashParams } from '../url';
 
-const INIT_PARAMS = 'initParams';
+export const INIT_PARAMS = 'initParams';
 
 export const getWebViewInitParams = (locationHash: string): InitParams => {
   const initParams = urlParseHashParams(locationHash);
