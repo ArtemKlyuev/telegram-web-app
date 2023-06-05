@@ -5,16 +5,12 @@ import { urlParseQueryString } from '@utils';
 
 type WebAppInitDataValues = ValueOf<WebAppInitData>;
 
-const isWrappedInCurlyBrackets = (value: string): boolean => {
-  return value[0] === '{' && value.at(-1) === '}';
-};
-
-const isWrappedInSquareBrackets = (value: string): boolean => {
-  return value[0] === '[' && value.at(-1) === ']';
+const isWrappedIn = (value: string, open: string, close: string): boolean => {
+  return value[0] === open && value.at(-1) === close;
 };
 
 const isWrappedInBrackets = (value: string): boolean => {
-  return isWrappedInCurlyBrackets(value) || isWrappedInSquareBrackets(value);
+  return isWrappedIn(value, '{', '}') || isWrappedIn(value, '[', ']');
 };
 
 export class InitData {
