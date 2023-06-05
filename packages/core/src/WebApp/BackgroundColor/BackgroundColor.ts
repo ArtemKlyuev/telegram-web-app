@@ -5,7 +5,7 @@ import { HeaderBgColor } from '@typings/WebApp';
 import { EventEmitter, Disposer, parseColorToHex } from '@utils';
 import { WebAppBackgroundColorInvalidError } from '@Errors';
 
-import { TELEGRAM_THEME } from './Theme';
+import { TELEGRAM_THEME } from '../Theme';
 
 interface Options {
   eventEmitter: EventEmitter<BgColorEvent>;
