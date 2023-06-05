@@ -40,9 +40,20 @@ describe('utils', () => {
     });
 
     it('should parse query string', () => {
-      const result = urlParseQueryString('from=Monday&to=Friday');
+      const stringifiedData = JSON.stringify({ id: 1 });
 
-      expect(result).toStrictEqual({ from: 'Monday', to: 'Friday' });
+      const url = new URL('https://google.com');
+      url.searchParams.append('from', 'Monday');
+      url.searchParams.append('to', 'Friday');
+      url.searchParams.append('data', stringifiedData);
+
+      const result = urlParseQueryString(url.searchParams.toString());
+
+      expect(result).toStrictEqual({
+        from: 'Monday',
+        to: 'Friday',
+        data: stringifiedData,
+      });
     });
 
     it('should parse query string without value', () => {
