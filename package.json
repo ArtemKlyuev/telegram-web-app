@@ -10,7 +10,7 @@
     "core": "pnpm --filter @telegram-web-app/core",
     "react": "pnpm --filter @telegram-web-app/react",
     "lint": "eslint '**/*.{js,jsx,ts,tsx}' --quiet",
-    "lint:fix": "pnpm lint:js --fix --no-error-on-unmatched-pattern"
+    "lint:fix": "pnpm lint --fix --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
     "@changesets/cli": "2.26.1",
