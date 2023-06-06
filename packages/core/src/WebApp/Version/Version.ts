@@ -77,6 +77,7 @@ export class Version {
     this.#version = version;
   }
 
+  // TODO: maybe would be better to rename to `isCompatibleTo`
   isSuitableTo(suitableVersion: string): boolean {
     return this.#compareVersions(this.#version, suitableVersion) >= VERSION_DIFFERENCE.EQUAL;
   }
