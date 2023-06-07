@@ -4,8 +4,7 @@ import { HexColor, ThemeParams } from '@typings/common';
 
 import { Disposer, EventEmitter, isColorDark, parseColorToHex } from '@utils';
 
-type ThemeEvents = typeof THEME_EVENTS;
-type ThemeEvent = ValueOf<ThemeEvents>;
+type ThemeEvent = ValueOf<typeof THEME_EVENTS>;
 type ColorSchemeChangeListener = (newColorScheme: ColorScheme) => void;
 type ThemeParamSetListener = (param: keyof Required<ThemeParams>, color: HexColor) => void;
 type ThemeParamsChangeListener = (params: ThemeParams) => void;
@@ -63,9 +62,9 @@ export class Theme {
     this.#eventEmitter.emit(Theme.EVENTS.COLOR_SCHEME_CHANGED, colorScheme);
   }
 
-  on(event: ThemeEvents['COLOR_SCHEME_CHANGED'], listener: ColorSchemeChangeListener): Disposer;
-  on(event: ThemeEvents['THEME_PARAM_SET'], listener: ThemeParamSetListener): Disposer;
-  on(event: ThemeEvents['THEME_PARAMS_CHANGED'], listener: ThemeParamsChangeListener): Disposer;
+  on(event: 'color_scheme_changed', listener: ColorSchemeChangeListener): Disposer;
+  on(event: 'theme_param_set', listener: ThemeParamSetListener): Disposer;
+  on(event: 'theme_params_changed', listener: ThemeParamsChangeListener): Disposer;
   on(
     event: ThemeEvent,
     listener: ColorSchemeChangeListener | ThemeParamSetListener | ThemeParamsChangeListener,
