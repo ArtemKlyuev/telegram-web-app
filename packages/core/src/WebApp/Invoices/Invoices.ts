@@ -23,7 +23,7 @@ export class Invoices {
     const match = pathname.match(INVOICE_REGEX) ?? [];
     const slug = match[2];
 
-    if (!isHTTPTypeProtocol(protocol) || !isTelegramHostname(hostname) || !slug) {
+    if (!slug || !isHTTPTypeProtocol(protocol) || !isTelegramHostname(hostname)) {
       throw new WebAppInvoiceUrlInvalidError(url);
     }
 
