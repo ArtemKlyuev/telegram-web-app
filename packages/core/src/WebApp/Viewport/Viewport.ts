@@ -9,21 +9,20 @@ interface Options {
 
 export interface ViewportData {
   is_expanded: boolean;
-  height: number;
+  height: number | false;
   is_state_stable: boolean;
 }
 
-type ViewportEvents = typeof Viewport.EVENTS;
-type ViewportEvent = ValueOf<ViewportEvents>;
+type ViewportEvent = ValueOf<typeof Viewport.EVENTS>;
 type ViewportChangeListener = (isStateStable: boolean) => any;
 type HeightCalculatedListener = (params: { height: number; stableHeight: number }) => any;
 
 export class Viewport {
   readonly #eventEmitter: EventEmitter<ViewportEvent>;
+  readonly #mainButtonHeight: number;
   #viewportHeight: number | false = false;
   #viewportStableHeight: number | false = false;
   #isExpanded = true;
-  #mainButtonHeight: number;
 
   static get EVENTS() {
     return {
@@ -37,7 +36,7 @@ export class Viewport {
     this.#mainButtonHeight = mainButtonHeight;
   }
 
-  #calculateHeight(viewportHeight: number | false): string {
+  #calculateCSSHeight(viewportHeight: number | false): string {
     if (viewportHeight !== false) {
       return viewportHeight - this.#mainButtonHeight + 'px';
     }
@@ -51,14 +50,14 @@ export class Viewport {
     return height - this.#mainButtonHeight;
   }
 
-  on(event: ViewportEvents['HEIGHT_CALCULATED'], listener: HeightCalculatedListener): Disposer;
-  on(event: ViewportEvents['VIEWPORT_CHANGED'], listener: ViewportChangeListener): Disposer;
+  on(event: 'height_calculated', listener: HeightCalculatedListener): Disposer;
+  on(event: 'viewport_changed', listener: ViewportChangeListener): Disposer;
   on(event: ViewportEvent, listener: HeightCalculatedListener | ViewportChangeListener): Disposer {
     return this.#eventEmitter.subscribe(event, listener);
   }
 
   setHeight = (data?: ViewportData | undefined): void => {
-    if (typeof data !== 'undefined') {
+    if (data) {
       this.#isExpanded = Boolean(data.is_expanded);
       this.#viewportHeight = data.height;
 
@@ -69,8 +68,8 @@ export class Viewport {
       this.#eventEmitter.emit(Viewport.EVENTS.VIEWPORT_CHANGED, Boolean(data.is_state_stable));
     }
 
-    const height = this.#calculateHeight(this.#viewportHeight);
-    const stableHeight = this.#calculateHeight(this.#viewportStableHeight);
+    const height = this.#calculateCSSHeight(this.#viewportHeight);
+    const stableHeight = this.#calculateCSSHeight(this.#viewportStableHeight);
 
     this.#eventEmitter.emit(Viewport.EVENTS.HEIGHT_CALCULATED, { height, stableHeight });
   };
